@@ -1,2 +1,1 @@
-v1.0
-	Create new project
+v1.0 - Create new project.
