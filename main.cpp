@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     w.show();
 
     // Set icon
-    a.setWindowIcon(QIcon(":/icons/Images/favicon.ico"));
+    a.setWindowIcon(QIcon(":/icons/Images/icon.ico"));
 
     return a.exec();
 }
