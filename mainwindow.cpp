@@ -93,3 +93,17 @@ void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
         ui->humanDirLabel->setDisabled(true);
     }
 }
+
+/* Handle reset button press */
+void MainWindow::on_resetBtn_clicked()
+{
+    /* reset all data to default */
+    ui->buildingDirLabel->setText("...");
+    ui->humanDirLabel->setText("...");
+    ui->humanDirLabel->setDisabled(false);
+    ui->algoCombo->setCurrentIndex(0);
+    ui->humanTotalSpinBox->setValue(0);
+    ui->humanAvgSpinBox->setValue(0);
+    ui->humanVisitorSpinBox->setValue(0);
+    ui->saveResultBtn->setDisabled(true);
+}

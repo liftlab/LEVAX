@@ -22,6 +22,7 @@ private slots:
     void on_humanTotalSpinBox_valueChanged(int args1);  /* Handle total human spin box value changed */
     void on_humanAvgSpinBox_valueChanged(int arg1);     /* Handle average human spin box value changed */
     void on_humanVisitorSpinBox_valueChanged(int arg1); /* Handle human visitor spin box value changed */
+    void on_resetBtn_clicked();             /* Handle reset button press */
 
 private:
     Ui::MainWindow *ui;

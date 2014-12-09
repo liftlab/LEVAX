@@ -5,7 +5,8 @@ v1.2 - 1st GUI element implementation<br />
 v2.0 - 2nd GUI element implementation, new icon<br />  
 v2.1 - Rename elements, removed "File->Save data" feature<br />  
 v2.2 - QFileDialog to load a file, help button, rename object names<br />  
-v2.3 - Fix to disable multiple inputs of simulated humans data<br /><br />  
+v2.3 - Fix to disable multiple inputs of simulated humans data<br />  
+v2.4 - Reset button feature implementation<br /><br />  
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  
