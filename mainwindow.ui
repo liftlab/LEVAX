@@ -489,7 +489,8 @@
      <string>File</string>
     </property>
     <addaction name="separator"/>
-    <addaction name="actionQuit"/>
+    <addaction name="actionHelp"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -499,9 +500,14 @@
     <string>Save Data...</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
    </property>
   </action>
  </widget>
@@ -509,7 +515,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>actionQuit</sender>
+   <sender>actionExit</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>

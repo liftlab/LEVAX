@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+/* main program */
 int main(int argc, char *argv[])
 {
+    /* initialize QApplication and display MainWindow GUI */
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
