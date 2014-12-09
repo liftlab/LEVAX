@@ -488,7 +488,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave_Data"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -502,7 +501,7 @@
   </action>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>Exit</string>
    </property>
   </action>
  </widget>

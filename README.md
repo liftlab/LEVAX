@@ -3,9 +3,10 @@ v1.0 - Create new project.
 v1.1 - Window width/height, title, icon, disable window resize 
 v1.2 - 1st GUI element implementation
 v2.0 - 2nd GUI element implementation, new icon
+v2.1 - Rename elements, removed "File->Save data" feature
 
 [Instructions]
-To create an executable, download and extract
+To open the executable, download and extract
 the DLL archive in dropbox to the release folder.
 
 1. Qt5Core.dll
