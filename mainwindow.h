@@ -6,6 +6,8 @@
 #include <QMessageBox>  /* Help pop-up message box */
 #include <QDateTime>    /* Date time */
 #include <QDebug>       /* Debug, similar to cout. Usage qDebut() << "Hello World" */
+#include "tinyXML/tinyxml.h"    /* TinyXML XML parser*/
+#include <string>       /* String */
 
 namespace Ui {
 class MainWindow;
@@ -29,9 +31,14 @@ private slots:
     void onActionHelp();                    /* Handle help button press */
     void on_runBtn_clicked();               /* Handle run button press */
     void on_saveResultBtn_clicked();        /* Handle save result button clicked */
+    void on_humanDirLabel_textChanged(const QString &arg1); /* Detect humanDirLabel text change */
+    void on_buildingDirLabel_textChanged(const QString &arg1); /* Detect buildingDirLabel text change */
 
 private:
     Ui::MainWindow *ui;
+    void update_inputSummaryBox(const QString &arg1, const QString &arg2); /* update inputSummaryBox with new data */
+    bool validateBuildingData(const QString &arg1); /* validate building XML */
+    bool validateHumanData(const QString &arg1); /* validate human XML */
 };
 
 #endif // MAINWINDOW_H

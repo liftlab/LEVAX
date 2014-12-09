@@ -7,8 +7,9 @@ v2.1 - Rename elements, removed "File->Save data" feature<br />
 v2.2 - QFileDialog to load a file, help button, rename object names<br />  
 v2.3 - Fix to disable multiple inputs of simulated humans data<br />  
 v2.4 - Reset button feature implementation<br />  
-v2.5 - Implemented Help feature, Run function placeholder, save result<br /><br />  
- 
+v2.5 - Implemented Help feature, Run function placeholder, save result<br />  
+v2.6 - Added TinyXML to project, validate XML feature<br /><br />  
+
 [Instructions]<br />  
 To open the executable, download and extract<br />  
 the DLL archive in dropbox to the release folder.<br /><br />  

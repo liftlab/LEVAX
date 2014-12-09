@@ -26,7 +26,7 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
                 this,
                 tr("Open Simulated Human Data"),
                 "./",
-                "XML Data File (*.xml);;"
+                "XML Data File (*.xml)"
 
                 );
 
@@ -53,7 +53,7 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
                 this,
                 tr("Open Building Model"),
                 "./",
-                "XML Data File (*.xml);;"
+                "XML Data File (*.xml)"
 
                 );
 
@@ -210,4 +210,222 @@ void MainWindow::on_saveResultBtn_clicked()
     /* Save and display success */
     if(!fileName.isEmpty())
         QMessageBox::information(this,tr("Help"),"File saved to "+fileName);
+}
+
+/* Detect humanDirLabel text change */
+void MainWindow::on_humanDirLabel_textChanged(const QString &arg1)
+{
+    if(arg1 != "...")
+    {
+        update_inputSummaryBox(arg1,ui->buildingDirLabel->text());
+    }
+}
+
+/* Detect buildingDirLabel text change */
+void MainWindow::on_buildingDirLabel_textChanged(const QString &arg1)
+{
+    if(arg1 != "...")
+    {
+        update_inputSummaryBox(ui->humanDirLabel->text(), arg1);
+    }
+}
+
+/* update inputSummaryBox with new data */
+void MainWindow::update_inputSummaryBox(const QString &arg1, const QString &arg2)
+{
+    /* clear */
+    ui->inputSummaryBox->clear();
+
+    /* header seperator */
+    QString header1 = "Building Data<br>"
+                      "====================<br>";
+
+    QString header2 = "Simulated Human Data<br>"
+                      "====================<br>";
+
+    /* Output of building */
+    ui->inputSummaryBox->append(header1);
+    if(arg2 == "...")
+    {
+        ui->inputSummaryBox->append("No data uploaded<br>");
+    }
+    else
+    {
+        /* Display error if invalid */
+        if(!validateBuildingData(arg2))
+        {
+            ui->buildingDirLabel->setText("...");
+            ui->inputSummaryBox->append("No data uploaded<br>");
+            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
+        }
+        else
+        {
+            ui->inputSummaryBox->append("Data display here<br>");
+        }
+    }
+
+    /* Output of simulated humans */
+    ui->inputSummaryBox->append(header2);
+    if(arg1 == "...")
+    {
+        ui->inputSummaryBox->append("No data uploaded<br>");
+    }
+    else
+    {
+        /* Display error if invalid */
+        if(!validateHumanData(arg1))
+        {
+            ui->humanDirLabel->setText("...");
+            ui->inputSummaryBox->append("No data uploaded<br>");
+            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
+        }
+        else
+        {
+            ui->inputSummaryBox->append("Data display here<br>");
+        }
+    }
+}
+
+/* validate building XML */
+bool MainWindow::validateBuildingData(const QString &arg1)
+{
+    /* load XML */
+    TiXmlDocument doc(arg1.toStdString().c_str());
+
+    /* Check if file can be open */
+    if(doc.LoadFile())
+    {
+        TiXmlElement *pRoot, *pParm;
+
+        /* checks if building exist */
+        pRoot = doc.FirstChildElement("building");
+        if(pRoot)
+        {
+            /* check if floors, metrePerFloor, householdPerFloor exist */
+            if(pRoot->Attribute("floors") != NULL && pRoot->Attribute("metrePerFloor") != NULL && pRoot->Attribute("householdPerFloor") != NULL)
+            {
+                /* check if first element of building exist */
+                pParm = pRoot->FirstChildElement();
+                if(pParm)
+                {
+                    while(pParm)
+                    {
+                        if(strcmp(pParm->Value(),"lift") == 0)
+                        {
+                            /* check if id, maxWeight, speed exist */
+                            if(pParm->Attribute("id") == NULL || pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL)
+                                return false;
+                            else
+                                pParm = pParm->NextSiblingElement();
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
+}
+
+/* validate human XML */
+bool MainWindow::validateHumanData(const QString &arg1)
+{
+    /* Load XML */
+    TiXmlDocument doc(arg1.toStdString().c_str());
+
+    /* Check if file can be open */
+    if(doc.LoadFile())
+    {
+        TiXmlElement *pRoot, *pParm, *pParm2;
+
+        /* checks if human exist */
+        pRoot = doc.FirstChildElement("human");
+        if(pRoot)
+        {
+            /* Check if first element of human exist */
+            pParm = pRoot->FirstChildElement();
+            if(pParm)
+            {
+                while(pParm)
+                {
+                    /* is the element named "person" */
+                    if(strcmp(pParm->Value(),"person") == 0)
+                    {
+                        /* checks if id, weight, resident exist */
+                        if(pParm->Attribute("id") != NULL && pParm->Attribute("weight") != NULL && pParm->Attribute("resident") != NULL)
+                        {
+                             /* checks if first element of person exist */
+                            pParm2 = pParm->FirstChildElement();
+                            if(pParm2)
+                            {
+                                while(pParm2)
+                                {
+                                     /* is the element named "floor" */
+                                    if(strcmp(pParm2->Value(),"floor") == 0)
+                                    {
+                                        /* check if travel exist */
+                                        if(pParm2->Attribute("travel") != NULL)
+                                            pParm2 = pParm2->NextSiblingElement();
+                                        else
+                                            return false;
+                                    }
+                                    else
+                                    {
+                                        return false;
+                                    }
+                                }
+                                pParm = pParm->NextSiblingElement();
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
 }
