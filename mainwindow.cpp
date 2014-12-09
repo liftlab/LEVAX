@@ -30,7 +30,11 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
     /* Set directory to label */
     if(!filename.isEmpty())
     {
+        ui->humanDirLabel->setDisabled(false);
         ui->humanDirLabel->setText(filename);
+        ui->humanTotalSpinBox->setValue(0);
+        ui->humanAvgSpinBox->setValue(0);
+        ui->humanVisitorSpinBox->setValue(0);
     }
     else
     {
@@ -55,4 +59,37 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
         ui->buildingDirLabel->setText(filename);
     else
         ui->buildingDirLabel->setText("...");
+}
+
+/* Handle total human spin box value changed */
+void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
+{
+    /* reset and disable human directory label */
+    if(arg1 != 0)
+    {
+        ui->humanDirLabel->setText("...");
+        ui->humanDirLabel->setDisabled(true);
+    }
+}
+
+/* Handle average human spin box value changed */
+void MainWindow::on_humanAvgSpinBox_valueChanged(int arg1)
+{
+    /* reset and disable human directory label */
+    if(arg1 != 0)
+    {
+        ui->humanDirLabel->setText("...");
+        ui->humanDirLabel->setDisabled(true);
+    }
+}
+
+/* Handle human visitor spin box value changed */
+void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
+{
+    /* reset and disable human directory label */
+    if(arg1 != 0)
+    {
+        ui->humanDirLabel->setText("...");
+        ui->humanDirLabel->setDisabled(true);
+    }
 }
