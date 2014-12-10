@@ -8,7 +8,8 @@ v2.2 - QFileDialog to load a file, help button, rename object names<br />
 v2.3 - Fix to disable multiple inputs of simulated humans data<br />  
 v2.4 - Reset button feature implementation<br />  
 v2.5 - Implemented Help feature, Run function placeholder, save result<br />  
-v2.6 - Added TinyXML to project, validate XML feature<br /><br />  
+v2.6 - Added TinyXML to project, validate XML feature<br />  
+v2.7 - Fixed validation introduced in v2.6, change GUI order<br /><br />  
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  

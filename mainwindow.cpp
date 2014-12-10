@@ -21,27 +21,34 @@ MainWindow::~MainWindow()
 /* humanXMLUploadBtn dialog function */
 void MainWindow::on_humanXMLUploadBtn_clicked()
 {
-    /* Prompt dialog at current folder, accepting .xml file only */
-    QString filename=QFileDialog::getOpenFileName(
-                this,
-                tr("Open Simulated Human Data"),
-                "./",
-                "XML Data File (*.xml)"
-
-                );
-
-    /* Set directory to label */
-    if(!filename.isEmpty())
+    if(ui->buildingDirLabel->text() != "...")
     {
-        ui->humanDirLabel->setDisabled(false);
-        ui->humanDirLabel->setText(filename);
-        ui->humanTotalSpinBox->setValue(0);
-        ui->humanAvgSpinBox->setValue(0);
-        ui->humanVisitorSpinBox->setValue(0);
+        /* Prompt dialog at current folder, accepting .xml file only */
+        QString filename=QFileDialog::getOpenFileName(
+                    this,
+                    tr("Open Simulated Human Data"),
+                    "./",
+                    "XML Data File (*.xml)"
+
+                    );
+
+        /* Set directory to label */
+        if(!filename.isEmpty())
+        {
+            ui->humanDirLabel->setDisabled(false);
+            ui->humanDirLabel->setText(filename);
+            ui->humanTotalSpinBox->setValue(0);
+            ui->humanAvgSpinBox->setValue(0);
+            ui->humanVisitorSpinBox->setValue(0);
+        }
+        else
+        {
+            ui->humanDirLabel->setText("...");
+        }
     }
     else
     {
-        ui->humanDirLabel->setText("...");
+        QMessageBox::information(this,tr("Notice"),"Please load building XML first");
     }
 }
 
@@ -59,9 +66,26 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
 
     /* Set directory to label */
     if(!filename.isEmpty())
+    {
         ui->buildingDirLabel->setText(filename);
+        ui->humanDirLabel->setDisabled(false);
+        ui->humanTotalSpinBox->setDisabled(false);
+        ui->humanAvgSpinBox->setDisabled(false);
+        ui->humanVisitorSpinBox->setDisabled(false);
+    }
     else
+    {
+        ui->humanDirLabel->setDisabled(true);
         ui->buildingDirLabel->setText("...");
+        ui->humanDirLabel->setText("...");
+        ui->inputSummaryBox->clear();
+        ui->humanTotalSpinBox->setDisabled(true);
+        ui->humanAvgSpinBox->setDisabled(true);
+        ui->humanVisitorSpinBox->setDisabled(true);
+        ui->humanTotalSpinBox->setValue(0);
+        ui->humanAvgSpinBox->setValue(0);
+        ui->humanVisitorSpinBox->setValue(0);
+    }
 }
 
 /* Handle total human spin box value changed */
@@ -101,16 +125,19 @@ void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
 void MainWindow::on_resetBtn_clicked()
 {
     /* reset all data to default */
+    ui->humanDirLabel->setDisabled(true);
     ui->inputSummaryBox->clear();
     ui->outputBox->clear();
     ui->buildingDirLabel->setText("...");
     ui->humanDirLabel->setText("...");
-    ui->humanDirLabel->setDisabled(false);
     ui->algoCombo->setCurrentIndex(0);
     ui->humanTotalSpinBox->setValue(0);
     ui->humanAvgSpinBox->setValue(0);
     ui->humanVisitorSpinBox->setValue(0);
     ui->saveResultBtn->setDisabled(true);
+    ui->humanTotalSpinBox->setDisabled(true);
+    ui->humanAvgSpinBox->setDisabled(true);
+    ui->humanVisitorSpinBox->setDisabled(true);
 }
 
 /* Handle help button press */
@@ -126,7 +153,7 @@ void MainWindow::onActionHelp()
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person id=\"2\" weight=\"78\" resident=\"27\"&gt;<br>"
                                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"27\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person id=\"3\" weight=\"69\" resident=\"-1\"&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person id=\"3\" weight=\"69\" resident=\"0\"&gt;<br>"
                                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"27\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
                         "&lt;/human&gt;<br><br>"
@@ -137,7 +164,7 @@ void MainWindow::onActionHelp()
                         "Weighs 78kg, living at 27th floor.<br>"
                         "He usually travels to 27th floor.<br>"
                         "-Person 3<br>"
-                        "Weighs 69kg, not a resident here.<br>"
+                        "Weighs 69kg, not a resident here.(resident=0)<br>"
                         "He usually travels to 27th floor.<br><br>"
                         "<b>E.g. of Building XML</b><br>"
                         "&lt;building floors=\"28\" metrePerFloor=\"3\" householdPerFloor=\"4\"&gt;<br>"
@@ -304,6 +331,28 @@ bool MainWindow::validateBuildingData(const QString &arg1)
             /* check if floors, metrePerFloor, householdPerFloor exist */
             if(pRoot->Attribute("floors") != NULL && pRoot->Attribute("metrePerFloor") != NULL && pRoot->Attribute("householdPerFloor") != NULL)
             {
+                /* checks for floors, metrePerFloor, householdPerFloor is a number/empty data */
+                int attr;
+                if(TIXML_SUCCESS != pRoot->QueryIntAttribute("floors", &attr) || TIXML_SUCCESS != pRoot->QueryIntAttribute("metrePerFloor", &attr) || TIXML_SUCCESS != pRoot->QueryIntAttribute("householdPerFloor", &attr))
+                    return false;
+
+                /* Floors must be at least 2 level*/
+                pRoot->QueryIntAttribute("floors", &attr);
+                if(attr < 2)
+                    return false;
+                else
+                    totalNoOfFloors = attr;
+
+                /* metrePerFloor must be at least 3m*/
+                pRoot->QueryIntAttribute("metrePerFloor", &attr);
+                if(attr < 3)
+                    return false;
+
+                /* householdPerFloor must be at least 1 or more*/
+                pRoot->QueryIntAttribute("householdPerFloor", &attr);
+                if(attr < 1)
+                    return false;
+
                 /* check if first element of building exist */
                 pParm = pRoot->FirstChildElement();
                 if(pParm)
@@ -316,7 +365,24 @@ bool MainWindow::validateBuildingData(const QString &arg1)
                             if(pParm->Attribute("id") == NULL || pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL)
                                 return false;
                             else
+                            {
+                                /* checks for id, maxWeight, speed is a number/empty data */
+                                int attr2;
+                                if(TIXML_SUCCESS != pParm->QueryIntAttribute("id", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2))
+                                    return false;
+
+                                /* maxWeight must be at least 200kg */
+                                pParm->QueryIntAttribute("maxWeight", &attr2);
+                                if(attr2 < 200)
+                                    return false;
+
+                                /* speed must be at least 1 or more*/
+                                pParm->QueryIntAttribute("speed", &attr2);
+                                if(attr2 < 1)
+                                    return false;
+
                                 pParm = pParm->NextSiblingElement();
+                            }
                         }
                         else
                         {
@@ -374,7 +440,22 @@ bool MainWindow::validateHumanData(const QString &arg1)
                         /* checks if id, weight, resident exist */
                         if(pParm->Attribute("id") != NULL && pParm->Attribute("weight") != NULL && pParm->Attribute("resident") != NULL)
                         {
-                             /* checks if first element of person exist */
+                            /* checks for id, weight, resident is a number/empty data */
+                            int attr;
+                            if(TIXML_SUCCESS != pParm->QueryIntAttribute("id", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("weight", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("resident", &attr))
+                                return false;
+
+                            /* person must have a resident value of more than 0 and less than building limit */
+                            pParm->QueryIntAttribute("resident", &attr);
+                            if(attr < 0 || attr > totalNoOfFloors)
+                                return false;
+
+                            /* person must have a weight of more than 0 and 150 or lower */
+                            pParm->QueryIntAttribute("weight", &attr);
+                            if(attr > 150 || attr < 1)
+                                return false;
+
+                            /* checks if first element of person exist */
                             pParm2 = pParm->FirstChildElement();
                             if(pParm2)
                             {
@@ -385,9 +466,23 @@ bool MainWindow::validateHumanData(const QString &arg1)
                                     {
                                         /* check if travel exist */
                                         if(pParm2->Attribute("travel") != NULL)
+                                        {
+                                            /* checks if travel is a number/empty data */
+                                            int attr2;
+                                            if(TIXML_SUCCESS != pParm2->QueryIntAttribute("travel", &attr2))
+                                                return false;
+
+                                            /* checks if person is travelling at least to level 2 or more
+                                             * but lesser than the total limit in building */
+                                            if(attr2 < 2 || attr2 > totalNoOfFloors)
+                                                return false;
+
                                             pParm2 = pParm2->NextSiblingElement();
+                                        }
                                         else
+                                        {
                                             return false;
+                                        }
                                     }
                                     else
                                     {
