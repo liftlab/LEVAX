@@ -1,13 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QMainWindow>  /* GUI Window */
 #include <QFileDialog>  /* File dialog */
 #include <QMessageBox>  /* Help pop-up message box */
 #include <QDateTime>    /* Date time */
+#include <QTimer>       /* Splash timer */
+#include <QSplashScreen>/* Splash screen */
 #include <QDebug>       /* Debug, similar to cout. Usage qDebut() << "Hello World" */
 #include "tinyXML/tinyxml.h"    /* TinyXML XML parser*/
-#include <string>       /* String */
 
 namespace Ui {
 class MainWindow;
