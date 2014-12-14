@@ -60,7 +60,7 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
                     ui->inputSummaryBox->undo();
 
                 /* Header */
-                QString header = "Simulated Human Data<br>"
+                QString header = "<b><font size=\"4\">Simulated Human Data</font></b><br>"
                                  "====================<br>";
                 header += summary;
 
@@ -123,7 +123,7 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
         else
         {
             /* header */
-            QString header = "Building Data<br>"
+            QString header = "<b><font size=\"4\">Building Data</font></b><br>"
                               "====================<br>";
             header += summary;
 
