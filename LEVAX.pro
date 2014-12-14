@@ -17,11 +17,15 @@ SOURCES += main.cpp\
     tinyXML/tinystr.cpp \
     tinyXML/tinyxml.cpp \
     tinyXML/tinyxmlerror.cpp \
-    tinyXML/tinyxmlparser.cpp
+    tinyXML/tinyxmlparser.cpp \
+    BuildingHandler.cpp \
+    Building.cpp
 
 HEADERS  += mainwindow.h \
     tinyXML/tinystr.h \
-    tinyXML/tinyxml.h
+    tinyXML/tinyxml.h \
+    BuildingHandler.h \
+    Building.h
 
 FORMS    += mainwindow.ui
 

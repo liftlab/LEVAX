@@ -24,30 +24,61 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
     if(ui->buildingDirLabel->text() != "...")
     {
         /* Prompt dialog at current folder, accepting .xml file only */
-        QString filename=QFileDialog::getOpenFileName(
-                    this,
-                    tr("Open Simulated Human Data"),
-                    "./",
-                    "XML Data File (*.xml)"
+        QFileDialog dlg(NULL, tr("Open Simulated Human Data"));
+        dlg.setNameFilter(tr("XML Data File (*.xml)"));
+        QString filename;
 
-                    );
+        /* Retrieve previous filename */
+        QString prevFilename = ui->humanDirLabel->text();
 
-        /* Set directory to label */
-        if(!filename.isEmpty())
+        /* Check for Open button pressed */
+        if(dlg.exec())
         {
-            ui->humanDirLabel->setDisabled(false);
-            ui->humanDirLabel->setText(filename);
-            ui->humanTotalSpinBox->setValue(0);
-            ui->humanAvgSpinBox->setValue(0);
-            ui->humanVisitorSpinBox->setValue(0);
-        }
-        else
-        {
-            ui->humanDirLabel->setText("...");
+
+            /* Get directory */
+            filename = dlg.selectedFiles().at(0);
+
+            /* Validate data */
+            QString summary = validateHumanData(filename);
+
+            /* Check if human data is invalid */
+            if(summary == "false")
+            {
+                /* Undo if previous data is loaded */
+                if(prevFilename != "...")
+                    ui->inputSummaryBox->undo();
+
+                ui->humanDirLabel->setText("...");
+
+                /* Display error */
+                QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
+            }
+            else
+            {
+                /* Undo if previous data is loaded */
+                if(prevFilename != "...")
+                    ui->inputSummaryBox->undo();
+
+                /* Header */
+                QString header = "Simulated Human Data<br>"
+                                 "====================<br>";
+                header += summary;
+
+                /* Display to inputSummaryBox */
+                ui->inputSummaryBox->append(header);
+
+                /* Enable simulated human elements */
+                ui->humanDirLabel->setDisabled(false);
+                ui->humanDirLabel->setText(filename);
+                ui->humanTotalSpinBox->setValue(0);
+                ui->humanAvgSpinBox->setValue(0);
+                ui->humanVisitorSpinBox->setValue(0);
+            }
         }
     }
     else
     {
+        /* Display warning message to load building XML first */
         QMessageBox::information(this,tr("Notice"),"Please load building XML first");
     }
 }
@@ -56,44 +87,77 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
 void MainWindow::on_buildingXMLUploadBtn_clicked()
 {
     /* Prompt dialog at current folder, accepting .xml file only */
-    QString filename=QFileDialog::getOpenFileName(
-                this,
-                tr("Open Building Model"),
-                "./",
-                "XML Data File (*.xml)"
+    QFileDialog dlg(NULL, tr("Open Building Model"));
+    dlg.setNameFilter(tr("XML Data File (*.xml)"));
+    QString filename;
 
-                );
+    /* Check for Open button pressed */
+    if(dlg.exec())
+    {
+        /* Get directory */
+        filename = dlg.selectedFiles().at(0);
 
-    /* Set directory to label */
-    if(!filename.isEmpty())
-    {
-        ui->buildingDirLabel->setText(filename);
-        ui->humanDirLabel->setDisabled(false);
-        ui->humanTotalSpinBox->setDisabled(false);
-        ui->humanAvgSpinBox->setDisabled(false);
-        ui->humanVisitorSpinBox->setDisabled(false);
-    }
-    else
-    {
-        ui->humanDirLabel->setDisabled(true);
-        ui->buildingDirLabel->setText("...");
-        ui->humanDirLabel->setText("...");
+        /* Clear inputSummaryBox */
         ui->inputSummaryBox->clear();
-        ui->humanTotalSpinBox->setDisabled(true);
-        ui->humanAvgSpinBox->setDisabled(true);
-        ui->humanVisitorSpinBox->setDisabled(true);
-        ui->humanTotalSpinBox->setValue(0);
-        ui->humanAvgSpinBox->setValue(0);
-        ui->humanVisitorSpinBox->setValue(0);
+
+        /* Validate data */
+        QString summary = validateBuildingData(filename);
+
+        /* Check if building data is invalid */
+        if(summary == "false")
+        {
+            /* Reset all elements */
+            ui->buildingDirLabel->setText("...");
+            ui->humanDirLabel->setText("...");
+            ui->humanDirLabel->setDisabled(true);
+            ui->humanTotalSpinBox->setDisabled(true);
+            ui->humanAvgSpinBox->setDisabled(true);
+            ui->humanVisitorSpinBox->setDisabled(true);
+            ui->humanTotalSpinBox->setValue(0);
+            ui->humanAvgSpinBox->setValue(0);
+            ui->humanVisitorSpinBox->setValue(0);
+
+            /* Display error */
+            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
+        }
+        else
+        {
+            /* header */
+            QString header = "Building Data<br>"
+                              "====================<br>";
+            header += summary;
+
+            /* Display to inputSummaryBox */
+            ui->inputSummaryBox->append(header);
+
+            /* Set elements to enable */
+            ui->buildingDirLabel->setText(filename);
+            ui->humanDirLabel->setDisabled(false);
+            ui->humanTotalSpinBox->setDisabled(false);
+            ui->humanAvgSpinBox->setDisabled(false);
+            ui->humanVisitorSpinBox->setDisabled(false);
+            ui->humanDirLabel->setText("...");
+            ui->humanTotalSpinBox->setValue(0);
+            ui->humanAvgSpinBox->setValue(0);
+            ui->humanVisitorSpinBox->setValue(0);
+        }
     }
 }
 
 /* Handle total human spin box value changed */
 void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
 {
+    /* Get previous human file name previous human label enabled status */
+    bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
+    QString prevFilename = ui->humanDirLabel->text();
+
     /* reset and disable human directory label */
     if(arg1 != 0)
     {
+        /* Undo if previous data is loaded */
+        if(prevHumanLabelStatus == true && prevFilename != "...")
+            ui->inputSummaryBox->undo();
+
         ui->humanDirLabel->setText("...");
         ui->humanDirLabel->setDisabled(true);
     }
@@ -102,9 +166,17 @@ void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
 /* Handle average human spin box value changed */
 void MainWindow::on_humanAvgSpinBox_valueChanged(int arg1)
 {
+    /* Get previous human file name previous human label enabled status */
+    bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
+    QString prevFilename = ui->humanDirLabel->text();
+
     /* reset and disable human directory label */
     if(arg1 != 0)
     {
+        /* Undo if previous data is loaded */
+        if(prevHumanLabelStatus == true && prevFilename != "...")
+            ui->inputSummaryBox->undo();
+
         ui->humanDirLabel->setText("...");
         ui->humanDirLabel->setDisabled(true);
     }
@@ -113,9 +185,17 @@ void MainWindow::on_humanAvgSpinBox_valueChanged(int arg1)
 /* Handle human visitor spin box value changed */
 void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
 {
+    /* Get previous human file name previous human label enabled status */
+    bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
+    QString prevFilename = ui->humanDirLabel->text();
+
     /* reset and disable human directory label */
     if(arg1 != 0)
     {
+        /* Undo if previous data is loaded */
+        if(prevHumanLabelStatus == true && prevFilename != "...")
+            ui->inputSummaryBox->undo();
+
         ui->humanDirLabel->setText("...");
         ui->humanDirLabel->setDisabled(true);
     }
@@ -143,7 +223,7 @@ void MainWindow::on_resetBtn_clicked()
 /* Handle help button press */
 void MainWindow::onActionHelp()
 {
-    /* Help message */
+    /* Help message to describe XML data structure */
     QString message = "<b>E.g. of Simulated Human XML</b><br>"
                        "&lt;human&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person id=\"1\" weight=\"60\" resident=\"4\"&gt;<br>"
@@ -239,83 +319,12 @@ void MainWindow::on_saveResultBtn_clicked()
         QMessageBox::information(this,tr("Help"),"File saved to "+fileName);
 }
 
-/* Detect humanDirLabel text change */
-void MainWindow::on_humanDirLabel_textChanged(const QString &arg1)
-{
-    if(arg1 != "...")
-    {
-        update_inputSummaryBox(arg1,ui->buildingDirLabel->text());
-    }
-}
-
-/* Detect buildingDirLabel text change */
-void MainWindow::on_buildingDirLabel_textChanged(const QString &arg1)
-{
-    if(arg1 != "...")
-    {
-        update_inputSummaryBox(ui->humanDirLabel->text(), arg1);
-    }
-}
-
-/* update inputSummaryBox with new data */
-void MainWindow::update_inputSummaryBox(const QString &arg1, const QString &arg2)
-{
-    /* clear */
-    ui->inputSummaryBox->clear();
-
-    /* header seperator */
-    QString header1 = "Building Data<br>"
-                      "====================<br>";
-
-    QString header2 = "Simulated Human Data<br>"
-                      "====================<br>";
-
-    /* Output of building */
-    ui->inputSummaryBox->append(header1);
-    if(arg2 == "...")
-    {
-        ui->inputSummaryBox->append("No data uploaded<br>");
-    }
-    else
-    {
-        /* Display error if invalid */
-        if(!validateBuildingData(arg2))
-        {
-            ui->buildingDirLabel->setText("...");
-            ui->inputSummaryBox->append("No data uploaded<br>");
-            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
-        }
-        else
-        {
-            ui->inputSummaryBox->append("Data display here<br>");
-        }
-    }
-
-    /* Output of simulated humans */
-    ui->inputSummaryBox->append(header2);
-    if(arg1 == "...")
-    {
-        ui->inputSummaryBox->append("No data uploaded<br>");
-    }
-    else
-    {
-        /* Display error if invalid */
-        if(!validateHumanData(arg1))
-        {
-            ui->humanDirLabel->setText("...");
-            ui->inputSummaryBox->append("No data uploaded<br>");
-            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
-        }
-        else
-        {
-            ui->inputSummaryBox->append("Data display here<br>");
-        }
-    }
-}
-
 /* validate building XML */
-bool MainWindow::validateBuildingData(const QString &arg1)
+QString MainWindow::validateBuildingData(const QString &arg1)
 {
+    /* Stores file data */
+    QString summary;
+
     /* load XML */
     TiXmlDocument doc(arg1.toStdString().c_str());
 
@@ -334,88 +343,143 @@ bool MainWindow::validateBuildingData(const QString &arg1)
                 /* checks for floors, metrePerFloor, householdPerFloor is a number/empty data */
                 int attr;
                 if(TIXML_SUCCESS != pRoot->QueryIntAttribute("floors", &attr) || TIXML_SUCCESS != pRoot->QueryIntAttribute("metrePerFloor", &attr) || TIXML_SUCCESS != pRoot->QueryIntAttribute("householdPerFloor", &attr))
-                    return false;
+                    return "false";
 
-                /* Floors must be at least 2 level*/
+                /* Floors must be at least 2 level */
                 pRoot->QueryIntAttribute("floors", &attr);
                 if(attr < 2)
-                    return false;
+                {
+                    return "false";
+                }
                 else
-                    totalNoOfFloors = attr;
+                {
+                    /* Append data to QString */
+                    summary += "Total number of floors ";
+                    summary += pRoot->Attribute("floors");
+                    summary += "<br>";
+
+                    /* set total number of floors */
+                    bh.createBuilding(attr);
+                }
 
                 /* metrePerFloor must be at least 3m*/
                 pRoot->QueryIntAttribute("metrePerFloor", &attr);
                 if(attr < 3)
-                    return false;
+                {
+                    return "false";
+                }
+                else
+                {
+                    /* Append data to QString */
+                    summary += "Number of metres per floor ";
+                    summary += pRoot->Attribute("metrePerFloor");
+                    summary += "<br>";
+                }
 
                 /* householdPerFloor must be at least 1 or more*/
                 pRoot->QueryIntAttribute("householdPerFloor", &attr);
                 if(attr < 1)
-                    return false;
+                {
+                    return "false";
+                }
+                else
+                {
+                    /* Append data to QString */
+                    summary += "Number of household per floor ";
+                    summary += pRoot->Attribute("householdPerFloor");
+                    summary += "<br>";
+                }
+
 
                 /* check if first element of building exist */
                 pParm = pRoot->FirstChildElement();
                 if(pParm)
                 {
+                    int liftCount = 1;
                     while(pParm)
                     {
                         if(strcmp(pParm->Value(),"lift") == 0)
                         {
                             /* check if id, maxWeight, speed exist */
                             if(pParm->Attribute("id") == NULL || pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL)
-                                return false;
+                                return "false";
                             else
                             {
                                 /* checks for id, maxWeight, speed is a number/empty data */
                                 int attr2;
                                 if(TIXML_SUCCESS != pParm->QueryIntAttribute("id", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2))
-                                    return false;
+                                    return "false";
 
                                 /* maxWeight must be at least 200kg */
                                 pParm->QueryIntAttribute("maxWeight", &attr2);
                                 if(attr2 < 200)
-                                    return false;
+                                {
+                                    return "false";
+                                }
+                                else
+                                {
+                                    /* Append data to QString */
+                                    summary += "<b>Lift no ";
+                                    summary += pParm->Attribute("id");
+                                    summary += "</b><br>";
+                                    summary += "Maximum weight ";
+                                    summary += pParm->Attribute("maxWeight");
+                                    summary += "kg<br>";
+                                }
 
                                 /* speed must be at least 1 or more*/
                                 pParm->QueryIntAttribute("speed", &attr2);
                                 if(attr2 < 1)
-                                    return false;
+                                {
+                                    return "false";
+                                }
+                                else
+                                {
+                                    /* Append data to QString */
+                                    summary += "Maximum speed ";
+                                    summary += pParm->Attribute("speed");
+                                    summary += "m/s<br>";
+                                }
 
                                 pParm = pParm->NextSiblingElement();
                             }
                         }
                         else
                         {
-                            return false;
+                            return "false";
                         }
+                        liftCount++;
                     }
                 }
                 else
                 {
-                    return false;
+                    return "false";
                 }
             }
             else
             {
-                return false;
+                return "false";
             }
         }
         else
         {
-            return false;
+            return "false";
         }
     }
     else
     {
-        return false;
+        return "false";
     }
 
-    return true;
+    return summary;
 }
 
 /* validate human XML */
-bool MainWindow::validateHumanData(const QString &arg1)
+QString MainWindow::validateHumanData(const QString &arg1)
 {
+    /* Stores file data */
+    QString summary;
+
     /* Load XML */
     TiXmlDocument doc(arg1.toStdString().c_str());
 
@@ -443,22 +507,52 @@ bool MainWindow::validateHumanData(const QString &arg1)
                             /* checks for id, weight, resident is a number/empty data */
                             int attr;
                             if(TIXML_SUCCESS != pParm->QueryIntAttribute("id", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("weight", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("resident", &attr))
-                                return false;
+                                return "false";
 
                             /* person must have a resident value of more than 0 and less than building limit */
                             pParm->QueryIntAttribute("resident", &attr);
-                            if(attr < 0 || attr > totalNoOfFloors)
-                                return false;
+                            if((attr < 0) || (attr > bh.getTotalFloor()))
+                            {
+                                return "false";
+                            }
+                            else
+                            {
+                                /* Append data to QString */
+                                summary += "<b>Person number ";
+                                summary += pParm->Attribute("id");
+                                if(strcmp(pParm->Attribute("resident"),"0") == 0)
+                                {
+                                    summary += "</b><br>Is not a resident<br>";
+                                }
+                                else
+                                {
+                                    summary += "</b><br>Is a resident staying at level ";
+                                    summary += pParm->Attribute("resident");
+                                    summary += "<br>";
+                                }
+                            }
 
                             /* person must have a weight of more than 0 and 150 or lower */
                             pParm->QueryIntAttribute("weight", &attr);
                             if(attr > 150 || attr < 1)
-                                return false;
+                            {
+                                return "false";
+                            }
+                            else
+                            {
+                                /* Append data to QString */
+                                summary += "Weighs ";
+                                summary += pParm->Attribute("weight");
+                                summary += "kg<br>";
+                            }
 
                             /* checks if first element of person exist */
                             pParm2 = pParm->FirstChildElement();
                             if(pParm2)
                             {
+                                /* Append data to QString */
+                                summary += "Will travel to floor ";
+
                                 while(pParm2)
                                 {
                                      /* is the element named "floor" */
@@ -470,57 +564,72 @@ bool MainWindow::validateHumanData(const QString &arg1)
                                             /* checks if travel is a number/empty data */
                                             int attr2;
                                             if(TIXML_SUCCESS != pParm2->QueryIntAttribute("travel", &attr2))
-                                                return false;
+                                                return "false";
 
                                             /* checks if person is travelling at least to level 2 or more
                                              * but lesser than the total limit in building */
-                                            if(attr2 < 2 || attr2 > totalNoOfFloors)
-                                                return false;
+                                            if(attr2 < 2 || attr2 > bh.getTotalFloor())
+                                            {
+                                                return "false";
+                                            }
+                                            else
+                                            {
+                                                /* Append data to QString */
+                                                summary += pParm2->Attribute("travel");
+                                                summary += ", ";
+                                            }
 
                                             pParm2 = pParm2->NextSiblingElement();
                                         }
                                         else
                                         {
-                                            return false;
+                                            return "false";
                                         }
                                     }
                                     else
                                     {
-                                        return false;
+                                        return "false";
                                     }
                                 }
                                 pParm = pParm->NextSiblingElement();
+
+                                /* remove last comma */
+                                summary.remove(summary.length()-2,1);
+
+                                /* Append data to QString */
+                                summary += "<br>";
                             }
                             else
                             {
-                                return false;
+                                return "false";
                             }
                         }
                         else
                         {
-                            return false;
+                            return "false";
                         }
                     }
                     else
                     {
-                        return false;
+                        return "false";
                     }
                 }
             }
             else
             {
-                return false;
+                return "false";
             }
         }
         else
         {
-            return false;
+            return "false";
         }
     }
     else
     {
-        return false;
+        return "false";
     }
 
-    return true;
+    return summary;
 }
+

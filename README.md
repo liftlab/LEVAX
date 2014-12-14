@@ -1,16 +1,18 @@
 [Changelog]<br />  
-v1.0 - Create new project.<br />  
-v1.1 - Window width/height, title, icon, disable window resize<br />   
-v1.2 - 1st GUI element implementation<br />  
-v2.0 - 2nd GUI element implementation, new icon<br />  
-v2.1 - Rename elements, removed "File->Save data" feature<br />  
-v2.2 - QFileDialog to load a file, help button, rename object names<br />  
-v2.3 - Fix to disable multiple inputs of simulated humans data<br />  
-v2.4 - Reset button feature implementation<br />  
-v2.5 - Implemented Help feature, Run function placeholder, save result<br />  
-v2.6 - Added TinyXML to project, validate XML feature<br />  
-v2.7 - Fixed validation introduced in v2.6, change GUI order<br />  
-v2.8 - Splash screen added<br /><br />  
+v1.0	: Create new project.<br />  
+v1.1	: Window width/height, title, icon, disable window resize<br />   
+v1.2	: 1st GUI element implementation<br />  
+v2.0	: 2nd GUI element implementation, new icon<br />  
+v2.1	: Rename elements, removed "File->Save data" feature<br />  
+v2.2	: QFileDialog to load a file, help button, rename object names<br />  
+v2.3	: Fix to disable multiple inputs of simulated humans data<br />  
+v2.4	: Reset button feature implementation<br />  
+v2.5	: Implemented Help feature, Run function placeholder, save result<br />  
+v2.6	: Added TinyXML to project, validate XML feature<br />  
+v2.7	: Fixed validation introduced in v2.6, change GUI order<br />  
+v2.8	: Splash screen added<br />  
+v2.9	: BuildingHandler and Building class<br />  
+V2.10	: Added XML summary<br /><br />  
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  

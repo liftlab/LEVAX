@@ -109,6 +109,9 @@
       <height>431</height>
      </rect>
     </property>
+    <property name="undoRedoEnabled">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="avgHumanLabel">
     <property name="geometry">
