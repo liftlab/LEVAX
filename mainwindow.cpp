@@ -15,10 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
 /* Destructor */
 MainWindow::~MainWindow()
 {
-    qDebug() << bh.getHouseholdPerFloor() << " "
-             << bh.getMetrePerFloor() << " "
-             << bh.getNoOfFloor() << " "
-             << bh.getNoOfLifts();
     delete ui;
 }
 
