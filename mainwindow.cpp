@@ -15,6 +15,10 @@ MainWindow::MainWindow(QWidget *parent) :
 /* Destructor */
 MainWindow::~MainWindow()
 {
+    qDebug() << bh.getHouseholdPerFloor() << " "
+             << bh.getMetrePerFloor() << " "
+             << bh.getNoOfFloor() << " "
+             << bh.getNoOfLifts();
     delete ui;
 }
 
@@ -117,6 +121,9 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
             ui->humanAvgSpinBox->setValue(0);
             ui->humanVisitorSpinBox->setValue(0);
 
+            /* reset all building data due to error */
+            bh.resetAll();
+
             /* Display error */
             QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
         }
@@ -218,6 +225,9 @@ void MainWindow::on_resetBtn_clicked()
     ui->humanTotalSpinBox->setDisabled(true);
     ui->humanAvgSpinBox->setDisabled(true);
     ui->humanVisitorSpinBox->setDisabled(true);
+
+    /* reset building data */
+    bh.resetAll();
 }
 
 /* Handle help button press */
@@ -359,7 +369,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                     summary += "<br>";
 
                     /* set total number of floors */
-                    bh.createBuilding(attr);
+                    bh.setNoOfFloors(attr);
                 }
 
                 /* metrePerFloor must be at least 3m*/
@@ -374,6 +384,9 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                     summary += "Number of metres per floor ";
                     summary += pRoot->Attribute("metrePerFloor");
                     summary += "<br>";
+
+                    /* set metre per floor */
+                    bh.setMetrePerFloor(attr);
                 }
 
                 /* householdPerFloor must be at least 1 or more*/
@@ -388,6 +401,9 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                     summary += "Number of household per floor ";
                     summary += pRoot->Attribute("householdPerFloor");
                     summary += "<br>";
+
+                    /* set number of household per floor */
+                    bh.setHouseholdPerFloor(attr);
                 }
 
 
@@ -395,7 +411,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                 pParm = pRoot->FirstChildElement();
                 if(pParm)
                 {
-                    int liftCount = 1;
+                    int liftCount = 0;
                     while(pParm)
                     {
                         if(strcmp(pParm->Value(),"lift") == 0)
@@ -450,6 +466,8 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                         }
                         liftCount++;
                     }
+                    /* set number of lifts */
+                    bh.setNoOfLifts(liftCount);
                 }
                 else
                 {
@@ -511,7 +529,7 @@ QString MainWindow::validateHumanData(const QString &arg1)
 
                             /* person must have a resident value of more than 0 and less than building limit */
                             pParm->QueryIntAttribute("resident", &attr);
-                            if((attr < 0) || (attr > bh.getTotalFloor()))
+                            if((attr < 0) || (attr > bh.getNoOfFloor()))
                             {
                                 return "false";
                             }
@@ -568,7 +586,7 @@ QString MainWindow::validateHumanData(const QString &arg1)
 
                                             /* checks if person is travelling at least to level 2 or more
                                              * but lesser than the total limit in building */
-                                            if(attr2 < 2 || attr2 > bh.getTotalFloor())
+                                            if(attr2 < 2 || attr2 > bh.getNoOfFloor())
                                             {
                                                 return "false";
                                             }
