@@ -12,7 +12,8 @@ v2.6	: Added TinyXML to project, validate XML feature<br />
 v2.7	: Fixed validation introduced in v2.6, change GUI order<br />  
 v2.8	: Splash screen added<br />  
 v2.9	: BuildingHandler and Building class<br />  
-V2.10	: Added XML summary<br /><br />  
+v2.10	: Added XML summary<br />  
+v2.11	: Remove person and lift id from XML, update Help<br /><br /> 
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  

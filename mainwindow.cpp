@@ -238,14 +238,14 @@ void MainWindow::onActionHelp()
     /* Help message to describe XML data structure */
     QString message = "<b>E.g. of Simulated Human XML</b><br>"
                        "&lt;human&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person id=\"1\" weight=\"60\" resident=\"4\"&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person weight=\"60\" resident=\"4\"&gt;<br>"
                                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"4\"/&gt;<br>"
                                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"20\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person id=\"2\" weight=\"78\" resident=\"27\"&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person weight=\"78\" resident=\"27\"&gt;<br>"
                                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"27\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person id=\"3\" weight=\"69\" resident=\"0\"&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person weight=\"69\" resident=\"0\"&gt;<br>"
                                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"27\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
                         "&lt;/human&gt;<br><br>"
@@ -260,15 +260,15 @@ void MainWindow::onActionHelp()
                         "He usually travels to 27th floor.<br><br>"
                         "<b>E.g. of Building XML</b><br>"
                         "&lt;building floors=\"28\" metrePerFloor=\"3\" householdPerFloor=\"4\"&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift id=\"1\" maxWeight=\"400\" speed=\"1\"/&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift id=\"2\" maxWeight=\"340\" speed=\"1\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"1\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"340\" speed=\"1\"/&gt;<br>"
                         "&lt;/building&gt;<br><br>"
                         "Building is 28 stories high with 4 household per floor<br>"
-                        "Each level is 3metres apart. It has two lift<br>"
+                        "Each level is 3 metres apart. It has two lift<br>"
                         "-Lift 1<br>"
-                        "Maximum weight of 400kg and travels 1 floor per sec<br>"
+                        "Maximum weight of 400kg and travels 1 second per floor<br>"
                         "-Lift 2<br>"
-                        "Maximum weight of 340kg and travels 1 floor per sec<br>";
+                        "Maximum weight of 340kg and travels 1 second per floor<br>";
 
     /* Pop-up message box */
     QMessageBox::information(this,tr("Help"),message);
@@ -408,7 +408,6 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                     bh.setHouseholdPerFloor(attr);
                 }
 
-
                 /* check if first element of building exist */
                 pParm = pRoot->FirstChildElement();
                 if(pParm)
@@ -418,14 +417,16 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                     {
                         if(strcmp(pParm->Value(),"lift") == 0)
                         {
-                            /* check if id, maxWeight, speed exist */
-                            if(pParm->Attribute("id") == NULL || pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL)
+                            liftCount++;
+
+                            /* check if maxWeight, speed exist */
+                            if(pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL)
                                 return "false";
                             else
                             {
-                                /* checks for id, maxWeight, speed is a number/empty data */
+                                /* checks for maxWeight, speed is a number/empty data */
                                 int attr2;
-                                if(TIXML_SUCCESS != pParm->QueryIntAttribute("id", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2))
+                                if(TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2))
                                     return "false";
 
                                 /* maxWeight must be at least 200kg */
@@ -438,7 +439,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                 {
                                     /* Append data to QString */
                                     summary += "<b>Lift no ";
-                                    summary += pParm->Attribute("id");
+                                    summary += QString::number(liftCount);
                                     summary += "</b><br>";
                                     summary += "Maximum weight ";
                                     summary += pParm->Attribute("maxWeight");
@@ -456,7 +457,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                     /* Append data to QString */
                                     summary += "Maximum speed ";
                                     summary += pParm->Attribute("speed");
-                                    summary += "m/s<br>";
+                                    summary += "sec/floor<br>";
                                 }
 
                                 pParm = pParm->NextSiblingElement();
@@ -466,7 +467,6 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                         {
                             return "false";
                         }
-                        liftCount++;
                     }
                     /* set number of lifts */
                     bh.setNoOfLifts(liftCount);
@@ -516,17 +516,20 @@ QString MainWindow::validateHumanData(const QString &arg1)
             pParm = pRoot->FirstChildElement();
             if(pParm)
             {
+                int personCount = 0;
                 while(pParm)
                 {
                     /* is the element named "person" */
                     if(strcmp(pParm->Value(),"person") == 0)
                     {
-                        /* checks if id, weight, resident exist */
-                        if(pParm->Attribute("id") != NULL && pParm->Attribute("weight") != NULL && pParm->Attribute("resident") != NULL)
+                        personCount++;
+
+                        /* checks if weight, resident exist */
+                        if(pParm->Attribute("weight") != NULL && pParm->Attribute("resident") != NULL)
                         {
-                            /* checks for id, weight, resident is a number/empty data */
+                            /* checks for weight, resident is a number/empty data */
                             int attr;
-                            if(TIXML_SUCCESS != pParm->QueryIntAttribute("id", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("weight", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("resident", &attr))
+                            if(TIXML_SUCCESS != pParm->QueryIntAttribute("weight", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("resident", &attr))
                                 return "false";
 
                             /* person must have a resident value of more than 0 and less than building limit */
@@ -539,7 +542,7 @@ QString MainWindow::validateHumanData(const QString &arg1)
                             {
                                 /* Append data to QString */
                                 summary += "<b>Person number ";
-                                summary += pParm->Attribute("id");
+                                summary += QString::number(personCount);
                                 if(strcmp(pParm->Attribute("resident"),"0") == 0)
                                 {
                                     summary += "</b><br>Is not a resident<br>";
