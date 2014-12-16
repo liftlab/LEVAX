@@ -1,5 +1,10 @@
-#include "Building.h"
+/*-----------------------------------------------------------------------------
+ * File      - Building.cpp
+ * Author    - LEVAX
+ * Purpose   - Building object class. Stores building structure
+ *---------------------------------------------------------------------------*/
 
+#include "Building.h"
 
 /* Constructor */
 Building::Building()

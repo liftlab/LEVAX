@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------
+ * File      - BuildingHandler.cpp
+ * Author    - LEVAX
+ * Purpose   - Handles Building object
+ *---------------------------------------------------------------------------*/
+
 #include "BuildingHandler.h"
 
 /* Contructor */

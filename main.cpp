@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------
+ * File      - main.cpp
+ * Author    - LEVAX
+ * Purpose   - Main application. Display splash and GUI
+ *---------------------------------------------------------------------------*/
+
 #include "mainwindow.h"
 #include <QApplication>
 

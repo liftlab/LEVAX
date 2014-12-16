@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------
+ * File      - Building.h
+ * Author    - LEVAX
+ * Purpose   - Declare building structure and its functions.
+ *---------------------------------------------------------------------------*/
+
 #ifndef BUILDING_H
 #define BUILDING_H
 

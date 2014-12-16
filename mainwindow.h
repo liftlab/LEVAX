@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------
+ * File      - mainwindow.h
+ * Author    - LEVAX
+ * Purpose   - Declare function and objects for GUI actions.
+ *---------------------------------------------------------------------------*/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

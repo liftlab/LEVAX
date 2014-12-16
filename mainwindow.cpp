@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------
+ * File      - mainwindow.cpp
+ * Author    - LEVAX
+ * Purpose   - Handles GUI interaction and element data retrieval
+ *---------------------------------------------------------------------------*/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 

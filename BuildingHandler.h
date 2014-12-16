@@ -1,3 +1,10 @@
+/*-----------------------------------------------------------------------------
+ * File      - BuildingHandler.h
+ * Author    - LEVAX
+ * Purpose   - Declare function and objects to set and get data
+ *             for Building Object
+ *---------------------------------------------------------------------------*/
+
 #ifndef BUILDINGHANDLER_H
 #define BUILDINGHANDLER_H
 
@@ -22,9 +29,6 @@ public:
     int getNoOfLifts();         /* Return number of lifts */
     int getMetrePerFloor();     /* Return metre per floor */
     int getHouseholdPerFloor(); /* Return number of household per floor */
-
-
-
 
 private:
     Building building;          /* Building object */
