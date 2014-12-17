@@ -13,7 +13,7 @@ v2.7	: Fixed validation introduced in v2.6, change GUI order<br />
 v2.8	: Splash screen added<br />  
 v2.9	: BuildingHandler and Building class<br />  
 v2.10	: Added XML summary<br />  
-v2.11	: Remove person and lift id from XML, update Help<br /> 
+v2.11	: Remove person and lift id from XML, update Help<br />  
 v2.12	: Add Lift/LiftHandler class, debug menu<br /><br />  
 
 [Instructions]<br />  
