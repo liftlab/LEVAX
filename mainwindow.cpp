@@ -16,11 +16,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /* Help menu listener */
     connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(onActionHelp()));
+
+    /* Debug menu listener */
+    connect(ui->actionCheckObj, SIGNAL(triggered()), this, SLOT(onActionCheckObj()));
 }
 
 /* Destructor */
 MainWindow::~MainWindow()
 {
+
+
     delete ui;
 }
 
@@ -106,6 +111,9 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
         /* Clear inputSummaryBox */
         ui->inputSummaryBox->clear();
 
+        /* Reset all lift data before any input*/
+        lh.resetAll();
+
         /* Validate data */
         QString summary = validateBuildingData(filename);
 
@@ -123,7 +131,7 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
             ui->humanAvgSpinBox->setValue(0);
             ui->humanVisitorSpinBox->setValue(0);
 
-            /* reset all building data due to error */
+            /* reset all building due to error */
             bh.resetAll();
 
             /* Display error */
@@ -228,8 +236,9 @@ void MainWindow::on_resetBtn_clicked()
     ui->humanAvgSpinBox->setDisabled(true);
     ui->humanVisitorSpinBox->setDisabled(true);
 
-    /* reset building data */
+    /* reset building/lift data */
     bh.resetAll();
+    lh.resetAll();
 }
 
 /* Handle help button press */
@@ -429,6 +438,8 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                 if(TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2))
                                     return "false";
 
+                                int maxWeight, speed = 0;
+
                                 /* maxWeight must be at least 200kg */
                                 pParm->QueryIntAttribute("maxWeight", &attr2);
                                 if(attr2 < 200)
@@ -444,6 +455,8 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                     summary += "Maximum weight ";
                                     summary += pParm->Attribute("maxWeight");
                                     summary += "kg<br>";
+
+                                    maxWeight = attr2;
                                 }
 
                                 /* speed must be at least 1 or more*/
@@ -458,7 +471,12 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                     summary += "Maximum speed ";
                                     summary += pParm->Attribute("speed");
                                     summary += "sec/floor<br>";
+
+                                    speed = attr2;
                                 }
+
+                                /* Create new lift object */
+                                lh.createNewLift(liftCount, maxWeight, speed);
 
                                 pParm = pParm->NextSiblingElement();
                             }
@@ -468,6 +486,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                             return "false";
                         }
                     }
+
                     /* set number of lifts */
                     bh.setNoOfLifts(liftCount);
                 }
@@ -656,3 +675,14 @@ QString MainWindow::validateHumanData(const QString &arg1)
     return summary;
 }
 
+/* FOR DEBUGGING PURPOSES ONLY */
+/* Check current created object */
+void MainWindow::onActionCheckObj()
+{
+    /* Message */
+    QString message = "Number of lift object(s) = "
+                      + QString::number(lh.getNumberOfLiftsObject());
+
+    /* Pop-up message box */
+    QMessageBox::information(this,tr("Number of objects"),message);
+}

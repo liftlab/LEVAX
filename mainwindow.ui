@@ -519,14 +519,16 @@
     <addaction name="actionHelp"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+    <addaction name="actionCheckObj"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuDebug"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionSave_Data">
-   <property name="text">
-    <string>Save Data...</string>
-   </property>
-  </action>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -535,6 +537,11 @@
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="actionCheckObj">
+   <property name="text">
+    <string>Check Objects</string>
    </property>
   </action>
  </widget>

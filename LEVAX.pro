@@ -19,13 +19,17 @@ SOURCES += main.cpp\
     tinyXML/tinyxmlerror.cpp \
     tinyXML/tinyxmlparser.cpp \
     BuildingHandler.cpp \
-    Building.cpp
+    Building.cpp \
+    LiftHandler.cpp \
+    Lift.cpp
 
 HEADERS  += mainwindow.h \
     tinyXML/tinystr.h \
     tinyXML/tinyxml.h \
     BuildingHandler.h \
-    Building.h
+    Building.h \
+    LiftHandler.h \
+    Lift.h
 
 FORMS    += mainwindow.ui
 

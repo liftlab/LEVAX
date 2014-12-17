@@ -17,6 +17,7 @@
 
 #include "tinyXML/tinyxml.h"    /* TinyXML XML parser*/
 #include "BuildingHandler.h"    /* Building Handler */
+#include "LiftHandler.h"        /* Lift Handler */
 
 namespace Ui {
 class MainWindow;
@@ -37,13 +38,17 @@ private slots:
     void on_humanAvgSpinBox_valueChanged(int arg1);     /* Handle average human spin box value changed */
     void on_humanVisitorSpinBox_valueChanged(int arg1); /* Handle human visitor spin box value changed */
     void on_resetBtn_clicked();             /* Handle reset button press */
-    void onActionHelp();                    /* Handle help button press */
+    void onActionHelp();                 /* Handle help button press */
     void on_runBtn_clicked();               /* Handle run button press */
     void on_saveResultBtn_clicked();        /* Handle save result button clicked */
+
+    /* FOR DEBUGGING PURPOSES ONLY */
+    void onActionCheckObj();             /* Check current created object */
 
 private:
     Ui::MainWindow *ui;
     BuildingHandler bh;                     /* Building handler object */
+    LiftHandler lh;                         /* Lift handler object */
 
     QString validateBuildingData(const QString &arg1); /* validate building XML */
     QString validateHumanData(const QString &arg1);    /* validate human XML */
