@@ -49,6 +49,9 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
             /* Get directory */
             filename = dlg.selectedFiles().at(0);
 
+            /* Reset all simulated human data before any input*/
+            shh.resetAll();
+
             /* Validate data */
             QString summary = validateHumanData(filename);
 
@@ -111,8 +114,11 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
         /* Clear inputSummaryBox */
         ui->inputSummaryBox->clear();
 
-        /* Reset all lift data before any input*/
+        /* Reset all lift data before any input */
         lh.resetAll();
+        /* Reset all simulated human data before any input */
+        shh.resetAll();
+
 
         /* Validate data */
         QString summary = validateBuildingData(filename);
@@ -239,6 +245,7 @@ void MainWindow::on_resetBtn_clicked()
     /* reset building/lift data */
     bh.resetAll();
     lh.resetAll();
+    shh.resetAll();
 }
 
 /* Handle help button press */
@@ -510,6 +517,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
         return "false";
     }
 
+    lh.getAllLiftData();
     return summary;
 }
 
@@ -572,6 +580,9 @@ QString MainWindow::validateHumanData(const QString &arg1)
                                     summary += pParm->Attribute("resident");
                                     summary += "<br>";
                                 }
+
+                                /* Create a simulatedHuman object with resident value*/
+                                shh.createSimulatedHuman(personCount, attr);
                             }
 
                             /* person must have a weight of more than 0 and 150 or lower */
@@ -586,6 +597,9 @@ QString MainWindow::validateHumanData(const QString &arg1)
                                 summary += "Weighs ";
                                 summary += pParm->Attribute("weight");
                                 summary += "kg<br>";
+
+                                /* Set weight for simulatedHuman */
+                                shh.setWeight(personCount, attr);
                             }
 
                             /* checks if first element of person exist */
@@ -619,6 +633,7 @@ QString MainWindow::validateHumanData(const QString &arg1)
                                                 /* Append data to QString */
                                                 summary += pParm2->Attribute("travel");
                                                 summary += ", ";
+                                                shh.addFloorTravelling(personCount, attr2);
                                             }
 
                                             pParm2 = pParm2->NextSiblingElement();
@@ -672,6 +687,8 @@ QString MainWindow::validateHumanData(const QString &arg1)
         return "false";
     }
 
+    shh.getAllPersonData();
+
     return summary;
 }
 
@@ -681,7 +698,10 @@ void MainWindow::onActionCheckObj()
 {
     /* Message */
     QString message = "Number of lift object(s) = "
-                      + QString::number(lh.getNumberOfLiftsObject());
+                    + QString::number(lh.getNumberOfLiftsObject())
+                    + "<br>"
+                    + "Number of simulatedHuman object(s) = "
+                    + QString::number(shh.getNumberOfSimulatedHumanObject());
 
     /* Pop-up message box */
     QMessageBox::information(this,tr("Number of objects"),message);

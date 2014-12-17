@@ -21,7 +21,9 @@ SOURCES += main.cpp\
     BuildingHandler.cpp \
     Building.cpp \
     LiftHandler.cpp \
-    Lift.cpp
+    Lift.cpp \
+    SimulatedHuman.cpp \
+    SimulatedHumanHandler.cpp
 
 HEADERS  += mainwindow.h \
     tinyXML/tinystr.h \
@@ -29,7 +31,9 @@ HEADERS  += mainwindow.h \
     BuildingHandler.h \
     Building.h \
     LiftHandler.h \
-    Lift.h
+    Lift.h \
+    SimulatedHuman.h \
+    SimulatedHumanHandler.h
 
 FORMS    += mainwindow.ui
 

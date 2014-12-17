@@ -20,7 +20,7 @@ LiftHandler::~LiftHandler()
 /* Create new lift object and store in vector*/
 void LiftHandler::createNewLift(int liftID, int maxWeight, int speedSecPerFloor)
 {
-    Lift* l = new Lift(liftID, maxWeight, speedSecPerFloor);
+    Lift *l = new Lift(liftID, maxWeight, speedSecPerFloor);
 
     liftObj.push_back(l);
 }
@@ -30,9 +30,9 @@ void LiftHandler::resetAll()
 {
     if(liftObj.size() != 0)
     {
-        qDebug() << "Freeing memory";
+        qDebug() << "Freeing memory for lift";
 
-        for(size_t i=0;i<liftObj.size();i++)
+        for(std::size_t i=0;i<liftObj.size();i++)
         {
             delete liftObj[i];
             qDebug() << "Memory cleared for lift" << i+1;
@@ -45,11 +45,11 @@ void LiftHandler::resetAll()
 /* Print all lift object data for debugging */
 void LiftHandler::getAllLiftData()
 {
-    for(size_t i=0;i<liftObj.size();i++)
+    for(std::size_t i=0;i<liftObj.size();i++)
     {
-        qDebug() << liftObj[i]->getLiftID()
-                 << liftObj[i]->getLiftWeight()
-                 << liftObj[i]->getLiftSpeed();
+        qDebug() << "Lift ID" << liftObj[i]->getLiftID();
+        qDebug() << "Max Weight" << liftObj[i]->getLiftWeight();
+        qDebug() << "Speed(sec/floor)" << liftObj[i]->getLiftSpeed();
     }
 }
 

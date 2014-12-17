@@ -20,7 +20,6 @@ public:
 
     void createNewLift(int, int, int);          /* Create new lift object and store in vector*/
     void resetAll();                            /* Free and reset all lift object in liftObj vector */
-    void getAllLiftData();                      /* Print all lift object data for debugging */
     int getNumberOfLiftsObject();               /* Return number of lift objects */
 
     /* Setters */
@@ -32,6 +31,9 @@ public:
     int getLiftID(int);                         /* Return lift id */
     int getLiftWeight(int);                     /* Return lift weight */
     int getLiftSpeed(int);                      /* Return lift speed */
+
+    /* FOR DEBUGGING PURPOSES ONLY */
+    void getAllLiftData();                      /* Print all lift object data for debugging */
 
 private:
     std::vector<Lift*> liftObj;
