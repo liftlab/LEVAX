@@ -24,8 +24,6 @@ MainWindow::MainWindow(QWidget *parent) :
 /* Destructor */
 MainWindow::~MainWindow()
 {
-
-
     delete ui;
 }
 
@@ -183,6 +181,9 @@ void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
 
         ui->humanDirLabel->setText("...");
         ui->humanDirLabel->setDisabled(true);
+
+        /* Free all simulatedHuman object memory (if any) */
+        shh.resetAll();
     }
 }
 
@@ -202,6 +203,9 @@ void MainWindow::on_humanAvgSpinBox_valueChanged(int arg1)
 
         ui->humanDirLabel->setText("...");
         ui->humanDirLabel->setDisabled(true);
+
+        /* Free all simulatedHuman object memory (if any) */
+        shh.resetAll();
     }
 }
 
@@ -221,6 +225,9 @@ void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
 
         ui->humanDirLabel->setText("...");
         ui->humanDirLabel->setDisabled(true);
+
+        /* Free all simulatedHuman object memory (if any) */
+        shh.resetAll();
     }
 }
 
