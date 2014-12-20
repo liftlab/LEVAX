@@ -5,11 +5,15 @@
  *---------------------------------------------------------------------------*/
 
 #include "mainwindow.h"
+#include <ctime>
 #include <QApplication>
 
 /* main program */
 int main(int argc, char *argv[])
 {
+    /* Random Seed */
+    srand(time(NULL));
+
     /* Initialize QApplication */
     QApplication a(argc, argv);
 

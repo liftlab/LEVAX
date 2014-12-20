@@ -12,7 +12,7 @@
 class SimulatedHuman
 {
 public:
-    SimulatedHuman(int, int);                   /* Constructor */
+    SimulatedHuman(int);                        /* Constructor */
     ~SimulatedHuman();                          /* Destructor */
 
     int getFloorTravellingSize();               /* Get size of floorTravelling */

@@ -7,9 +7,9 @@
 #include <SimulatedHuman.h>
 
 /* Constructor */
-SimulatedHuman::SimulatedHuman(int personID, int residentOf)
+SimulatedHuman::SimulatedHuman(int residentOf)
 {
-    this->personID = personID;
+    this->personID = 0;
     this->residentOf = residentOf;
     this->weight = 0;
 }

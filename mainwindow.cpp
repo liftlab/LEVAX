@@ -43,12 +43,20 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
         /* Check for Open button pressed */
         if(dlg.exec())
         {
-
             /* Get directory */
             filename = dlg.selectedFiles().at(0);
 
-            /* Reset all simulated human data before any input*/
-            shh.resetAll();
+            /* Reset all previously loaded simulated human data */
+            if((shh.getNumberOfSimulatedHumanObject() > 0 && prevFilename != "...")
+               || (ui->humanTotalSpinBox->value() > 0 && prevFilename == "..."))
+            {
+                shh.resetAll();
+                ui->humanTotalSpinBox->setValue(0);
+                ui->humanAvgSpinBox->setValue(0);
+                ui->humanVisitorSpinBox->setValue(0);
+                ui->humanDirLabel->setDisabled(false);
+                ui->inputSummaryBox->undo();
+            }
 
             /* Validate data */
             QString summary = validateHumanData(filename);
@@ -56,10 +64,6 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
             /* Check if human data is invalid */
             if(summary == "false")
             {
-                /* Undo if previous data is loaded */
-                if(prevFilename != "...")
-                    ui->inputSummaryBox->undo();
-
                 ui->humanDirLabel->setText("...");
 
                 /* Display error */
@@ -67,10 +71,6 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
             }
             else
             {
-                /* Undo if previous data is loaded */
-                if(prevFilename != "...")
-                    ui->inputSummaryBox->undo();
-
                 /* Header */
                 QString header = "<b><font size=\"4\">Simulated Human Data</font></b><br>"
                                  "====================<br>";
@@ -80,18 +80,19 @@ void MainWindow::on_humanXMLUploadBtn_clicked()
                 ui->inputSummaryBox->append(header);
 
                 /* Enable simulated human elements */
-                ui->humanDirLabel->setDisabled(false);
-                ui->humanDirLabel->setText(filename);
                 ui->humanTotalSpinBox->setValue(0);
                 ui->humanAvgSpinBox->setValue(0);
                 ui->humanVisitorSpinBox->setValue(0);
+                ui->humanDirLabel->setDisabled(false);
+                ui->humanDirLabel->setText(filename);
+
             }
         }
     }
     else
     {
         /* Display warning message to load building XML first */
-        QMessageBox::information(this,tr("Notice"),"Please load building XML first");
+        QMessageBox::information(this,tr("Notice"), "Please load building XML first");
     }
 }
 
@@ -155,7 +156,7 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
             ui->buildingDirLabel->setText(filename);
             ui->humanDirLabel->setDisabled(false);
             ui->humanTotalSpinBox->setDisabled(false);
-            ui->humanAvgSpinBox->setDisabled(false);
+            //ui->humanAvgSpinBox->setDisabled(false);
             ui->humanVisitorSpinBox->setDisabled(false);
             ui->humanDirLabel->setText("...");
             ui->humanTotalSpinBox->setValue(0);
@@ -168,67 +169,168 @@ void MainWindow::on_buildingXMLUploadBtn_clicked()
 /* Handle total human spin box value changed */
 void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
 {
+    /* Set average floor value */
+    int avgPerFloor = arg1/bh.getNoOfFloor();
+    ui->humanAvgSpinBox->setValue(avgPerFloor);
+
     /* Get previous human file name previous human label enabled status */
     bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
     QString prevFilename = ui->humanDirLabel->text();
 
-    /* reset and disable human directory label */
-    if(arg1 != 0)
+    bool update = false;
+
+    /* Only update when value is more than or equal to 0 */
+    if(arg1 >= 0)
     {
-        /* Undo if previous data is loaded */
+        /* Undo and clear memory if previous data is loaded */
         if(prevHumanLabelStatus == true && prevFilename != "...")
+        {
+            /* Undo text box */
             ui->inputSummaryBox->undo();
 
-        ui->humanDirLabel->setText("...");
-        ui->humanDirLabel->setDisabled(true);
+            /* Free all simulatedHuman object memory (if any) */
+            shh.resetAll();
 
-        /* Free all simulatedHuman object memory (if any) */
-        shh.resetAll();
+            /* Set to default */
+            ui->humanDirLabel->setText("...");
+            ui->humanDirLabel->setDisabled(true);
+        }
+
+        /* Handle addition of simulated human */
+        if(arg1 > shh.getNumberOfSimulatedHumanObject())
+        {
+            /* Undo summary box if there is already 1 or more object created */
+            if(shh.getNumberOfSimulatedHumanObject() >= 1)
+                ui->inputSummaryBox->undo();
+
+            /* Add remainding object */
+            for(int i=shh.getNumberOfSimulatedHumanObject();i<arg1;i++)
+            {
+                /* Create first person */
+                int randResidentOf = rand() % bh.getNoOfFloor() + 2;
+                shh.createSimulatedHuman(randResidentOf);
+                shh.populateSimulatedHuman(bh.getNoOfFloor());
+
+                update = true;
+            }
+
+            ui->humanDirLabel->setText("...");
+            ui->humanDirLabel->setDisabled(true);
+        }
+        else if(arg1 < shh.getNumberOfSimulatedHumanObject()) /* Handle deletion of simulated human */
+        {
+            /* Undo summary box regardless of whether there are existing data or not */
+            ui->inputSummaryBox->undo();
+
+            /* Delete object from the back until arg1 */
+            for(int i=shh.getNumberOfSimulatedHumanObject();i>arg1;i--)
+            {
+                shh.removeLastData();
+
+                update = true;
+            }
+        }
+        else if(arg1 == shh.getNumberOfSimulatedHumanObject()) /* CPU Management */
+        {
+            update = false;
+        }
+
+        if(update)
+        {
+            /* Header */
+            QString header = "<b><font size=\"4\">Simulated Human Data</font></b><br>"
+                             "====================<br>";
+
+            /* Create text dynamically */
+            for(int i=0;i<shh.getNumberOfSimulatedHumanObject();i++)
+            {
+                /* Append data to QString */
+                header += "<b>Person number ";
+                header += QString::number(shh.getPersonID(i));
+                if(shh.getResident(i) == 0)
+                {
+                    header += "</b><br>Is not a resident<br>";
+                }
+                else
+                {
+                    header += "</b><br>Is a resident staying at level ";
+                    header +=  QString::number(shh.getResident(i));
+                    header += "<br>";
+                }
+
+                /* Append data to QString */
+                header += "Weighs ";
+                header += QString::number(shh.getWeight(i));
+                header += "kg<br>";
+
+                /* Append data to QString */
+                header += "Will travel to floor ";
+
+                for(int j=0;j<shh.getFloorTravellingSize(i);j++)
+                {
+                    /* Append data to QString */
+                    header += QString::number(shh.getFloorTravelling(i, j));
+                    header += ", ";
+                }
+
+                /* remove last comma */
+                header.remove(header.length()-2,1);
+
+                /* Append data to QString */
+                header += "<br>";
+            }
+
+            /* Display to inputSummaryBox if there are 1 or more object */
+            if(shh.getNumberOfSimulatedHumanObject() >= 1)
+                ui->inputSummaryBox->append(header);
+
+            update = false;
+        }
     }
 }
 
 /* Handle average human spin box value changed */
 void MainWindow::on_humanAvgSpinBox_valueChanged(int arg1)
 {
-    /* Get previous human file name previous human label enabled status */
-    bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
-    QString prevFilename = ui->humanDirLabel->text();
+//    /* Get previous human file name previous human label enabled status */
+//    bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
+//    QString prevFilename = ui->humanDirLabel->text();
 
-    /* reset and disable human directory label */
-    if(arg1 != 0)
-    {
-        /* Undo if previous data is loaded */
-        if(prevHumanLabelStatus == true && prevFilename != "...")
-            ui->inputSummaryBox->undo();
+//    /* reset and disable human directory label */
+//    if(arg1 != 0)
+//    {
+//        /* Undo if previous data is loaded */
+//        if(prevHumanLabelStatus == true && prevFilename != "...")
+//            ui->inputSummaryBox->undo();
 
-        ui->humanDirLabel->setText("...");
-        ui->humanDirLabel->setDisabled(true);
+//        ui->humanDirLabel->setText("...");
+//        ui->humanDirLabel->setDisabled(true);
 
-        /* Free all simulatedHuman object memory (if any) */
-        shh.resetAll();
-    }
+//        /* Free all simulatedHuman object memory (if any) */
+//        shh.resetAll();
+//    }
 }
 
 /* Handle human visitor spin box value changed */
 void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
 {
-    /* Get previous human file name previous human label enabled status */
-    bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
-    QString prevFilename = ui->humanDirLabel->text();
+//    /* Get previous human file name previous human label enabled status */
+//    bool prevHumanLabelStatus = ui->humanDirLabel->isEnabled();
+//    QString prevFilename = ui->humanDirLabel->text();
 
-    /* reset and disable human directory label */
-    if(arg1 != 0)
-    {
-        /* Undo if previous data is loaded */
-        if(prevHumanLabelStatus == true && prevFilename != "...")
-            ui->inputSummaryBox->undo();
+//    /* reset and disable human directory label */
+//    if(arg1 != 0)
+//    {
+//        /* Undo if previous data is loaded */
+//        if(prevHumanLabelStatus == true && prevFilename != "...")
+//            ui->inputSummaryBox->undo();
 
-        ui->humanDirLabel->setText("...");
-        ui->humanDirLabel->setDisabled(true);
+//        ui->humanDirLabel->setText("...");
+//        ui->humanDirLabel->setDisabled(true);
 
-        /* Free all simulatedHuman object memory (if any) */
-        shh.resetAll();
-    }
+//        /* Free all simulatedHuman object memory (if any) */
+//        shh.resetAll();
+//    }
 }
 
 /* Handle reset button press */
@@ -566,9 +668,9 @@ QString MainWindow::validateHumanData(const QString &arg1)
                             if(TIXML_SUCCESS != pParm->QueryIntAttribute("weight", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("resident", &attr))
                                 return "false";
 
-                            /* person must have a resident value of more than 0 and less than building limit */
+                            /* person must have a resident value of more than 0 but not 1 and less than building limit */
                             pParm->QueryIntAttribute("resident", &attr);
-                            if((attr < 0) || (attr > bh.getNoOfFloor()))
+                            if((attr < 0) || (attr > bh.getNoOfFloor()) || attr == 1)
                             {
                                 return "false";
                             }
@@ -589,7 +691,7 @@ QString MainWindow::validateHumanData(const QString &arg1)
                                 }
 
                                 /* Create a simulatedHuman object with resident value*/
-                                shh.createSimulatedHuman(personCount, attr);
+                                shh.createSimulatedHuman(attr);
                             }
 
                             /* person must have a weight of more than 0 and 150 or lower */
