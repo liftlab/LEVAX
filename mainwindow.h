@@ -14,6 +14,7 @@
 #include <QTimer>                   /* Splash timer */
 #include <QSplashScreen>            /* Splash screen */
 #include <QDebug>                   /* Debug, similar to cout. Usage qDebut() << "Hello World" */
+#include <QScrollBar>               /* Scroll bar */
 
 #include "tinyXML/tinyxml.h"        /* TinyXML XML parser*/
 #include "BuildingHandler.h"        /* Building Handler */
@@ -36,7 +37,6 @@ private slots:
     void on_humanXMLUploadBtn_clicked();                /* humanXMLUploadBtn dialog function */
     void on_buildingXMLUploadBtn_clicked();             /* buildingXMLUploadBtn dialog function */
     void on_humanTotalSpinBox_valueChanged(int args1);  /* Handle total human spin box value changed */
-    void on_humanAvgSpinBox_valueChanged(int arg1);     /* Handle average human spin box value changed */
     void on_humanVisitorSpinBox_valueChanged(int arg1); /* Handle human visitor spin box value changed */
     void on_resetBtn_clicked();                         /* Handle reset button press */
     void onActionHelp();                                /* Handle help button press */
@@ -53,7 +53,8 @@ private:
     SimulatedHumanHandler shh;                          /* SimulatedHuman handler object */
 
     QString validateBuildingData(const QString &arg1);  /* validate building XML */
-    QString validateHumanData(const QString &arg1);     /* validate human XML */
+    bool validateHumanData(const QString &arg1);        /* validate human XML */
+    void updateSummary(bool);                           /* update summary box */
 };
 
 #endif // MAINWINDOW_H

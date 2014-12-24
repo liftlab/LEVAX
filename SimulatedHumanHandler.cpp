@@ -22,8 +22,17 @@ void SimulatedHumanHandler::createSimulatedHuman(int residentOf)
 {
     /* Create new object */
     SimulatedHuman *sh = new SimulatedHuman(residentOf);
-    sh->setPersonID(simulatedHumanObj.size()+1);
-    simulatedHumanObj.push_back(sh);
+
+    if(residentOf != 0)
+    {
+        sh->setPersonID(simulatedHumanObj.size()+1);
+        simulatedHumanObj.push_back(sh);
+    }
+    else
+    {
+        sh->setPersonID(nonResSimulatedHumanObj.size()+1);
+        nonResSimulatedHumanObj.push_back(sh);
+    }
 }
 
 /* Free and reset all simulatedHuman object in simulatedHumanObj vector */
@@ -31,13 +40,24 @@ void SimulatedHumanHandler::resetAll()
 {
     if(simulatedHumanObj.size() != 0)
     {
-        qDebug() << "Freeing memory for simulatedHuman";
+        qDebug() << "Freeing memory for resident";
         for(std::size_t i=0;i<simulatedHumanObj.size();i++)
         {
             delete simulatedHumanObj[i];
-            qDebug() << "Memory cleared for simulatedHuman" << i+1;
+            qDebug() << "Memory cleared for simulatedHuman resident" << i+1;
         }
         simulatedHumanObj.clear();
+    }
+
+    if(nonResSimulatedHumanObj.size() != 0)
+    {
+        qDebug() << "Freeing memory for visitor";
+        for(std::size_t i=0;i<nonResSimulatedHumanObj.size();i++)
+        {
+            delete nonResSimulatedHumanObj[i];
+            qDebug() << "Memory cleared for simulatedHuman visitor" << i+1;
+        }
+        nonResSimulatedHumanObj.clear();
     }
 }
 
@@ -48,80 +68,83 @@ int SimulatedHumanHandler::getNumberOfSimulatedHumanObject()
 }
 
 /* Set person id */
-void SimulatedHumanHandler::setPersonID(int personID)
+void SimulatedHumanHandler::setPersonID(int idx, int personID, bool isResident)
 {
-    simulatedHumanObj[personID-1]->setPersonID(personID);
+    if(isResident)
+        simulatedHumanObj[idx]->setPersonID(personID);
+    else
+        nonResSimulatedHumanObj[idx]->setPersonID(personID);
 }
 
 /* Set resident floor */
-void SimulatedHumanHandler::setResident(int idx, int residentOf)
+void SimulatedHumanHandler::setResident(int idx, int residentOf, bool isResident)
 {
-    simulatedHumanObj[idx-1]->setResident(residentOf);
+    if(isResident)
+        simulatedHumanObj[idx]->setResident(residentOf);
+    else
+        nonResSimulatedHumanObj[idx]->setResident(0);
 }
 
 /* Set weight */
-void SimulatedHumanHandler::setWeight(int idx, int weight)
+void SimulatedHumanHandler::setWeight(int idx, int weight, bool isResident)
 {
-    simulatedHumanObj[idx-1]->setWeight(weight);
+    if(isResident)
+        simulatedHumanObj[idx-1]->setWeight(weight);
+    else
+        nonResSimulatedHumanObj[idx-1]->setWeight(weight);
 }
 
 /* Add floor travelling */
-void SimulatedHumanHandler::addFloorTravelling(int idx, int floor)
+void SimulatedHumanHandler::addFloorTravelling(int idx, int floor, bool isResident)
 {
-    simulatedHumanObj[idx-1]->addFloorTravelling(floor);
+    if(isResident)
+        simulatedHumanObj[idx-1]->addFloorTravelling(floor);
+    else
+       nonResSimulatedHumanObj[idx-1]->addFloorTravelling(floor);
 }
 
 /* Return person id */
-int SimulatedHumanHandler::getPersonID(int idx)
+int SimulatedHumanHandler::getPersonID(int idx, bool isResident)
 {
-    return simulatedHumanObj[idx]->getPersonID();
+    if(isResident)
+        return simulatedHumanObj[idx]->getPersonID();
+    else
+        return nonResSimulatedHumanObj[idx]->getPersonID();
 }
 
 /* Return resident floor */
-int SimulatedHumanHandler::getResident(int idx)
+int SimulatedHumanHandler::getResident(int idx, bool isResident)
 {
-    return simulatedHumanObj[idx]->getResident();
+    if(isResident)
+        return simulatedHumanObj[idx]->getResident();
+    else
+        return nonResSimulatedHumanObj[idx]->getResident();
 }
 
 /* Return weight */
-int SimulatedHumanHandler::getWeight(int idx)
+int SimulatedHumanHandler::getWeight(int idx, bool isResident)
 {
-    return simulatedHumanObj[idx]->getWeight();
+    if(isResident)
+        return simulatedHumanObj[idx]->getWeight();
+    else
+        return nonResSimulatedHumanObj[idx]->getWeight();
 }
 
 /* Return floor travelling at index */
-int SimulatedHumanHandler::getFloorTravelling(int idxOfPerson, int idxOfFloorTravelling)
+int SimulatedHumanHandler::getFloorTravelling(int idxOfPerson, int idxOfFloorTravelling, bool isResident)
 {
-    return simulatedHumanObj[idxOfPerson]->getFloorTravelling(idxOfFloorTravelling);
-}
-
-/* Print all simulatedHuman object data for debugging */
-void SimulatedHumanHandler::getAllPersonData()
-{
-
-    for(std::size_t i=0;i<simulatedHumanObj.size();i++)
-    {
-        std::size_t numberOfFloorTravelling = simulatedHumanObj[i]->getFloorTravellingSize();
-
-        qDebug() << "PersonID" << simulatedHumanObj[i]->getPersonID();
-        qDebug() << "Weight" << simulatedHumanObj[i]->getWeight();
-        if(simulatedHumanObj[i]->getResident() == 0)
-            qDebug() << "Not a resident";
-        else
-            qDebug() << "Resident of" << simulatedHumanObj[i]->getResident();
-
-        QDebug debug = qDebug();
-        qDebug() << "Travelling: ";
-        for(std::size_t j=0; j<numberOfFloorTravelling;j++)
-            debug << getFloorTravelling(i, j);
-    }
+    if(isResident)
+        return simulatedHumanObj[idxOfPerson]->getFloorTravelling(idxOfFloorTravelling);
+    else
+        return nonResSimulatedHumanObj[idxOfPerson]->getFloorTravelling(idxOfFloorTravelling);
 }
 
 /* Populate simulatedHuman with weight, etc */
-void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors)
+void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isResident)
 {
-    /* Add own residence floor */
-    simulatedHumanObj.back()->addFloorTravelling(simulatedHumanObj.back()->getResident());
+    /* Add own residence floor if its a residence*/
+    if(isResident)
+        simulatedHumanObj.back()->addFloorTravelling(simulatedHumanObj.back()->getResident());
 
     /* Generate 1-100
      * 1-15     = Child,
@@ -137,19 +160,28 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors)
         /* Generate weight from 10 to 35 kg */
         int max = 35;
         int min = 15;
-        simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
 
-        /* Generate 1-100
-         * 1-90     = Travel only to their residence,
-         * 90-100    = Travel to other floor to find friends
-         */
-        int travellingType = rand() % 100 + 1;
-        if(travellingType >= 90 && travellingType <= 100)
+        if(isResident)
         {
-            /* Generate number of friends the object visiting */
-            int noOfFriends = rand() % TRAVEL_MAX + 1;
-            for(int i=0;i<noOfFriends;i++)
-                simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+
+            /* Generate 1-100
+             * 1-90     = Travel only to their residence,
+             * 90-100    = Travel to other floor to find friends
+             */
+            int travellingType = rand() % 100 + 1;
+            if(travellingType >= 90 && travellingType <= 100)
+            {
+                /* Generate number of friends the object visiting */
+                int noOfFriends = rand() % TRAVEL_MAX + 1;
+                for(int i=0;i<noOfFriends;i++)
+                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            }
+        }
+        else
+        {
+            nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+            nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
         }
     }
     else if(randHumanType >= 21 && randHumanType <= 30)
@@ -157,19 +189,28 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors)
         /* Generate weight from 80 to 150 kg */
         int max = 150;
         int min = 80;
-        simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
 
-        /* Generate 1-100
-         * 1-95     = Travel only to their residence,
-         * 95-100    = Travel to other floor to find friends
-         */
-        int travellingType = rand() % 100 + 1;
-        if(travellingType >= 95 && travellingType <= 100)
+        if(isResident)
         {
-            /* Generate number of friends the object visiting */
-            int noOfFriends = rand() % TRAVEL_MAX + 1;
-            for(int i=0;i<noOfFriends;i++)
-                simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+
+            /* Generate 1-100
+             * 1-95     = Travel only to their residence,
+             * 95-100    = Travel to other floor to find friends
+             */
+            int travellingType = rand() % 100 + 1;
+            if(travellingType >= 95 && travellingType <= 100)
+            {
+                /* Generate number of friends the object visiting */
+                int noOfFriends = rand() % TRAVEL_MAX + 1;
+                for(int i=0;i<noOfFriends;i++)
+                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            }
+        }
+        else
+        {
+                nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+                nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
         }
     }
     else if(randHumanType >= 36 && randHumanType <= 50)
@@ -177,19 +218,28 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors)
         /* Generate weight from 35 to 55 kg */
         int max = 55;
         int min = 35;
-        simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
 
-        /* Generate 1-100
-         * 1-90     = Travel only to their residence,
-         * 90-100    = Travel to other floor to find friends
-         */
-        int travellingType = rand() % 100 + 1;
-        if(travellingType >= 90 && travellingType <= 100)
+        if(isResident)
         {
-            /* Generate number of friends the object visiting */
-            int noOfFriends = rand() % TRAVEL_MAX + 1;
-            for(int i=0;i<noOfFriends;i++)
-                simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+
+            /* Generate 1-100
+             * 1-90     = Travel only to their residence,
+             * 90-100    = Travel to other floor to find friends
+             */
+            int travellingType = rand() % 100 + 1;
+            if(travellingType >= 90 && travellingType <= 100)
+            {
+                /* Generate number of friends the object visiting */
+                int noOfFriends = rand() % TRAVEL_MAX + 1;
+                for(int i=0;i<noOfFriends;i++)
+                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            }
+        }
+        else
+        {
+                nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+                nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
         }
     }
     else
@@ -197,33 +247,96 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors)
         /* Generate weight from 55 to 79 kg */
         int max = 79;
         int min = 55;
-        simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
 
-        /* Generate 1-100
-         * 1-85     = Travel only to their residence,
-         * 85-100    = Travel to other floor to find friends
-         */
-        int travellingType = rand() % 100 + 1;
-        if(travellingType >= 85 && travellingType <= 100)
+        if(isResident)
         {
-            /* Generate number of friends the object visiting */
-            int noOfFriends = rand() % TRAVEL_MAX + 1;
-            for(int i=0;i<noOfFriends;i++)
-                simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+
+            /* Generate 1-100
+             * 1-85     = Travel only to their residence,
+             * 85-100    = Travel to other floor to find friends
+             */
+            int travellingType = rand() % 100 + 1;
+            if(travellingType >= 85 && travellingType <= 100)
+            {
+                /* Generate number of friends the object visiting */
+                int noOfFriends = rand() % TRAVEL_MAX + 1;
+                for(int i=0;i<noOfFriends;i++)
+                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            }
+        }
+        else
+        {
+                nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+                nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
         }
     }
 }
 
-void SimulatedHumanHandler::removeLastData()
+/* Remove last simulatedHuman from vector. Bool flag true=resident false=visitor */
+void SimulatedHumanHandler::removeLastData(bool isResident)
 {
-    /* Free memory of last data */
-    delete simulatedHumanObj[simulatedHumanObj.size()-1];
+    if(isResident)
+    {
+        /* Free memory of last data */
+        delete simulatedHumanObj[simulatedHumanObj.size()-1];
 
-    /* Remove from vector */
-    simulatedHumanObj.erase(simulatedHumanObj.end() - 1);
+        /* Remove from vector */
+        simulatedHumanObj.erase(simulatedHumanObj.end() - 1);
+    }
+    else /* Delete visitor */
+    {
+        /* Free memory of last data */
+        delete nonResSimulatedHumanObj[nonResSimulatedHumanObj.size()-1];
+
+        /* Remove from vector */
+        nonResSimulatedHumanObj.erase(nonResSimulatedHumanObj.end() - 1);
+    }
 }
 
-int SimulatedHumanHandler::getFloorTravellingSize(int idx)
+/* Get vector size of floorTravelling */
+int SimulatedHumanHandler::getFloorTravellingSize(int idx, bool isResident)
 {
-    return simulatedHumanObj[idx]->getFloorTravellingSize();
+    if(isResident)
+        return simulatedHumanObj[idx]->getFloorTravellingSize();
+    else
+        return nonResSimulatedHumanObj[idx]->getFloorTravellingSize();
+}
+
+/* Return number of resident objects */
+int SimulatedHumanHandler::getNumberOfVisitorObj()
+{
+    return nonResSimulatedHumanObj.size();
+}
+
+/* Print all simulatedHuman object data for debugging */
+void SimulatedHumanHandler::getAllPersonData()
+{
+    for(std::size_t i=0;i<simulatedHumanObj.size();i++)
+    {
+        std::size_t numberOfFloorTravelling = simulatedHumanObj[i]->getFloorTravellingSize();
+
+        qDebug() << "PersonID" << simulatedHumanObj[i]->getPersonID();
+        qDebug() << "Weight" << simulatedHumanObj[i]->getWeight();
+        qDebug() << "Resident of" << simulatedHumanObj[i]->getResident();
+
+        QDebug debug = qDebug();
+        qDebug() << "Travelling: ";
+        for(std::size_t j=0; j<numberOfFloorTravelling;j++)
+            debug << getFloorTravelling(i, j, true);
+    }
+
+    for(std::size_t i=0;i<nonResSimulatedHumanObj.size();i++)
+    {
+        std::size_t numberOfFloorTravelling = nonResSimulatedHumanObj[i]->getFloorTravellingSize();
+
+        qDebug() << "VisitorID" << nonResSimulatedHumanObj[i]->getPersonID();
+        qDebug() << "Weight" << nonResSimulatedHumanObj[i]->getWeight();
+        qDebug() << "Not a resident";
+
+        QDebug debug = qDebug();
+        qDebug() << "Travelling: ";
+        for(std::size_t j=0; j<numberOfFloorTravelling;j++)
+            debug << getFloorTravelling(i, j, false);
+    }
 }

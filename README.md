@@ -17,7 +17,8 @@ v2.11	: Remove person and lift id from XML, update Help<br />
 v2.12	: Add Lift/LiftHandler class, debug menu<br />  
 v2.13	: Add SimulatedHuman/SimulatedHumanHandler class<br />  
 v2.14	: Fixed issue where simulatedHuman object memory not freed when clicking spinboxes<br />  
-v2.15	: Generating of SimulatedHumans through spin boxes<br /><br />  
+v2.15	: Generating of SimulatedHumans through spin boxes<br />  
+v2.16	: Generating of visitors through spin boxes. Multiple function flags "isResident" added. Automatic calculate of average number of people per floor<br /><br />  
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  

@@ -23,27 +23,29 @@ public:
     void createSimulatedHuman(int);                     /* Create simulatedHuman */
     void resetAll();                                    /* Free and reset all simulatedHuman object in simulatedHumanObj vector */
     int getNumberOfSimulatedHumanObject();              /* Return number of simulatedHuman objects */
-    void removeLastData();                              /* Remove last simulatedHuman from vector */
-    void populateSimulatedHuman(int);                   /* Populate simulatedHuman with weight, etc */
+    int getNumberOfVisitorObj();                        /* Return number of resident objects */
+    void removeLastData(bool);                          /* Remove last simulatedHuman from vector */
+    void populateSimulatedHuman(int, bool);             /* Populate simulatedHuman with weight, etc */
 
     /* Setters */
-    void setPersonID(int);                              /* Set person id */
-    void setResident(int, int);                         /* Set resident floor */
-    void setWeight(int, int);                           /* Set weight */
-    void addFloorTravelling(int, int);                  /* Add floor travelling */
+    void setPersonID(int, int, bool);                   /* Set person id */
+    void setResident(int, int, bool);                   /* Set resident floor */
+    void setWeight(int, int, bool);                     /* Set weight */
+    void addFloorTravelling(int, int, bool);            /* Add floor travelling */
 
     /* Getters */
-    int getPersonID(int);                               /* Return person id */
-    int getResident(int);                               /* Return resident floor */
-    int getWeight(int);                                 /* Return weight */
-    int getFloorTravelling(int, int);                   /* Return floor travelling at index */
-    int getFloorTravellingSize(int);                    /* Get vector size of floorTravelling */
+    int getPersonID(int, bool);                         /* Return person id */
+    int getResident(int, bool);                         /* Return resident floor */
+    int getWeight(int, bool);                           /* Return weight */
+    int getFloorTravelling(int, int, bool);             /* Return floor travelling at index */
+    int getFloorTravellingSize(int, bool);              /* Get vector size of floorTravelling */
 
     /* FOR DEBUGGING PURPOSES ONLY */
     void getAllPersonData();                            /* Print all simulatedHuman object data for debugging */
 
 private:
-    std::vector<SimulatedHuman*> simulatedHumanObj;
+    std::vector<SimulatedHuman*> simulatedHumanObj;         /* Stores resident */
+    std::vector<SimulatedHuman*> nonResSimulatedHumanObj;   /* Stores visitor */
 };
 
 

@@ -109,6 +109,9 @@
       <height>431</height>
      </rect>
     </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
     <property name="undoRedoEnabled">
      <bool>true</bool>
     </property>
@@ -181,7 +184,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Including visitors</string>
+     <string>Not including visitors</string>
     </property>
     <property name="toolTipDuration">
      <number>0</number>
@@ -190,7 +193,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
     <property name="maximum">
-     <number>1500</number>
+     <number>1000</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="humanVisitorSpinBox">
@@ -212,7 +215,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
     <property name="maximum">
-     <number>1500</number>
+     <number>500</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="humanAvgSpinBox">
@@ -228,7 +231,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Value will be set automatically. Total no of people / Total no of floors</string>
+     <string>Value will be set automatically. Total no of residents / Total no of floors</string>
     </property>
     <property name="toolTipDuration">
      <number>0</number>
@@ -287,12 +290,12 @@
      <rect>
       <x>310</x>
       <y>150</y>
-      <width>91</width>
+      <width>101</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Total no of people</string>
+     <string>Total no of residents</string>
     </property>
    </widget>
    <widget class="QComboBox" name="algoCombo">
