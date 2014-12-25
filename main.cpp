@@ -32,5 +32,6 @@ int main(int argc, char *argv[])
     // Set icon
     a.setWindowIcon(QIcon(":/icons/Images/icon.ico"));
 
+    // End program
     return a.exec();
 }
