@@ -9,6 +9,9 @@
 /* Constructor */
 SimulatedHumanHandler::SimulatedHumanHandler()
 {
+    /* Reserve memory */
+    simulatedHumanObj.reserve(MAX_PEOPLE);
+    nonResSimulatedHumanObj.reserve(MAX_VISITOR);
 }
 
 /* Destructor */

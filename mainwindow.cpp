@@ -14,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->humanTotalSpinBox->setMaximum(MAX_PEOPLE);
+    ui->humanVisitorSpinBox->setMaximum(MAX_VISITOR);
+
     /* Help menu listener */
     connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(onActionHelp()));
 
@@ -819,87 +822,91 @@ void MainWindow::updateSummary(bool isResident)
         {
             header = "<b><font size=\"4\">Simulated Human Data</font></b><br>"
                      "====================<br>";
-        }
 
-        /* Create text dynamically */
-        for(int i=0;i<shh.getNumberOfSimulatedHumanObject();i++)
-        {
-            /* Append data to QString */
-            header += "<b>Person number ";
-            header += QString::number(shh.getPersonID(i, true));
-
-            header += "</b><br>Is a resident staying at level ";
-            header +=  QString::number(shh.getResident(i, true));
-            header += "<br>";
-
-            /* Append data to QString */
-            header += "Weighs ";
-            header += QString::number(shh.getWeight(i, true));
-            header += "kg<br>";
-
-            /* Append data to QString */
-            header += "Will travel to floor ";
-
-            for(int j=0;j<shh.getFloorTravellingSize(i, true);j++)
+            if(shh.getNumberOfSimulatedHumanObject() >= 1)
             {
-                /* Append data to QString */
-                header += QString::number(shh.getFloorTravelling(i, j, true));
-                header += ", ";
-            }
+                /* Create text dynamically */
+                for(int i=0;i<shh.getNumberOfSimulatedHumanObject();i++)
+                {
+                    /* Append data to QString */
+                    header += "<b>Person number ";
+                    header += QString::number(shh.getPersonID(i, true));
 
-            /* remove last comma */
-            header.remove(header.length()-2,1);
+                    header += "</b><br>Is a resident staying at level ";
+                    header +=  QString::number(shh.getResident(i, true));
+                    header += "<br>";
 
-            if(i != shh.getNumberOfSimulatedHumanObject()-1)
-            {
-                /* Append data to QString */
-                header += "<br>";
+                    /* Append data to QString */
+                    header += "Weighs ";
+                    header += QString::number(shh.getWeight(i, true));
+                    header += "kg<br>";
+
+                    /* Append data to QString */
+                    header += "Will travel to floor ";
+
+                    for(int j=0;j<shh.getFloorTravellingSize(i, true);j++)
+                    {
+                        /* Append data to QString */
+                        header += QString::number(shh.getFloorTravelling(i, j, true));
+                        header += ", ";
+                    }
+
+                    /* remove last comma */
+                    header.remove(header.length()-2,1);
+
+                    if(i != shh.getNumberOfSimulatedHumanObject()-1)
+                    {
+                        /* Append data to QString */
+                        header += "<br>";
+                    }
+                }
+
+                ui->inputSummaryBox->append(header);
             }
         }
-
-        if(shh.getNumberOfSimulatedHumanObject() >= 1)
-            ui->inputSummaryBox->append(header);
     }
     else
     {
-        /* If there are no resident object, append header */
-        if(shh.getNumberOfSimulatedHumanObject() <= 0)
-        {
-            header = "<b><font size=\"4\">Simulated Human Data</font></b><br>"
-                     "====================<br>";
-        }
-        /* Create text dynamically */
-        for(int i=0;i<shh.getNumberOfVisitorObj();i++)
-        {
-            /* Append data to QString */
-            header += "<b>Visitor number ";
-            header += QString::number(shh.getPersonID(i, false));
-            header += "</b><br>Is not a resident<br>";
-
-            /* Append data to QString */
-            header += "Weighs ";
-            header += QString::number(shh.getWeight(i, false));
-            header += "kg<br>";
-
-            /* Append data to QString */
-            header += "Will travel to floor ";
-
-            for(int j=0;j<shh.getFloorTravellingSize(i, false);j++)
-            {
-                /* Append data to QString */
-                header += QString::number(shh.getFloorTravelling(i, j, false));
-                header += ", ";
-            }
-
-            /* remove last comma */
-            header.remove(header.length()-2,1);
-
-            /* Append data to QString */
-            header += "<br>";
-        }
-
+        /* If there are visitors, update */
         if(shh.getNumberOfVisitorObj() >= 1)
         {
+
+            /* If there are no resident object, append header */
+            if(shh.getNumberOfSimulatedHumanObject() <= 0)
+            {
+                header = "<b><font size=\"4\">Simulated Human Data</font></b><br>"
+                         "====================<br>";
+            }
+            /* Create text dynamically */
+            for(int i=0;i<shh.getNumberOfVisitorObj();i++)
+            {
+                /* Append data to QString */
+                header += "<b>Visitor number ";
+                header += QString::number(shh.getPersonID(i, false));
+                header += "</b><br>Is not a resident<br>";
+
+                /* Append data to QString */
+                header += "Weighs ";
+                header += QString::number(shh.getWeight(i, false));
+                header += "kg<br>";
+
+                /* Append data to QString */
+                header += "Will travel to floor ";
+
+                for(int j=0;j<shh.getFloorTravellingSize(i, false);j++)
+                {
+                    /* Append data to QString */
+                    header += QString::number(shh.getFloorTravelling(i, j, false));
+                    header += ", ";
+                }
+
+                /* remove last comma */
+                header.remove(header.length()-2,1);
+
+                /* Append data to QString */
+                header += "<br>";
+            }
+
             ui->inputSummaryBox->append(header);
         }
     }

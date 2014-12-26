@@ -6,6 +6,11 @@
 
 #include <SimulatedHuman.h>
 
+/* Empty Constructor */
+SimulatedHuman::SimulatedHuman()
+{
+}
+
 /* Constructor */
 SimulatedHuman::SimulatedHuman(int residentOf)
 {

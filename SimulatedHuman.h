@@ -12,6 +12,7 @@
 class SimulatedHuman
 {
 public:
+    SimulatedHuman();                           /* Empty Constructor */
     SimulatedHuman(int);                        /* Constructor */
     ~SimulatedHuman();                          /* Destructor */
 

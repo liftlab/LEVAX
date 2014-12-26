@@ -12,7 +12,9 @@
 #include "SimulatedHuman.h"
 #include <qDebug>
 
-#define TRAVEL_MAX 3
+#define TRAVEL_MAX 3                                    /* Maximum no of floors people will travel */
+#define MAX_PEOPLE 1000                                 /* Maximum no of people */
+#define MAX_VISITOR 500                                 /* Maximum no of visitor */
 
 class SimulatedHumanHandler
 {
