@@ -34,141 +34,34 @@
   <property name="windowTitle">
    <string>L.E.V.A.X - A Lift Simulator System (SS14-4G)</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QLabel" name="algoLabel_2">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>330</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Result of test</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="simulatedHumanLabel">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>70</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Simulated Humans Data (.xml)</string>
-    </property>
-   </widget>
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>230</y>
+      <y>370</y>
       <width>281</width>
       <height>16</height>
      </rect>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="buildingXMLUploadBtn">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>40</y>
-      <width>81</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Choose File</string>
-    </property>
-   </widget>
-   <widget class="Line" name="line_6">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>130</y>
-      <width>121</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QTextBrowser" name="inputSummaryBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>281</width>
-      <height>431</height>
-     </rect>
-    </property>
-    <property name="sizeAdjustPolicy">
-     <enum>QAbstractScrollArea::AdjustIgnored</enum>
-    </property>
-    <property name="undoRedoEnabled">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="avgHumanLabel">
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>210</y>
-      <width>131</width>
+      <y>340</y>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Avg no of people per floor</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="saveResultBtn">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>480</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Save Result</string>
-    </property>
-   </widget>
-   <widget class="Line" name="line_7">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>130</y>
-      <width>121</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QLabel" name="inputSummaryLabel">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Summary of inputs</string>
+     <string>Average people per floor</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="humanTotalSpinBox">
@@ -178,7 +71,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>150</y>
+      <y>275</y>
       <width>80</width>
       <height>22</height>
      </rect>
@@ -192,6 +85,9 @@
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
+    <property name="accelerated">
+     <bool>true</bool>
+    </property>
     <property name="maximum">
      <number>1000</number>
     </property>
@@ -203,7 +99,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>180</y>
+      <y>307</y>
       <width>80</width>
       <height>22</height>
      </rect>
@@ -213,6 +109,9 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="accelerated">
+     <bool>true</bool>
     </property>
     <property name="maximum">
      <number>500</number>
@@ -225,7 +124,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>210</y>
+      <y>338</y>
       <width>80</width>
       <height>22</height>
      </rect>
@@ -247,8 +146,8 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>240</y>
-      <width>151</width>
+      <y>400</y>
+      <width>271</width>
       <height>21</height>
      </rect>
     </property>
@@ -269,40 +168,24 @@
      <string>Reset</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>10</y>
-      <width>91</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Save Human XML</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="humanTotalLabel">
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>150</y>
-      <width>101</width>
+      <y>277</y>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Total no of residents</string>
+     <string>Total no. of residents</string>
     </property>
    </widget>
    <widget class="QComboBox" name="algoCombo">
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>270</y>
+      <y>430</y>
       <width>281</width>
       <height>22</height>
      </rect>
@@ -333,28 +216,6 @@
      </property>
     </item>
    </widget>
-   <widget class="QLineEdit" name="buildingDirLabel">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>40</y>
-      <width>191</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="Line" name="line_4">
     <property name="geometry">
      <rect>
@@ -372,7 +233,7 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>300</y>
+      <y>480</y>
       <width>91</width>
       <height>23</height>
      </rect>
@@ -381,133 +242,559 @@
      <string>Run Simulation</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="outputBox">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>360</y>
-      <width>281</width>
-      <height>111</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="buildingLabel">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>10</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Building Model (.xml)</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>430</x>
-      <y>130</y>
-      <width>41</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>OR</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="humanDirLabel">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>100</y>
-      <width>191</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="Line" name="line_2">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>60</y>
-      <width>281</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
    <widget class="QLabel" name="humanTotalLabel_3">
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>180</y>
-      <width>121</width>
+      <y>310</y>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Avg no of visitor per day</string>
+     <string>Average visitor per day</string>
     </property>
    </widget>
-   <widget class="QToolButton" name="humanXMLUploadBtn">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>100</y>
-      <width>81</width>
-      <height>21</height>
+      <x>10</x>
+      <y>10</y>
+      <width>281</width>
+      <height>461</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Choose File</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_2">
-    <property name="enabled">
+    <property name="autoFillBackground">
      <bool>false</bool>
     </property>
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>10</y>
-      <width>101</width>
-      <height>23</height>
-     </rect>
+    <property name="styleSheet">
+     <string notr="true">#tab {
+	background-color:#f0f0f0;
+}
+
+#tab_2 {
+	background-color:#f0f0f0;
+}
+
+QTabWidget::tab-bar {
+	left: 5px;
+}
+
+#inputSummaryBox {
+	border: 0px;
+}
+
+#inputSummaryBox_2 {
+	border: 0px;
+}
+
+#inputSummaryBox_3 {
+	border: 0px;
+}
+
+#outputBox {
+	border: 0px;
+}</string>
     </property>
-    <property name="text">
-     <string>Save Building XML</string>
+    <property name="tabPosition">
+     <enum>QTabWidget::North</enum>
     </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Rounded</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="documentMode">
+     <bool>false</bool>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Simulation Data(s)</string>
+     </attribute>
+     <widget class="QTextBrowser" name="inputSummaryBox">
+      <property name="geometry">
+       <rect>
+        <x>1</x>
+        <y>4</y>
+        <width>272</width>
+        <height>136</height>
+       </rect>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      </property>
+      <property name="undoRedoEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::TextSelectableByMouse</set>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="inputSummaryBox_2">
+      <property name="geometry">
+       <rect>
+        <x>1</x>
+        <y>149</y>
+        <width>272</width>
+        <height>136</height>
+       </rect>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      </property>
+      <property name="undoRedoEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::TextSelectableByMouse</set>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="inputSummaryBox_3">
+      <property name="geometry">
+       <rect>
+        <x>1</x>
+        <y>296</y>
+        <width>272</width>
+        <height>136</height>
+       </rect>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      </property>
+      <property name="undoRedoEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::TextSelectableByMouse</set>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+     <widget class="Line" name="line_5">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>137</y>
+        <width>281</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_8">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>283</y>
+        <width>281</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Simulation Result</string>
+     </attribute>
+     <widget class="QTextBrowser" name="outputBox">
+      <property name="geometry">
+       <rect>
+        <x>1</x>
+        <y>4</y>
+        <width>272</width>
+        <height>428</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="placeholderText">
+       <string>Simulation Result</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="saveResultBtn">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>195</x>
+        <y>406</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Save Result</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>320</y>
+      <y>240</y>
       <width>281</width>
       <height>16</height>
      </rect>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="totalFloorLabel">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>32</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Total no of floors (min 2)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metrePerFloorLabel">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>65</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>No of metre per floor (min 3)</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="totalFloorSpinBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>32</y>
+      <width>80</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="toolTipDuration">
+     <number>0</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="accelerated">
+     <bool>true</bool>
+    </property>
+    <property name="minimum">
+     <number>2</number>
+    </property>
+    <property name="maximum">
+     <number>60</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="metreSpinBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>64</y>
+      <width>80</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="toolTipDuration">
+     <number>0</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="accelerated">
+     <bool>true</bool>
+    </property>
+    <property name="minimum">
+     <number>3</number>
+    </property>
+    <property name="maximum">
+     <number>6</number>
+    </property>
+    <property name="value">
+     <number>3</number>
+    </property>
+    <property name="displayIntegerBase">
+     <number>10</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="totalLiftLabel">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>96</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Number of lifts (min 1)</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="totalLiftsSpinBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>96</y>
+      <width>80</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="toolTipDuration">
+     <number>0</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="accelerated">
+     <bool>true</bool>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>6</number>
+    </property>
+    <property name="value">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>307</x>
+      <y>130</y>
+      <width>285</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Edit Lift Information</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <widget class="QComboBox" name="liftCombo">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>17</y>
+       <width>221</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Select Lift To Edit</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="maxWeightLabel">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>50</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Max Weight (min 200kg)</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="maxWeightLabel_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>78</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Speed (Min 1m/s)</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="maxWeightSpinBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>45</y>
+       <width>80</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="toolTipDuration">
+      <number>0</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="minimum">
+      <number>200</number>
+     </property>
+     <property name="maximum">
+      <number>700</number>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="maxSpeedDoubleSpinBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>74</y>
+       <width>80</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="toolTipDuration">
+      <number>0</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="minimum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>10.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.250000000000000</double>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_1">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>15</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Step 1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>250</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Step 2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>380</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Step 3</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
@@ -524,6 +811,23 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuImport_XML">
+     <property name="title">
+      <string>Import .XML</string>
+     </property>
+     <addaction name="actionBuilding_Model"/>
+     <addaction name="actionHuman_Model"/>
+    </widget>
+    <widget class="QMenu" name="menuExport_XML">
+     <property name="title">
+      <string>Export .XML</string>
+     </property>
+     <addaction name="actionBuilding_Model_2"/>
+     <addaction name="actionHuman_Model_2"/>
+    </widget>
+    <addaction name="separator"/>
+    <addaction name="menuImport_XML"/>
+    <addaction name="menuExport_XML"/>
     <addaction name="separator"/>
     <addaction name="actionHelp"/>
     <addaction name="actionExit"/>
@@ -551,6 +855,31 @@
   <action name="actionCheckObj">
    <property name="text">
     <string>Check Objects</string>
+   </property>
+  </action>
+  <action name="actionSave_Result">
+   <property name="text">
+    <string>Save Result</string>
+   </property>
+  </action>
+  <action name="actionBuilding_Model">
+   <property name="text">
+    <string>Building Model</string>
+   </property>
+  </action>
+  <action name="actionHuman_Model">
+   <property name="text">
+    <string>Human Model</string>
+   </property>
+  </action>
+  <action name="actionBuilding_Model_2">
+   <property name="text">
+    <string>Building Model</string>
+   </property>
+  </action>
+  <action name="actionHuman_Model_2">
+   <property name="text">
+    <string>Human Model</string>
    </property>
   </action>
  </widget>

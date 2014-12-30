@@ -34,8 +34,8 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_humanXMLUploadBtn_clicked();                /* humanXMLUploadBtn dialog function */
-    void on_buildingXMLUploadBtn_clicked();             /* buildingXMLUploadBtn dialog function */
+    void uploadHumanXML();                /* humanXMLUploadBtn dialog function */
+    void uploadBuildingXML();             /* buildingXMLUploadBtn dialog function */
     void on_humanTotalSpinBox_valueChanged(int args1);  /* Handle total human spin box value changed */
     void on_humanVisitorSpinBox_valueChanged(int arg1); /* Handle human visitor spin box value changed */
     void on_resetBtn_clicked();                         /* Handle reset button press */
@@ -46,15 +46,35 @@ private slots:
     /* FOR DEBUGGING PURPOSES ONLY */
     void onActionCheckObj();                            /* Check current created object */
 
+    void on_liftCombo_currentIndexChanged(int index);
+
+    void on_totalFloorSpinBox_valueChanged(int arg1);
+
+    void on_metreSpinBox_valueChanged(int arg1);
+
+    void on_totalLiftsSpinBox_valueChanged(int arg1);
+
+    void on_maxWeightSpinBox_valueChanged(int arg1);
+
+    void on_maxSpeedDoubleSpinBox_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
     BuildingHandler bh;                                 /* Building handler object */
     LiftHandler lh;                                     /* Lift handler object */
     SimulatedHumanHandler shh;                          /* SimulatedHuman handler object */
 
+    int prevTotalHuman;                                 /* Total number of human generated previously */
+    int prevTotalVisitor;                               /* Total number of visitor generated previously */
+    bool loadBuildingByFile;                            /* Data is loaded by XML file */
+    bool loadHumanByFile;                               /* Data is loaded by XML file */
+
+    bool updateChanges;
+
     QString validateBuildingData(const QString &arg1);  /* validate building XML */
     bool validateHumanData(const QString &arg1);        /* validate human XML */
-    void updateSummary(bool);                           /* update summary box */
+    void updatePeopleSummary(bool);                           /* Update summary box */
+    void updateBuildingSummary();                      /* Display building summary */
 };
 
 #endif // MAINWINDOW_H

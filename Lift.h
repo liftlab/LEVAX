@@ -10,23 +10,23 @@
 class Lift
 {
 public:
-    Lift(int, int, int);                /* Constructor */
+    Lift(int, int, double);                /* Constructor */
     ~Lift();                            /* Destructor */
 
     /* Setters */
     void setLiftID(int);                /* Set lift id */
     void setLiftWeight(int);            /* Set lift weight */
-    void setLiftSpeed(int);             /* Set lift speed */
+    void setLiftSpeed(double);             /* Set lift speed */
 
     /* Getters */
     int getLiftID();                    /* Return lift id */
     int getLiftWeight();                /* Return lift weight */
-    int getLiftSpeed();                 /* Return lift speed */
+    double getLiftSpeed();                 /* Return lift speed */
 
 private:
     int liftID;
     int maxWeight;
-    int speedSecPerFloor;
+    double speedMetrePerSecond;
 };
 
 #endif // LIFT_H

@@ -9,7 +9,9 @@
 /* Constructor */
 Building::Building()
 {
-    this->noOfFloors=0;
+    this->noOfFloors=2;
+    this->noOfLifts=1;
+    this->metrePerFloor=3;
 }
 
 /* Destructor */
@@ -35,12 +37,6 @@ void Building::setMetrePerFloor(int metrePerFloor)
    this->metrePerFloor=metrePerFloor;
 }
 
-/* Set household per floor */
-void Building::setHouseholdPerFloor(int householdPerFloor)
-{
-    this->householdPerFloor=householdPerFloor;
-}
-
 /* Return number of floors */
 int Building::getNoOfFloor()
 {
@@ -57,10 +53,4 @@ int Building::getNoOfLifts()
 int Building::getMetrePerFloor()
 {
     return metrePerFloor;
-}
-
-/* Return number of household per floor */
-int Building::getHouseholdPerFloor()
-{
-    return householdPerFloor;
 }

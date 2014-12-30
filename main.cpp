@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
     /* Initialize GUI Window */
     MainWindow w;
 
-    /* Close splash in 2.5seconds and open GUI Window */
-    QTimer::singleShot(2500,splash,SLOT(close()));
-    QTimer::singleShot(2500,&w,SLOT(show()));
+    /* Close splash in 1.5seconds and open GUI Window */
+    QTimer::singleShot(1500,splash,SLOT(close()));
+    QTimer::singleShot(1500,&w,SLOT(show()));
 
     // Set icon
     a.setWindowIcon(QIcon(":/icons/Images/icon.ico"));

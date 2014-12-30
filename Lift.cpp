@@ -7,11 +7,11 @@
 #include "Lift.h"
 
 /* Constructor */
-Lift::Lift(int liftID, int maxWeight, int speedSecPerFloor)
+Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond)
 {
     this->liftID = liftID;
     this->maxWeight = maxWeight;
-    this->speedSecPerFloor = speedSecPerFloor;
+    this->speedMetrePerSecond = speedMetrePerSecond;
 }
 
 /* Destructor */
@@ -33,9 +33,9 @@ void Lift::setLiftWeight(int maxWeight)
 }
 
 /* Set lift speed */
-void Lift::setLiftSpeed(int speedSecPerFloor)
+void Lift::setLiftSpeed(double speedMetrePerSecond)
 {
-    this->speedSecPerFloor = speedSecPerFloor;
+    this->speedMetrePerSecond = speedMetrePerSecond;
 }
 
 /* Return lift id */
@@ -51,8 +51,8 @@ int Lift::getLiftWeight()
 }
 
 /* Return lift speed */
-int Lift::getLiftSpeed()
+double Lift::getLiftSpeed()
 {
-    return speedSecPerFloor;
+    return speedMetrePerSecond;
 }
 

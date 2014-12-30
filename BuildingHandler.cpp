@@ -9,10 +9,7 @@
 /* Contructor */
 BuildingHandler::BuildingHandler()
 {
-    building.setNoOfFloors(0);
-    building.setNoOfLifts(0);
-    building.setMetrePerFloor(0);
-    building.setHouseholdPerFloor(0);
+
 }
 
 /* Destructor */
@@ -38,18 +35,11 @@ void BuildingHandler::setMetrePerFloor(int metrePerFloor)
     building.setMetrePerFloor(metrePerFloor);
 }
 
-/* Set household per floor */
-void BuildingHandler::setHouseholdPerFloor(int householdPerFloor)
-{
-    building.setHouseholdPerFloor(householdPerFloor);
-}
-
 void BuildingHandler::resetAll()
 {
-    building.setNoOfFloors(0);
-    building.setNoOfLifts(0);
-    building.setMetrePerFloor(0);
-    building.setHouseholdPerFloor(0);
+    building.setNoOfFloors(2);
+    building.setNoOfLifts(1);
+    building.setMetrePerFloor(3);
 }
 
 /* Return number of floors */
@@ -68,10 +58,4 @@ int BuildingHandler::getNoOfLifts()
 int BuildingHandler::getMetrePerFloor()
 {
     return building.getMetrePerFloor();
-}
-
-/* Return number of household per floor */
-int BuildingHandler::getHouseholdPerFloor()
-{
-    return building.getHouseholdPerFloor();
 }
