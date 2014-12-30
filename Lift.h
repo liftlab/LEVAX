@@ -10,18 +10,18 @@
 class Lift
 {
 public:
-    Lift(int, int, double);                /* Constructor */
-    ~Lift();                            /* Destructor */
+    Lift(int, int, double);                 /* Constructor */
+    ~Lift();                                /* Destructor */
 
     /* Setters */
-    void setLiftID(int);                /* Set lift id */
-    void setLiftWeight(int);            /* Set lift weight */
-    void setLiftSpeed(double);             /* Set lift speed */
+    void setLiftID(int);                    /* Set lift id */
+    void setLiftWeight(int);                /* Set lift weight */
+    void setLiftSpeed(double);              /* Set lift speed */
 
     /* Getters */
-    int getLiftID();                    /* Return lift id */
-    int getLiftWeight();                /* Return lift weight */
-    double getLiftSpeed();                 /* Return lift speed */
+    int getLiftID();                        /* Return lift id */
+    int getLiftWeight();                    /* Return lift weight */
+    double getLiftSpeed();                  /* Return lift speed */
 
 private:
     int liftID;

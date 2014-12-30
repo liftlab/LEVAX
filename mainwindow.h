@@ -34,29 +34,26 @@ public:
     ~MainWindow();
 
 private slots:
-    void uploadHumanXML();                /* humanXMLUploadBtn dialog function */
-    void uploadBuildingXML();             /* buildingXMLUploadBtn dialog function */
+    void uploadHumanXML();                              /* humanXMLUploadBtn dialog function */
+    void uploadBuildingXML();                           /* buildingXMLUploadBtn dialog function */
     void on_humanTotalSpinBox_valueChanged(int args1);  /* Handle total human spin box value changed */
     void on_humanVisitorSpinBox_valueChanged(int arg1); /* Handle human visitor spin box value changed */
     void on_resetBtn_clicked();                         /* Handle reset button press */
     void onActionHelp();                                /* Handle help button press */
     void on_runBtn_clicked();                           /* Handle run button press */
     void on_saveResultBtn_clicked();                    /* Handle save result button clicked */
+    void on_liftCombo_currentIndexChanged(int index);   /* Handle lift combo box selection */
+    void on_totalFloorSpinBox_valueChanged(int arg1);   /* Handle total floor spin box value changed */
+    void on_metreSpinBox_valueChanged(int arg1);        /* Handle metre per floor spin box value changed */
+    void on_totalLiftsSpinBox_valueChanged(int arg1);   /* Handle total number of lift spin box value changed */
+    void on_maxWeightSpinBox_valueChanged(int arg1);    /* Handle lift max weight spinbox value changed */
+    void on_maxSpeedDoubleSpinBox_valueChanged(double arg1); /* Handle lift max speed spin box value changed */
+
+    void exportBuildingXML();                           /* Export building XML */
+    void exportHumanXML();                              /* Export human XML */
 
     /* FOR DEBUGGING PURPOSES ONLY */
     void onActionCheckObj();                            /* Check current created object */
-
-    void on_liftCombo_currentIndexChanged(int index);
-
-    void on_totalFloorSpinBox_valueChanged(int arg1);
-
-    void on_metreSpinBox_valueChanged(int arg1);
-
-    void on_totalLiftsSpinBox_valueChanged(int arg1);
-
-    void on_maxWeightSpinBox_valueChanged(int arg1);
-
-    void on_maxSpeedDoubleSpinBox_valueChanged(double arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -73,8 +70,8 @@ private:
 
     QString validateBuildingData(const QString &arg1);  /* validate building XML */
     bool validateHumanData(const QString &arg1);        /* validate human XML */
-    void updatePeopleSummary(bool);                           /* Update summary box */
-    void updateBuildingSummary();                      /* Display building summary */
+    void updatePeopleSummary(bool);                     /* Update summary box */
+    void updateBuildingSummary();                       /* Display building summary */
 };
 
 #endif // MAINWINDOW_H

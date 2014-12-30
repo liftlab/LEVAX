@@ -19,7 +19,7 @@ public:
     void setMetrePerFloor(int); /* Set metres per floor */
 
     /* Getters */
-    int getNoOfFloor();        /* Return number of floors */
+    int getNoOfFloor();         /* Return number of floors */
     int getNoOfLifts();         /* Return number of lifts */
     int getMetrePerFloor();     /* Return metre per floor */
 

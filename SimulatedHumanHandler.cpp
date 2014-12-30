@@ -156,6 +156,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
      * 50-100   = Average Adult
      */
     int randHumanType = rand() % 100 + 1;
+    int randomFloor;
 
     /* Set weight base on type*/
     if(randHumanType >= 1 && randHumanType <= 15)
@@ -178,13 +179,17 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 /* Generate number of friends the object visiting */
                 int noOfFriends = rand() % TRAVEL_MAX + 1;
                 for(int i=0;i<noOfFriends;i++)
-                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+                {
+                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                }
             }
         }
         else
         {
             nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-            nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+            randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+            nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
         }
     }
     else if(randHumanType >= 21 && randHumanType <= 30)
@@ -207,13 +212,17 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 /* Generate number of friends the object visiting */
                 int noOfFriends = rand() % TRAVEL_MAX + 1;
                 for(int i=0;i<noOfFriends;i++)
-                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+                {
+                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                }
             }
         }
         else
         {
                 nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-                nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+                randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+                nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
         }
     }
     else if(randHumanType >= 36 && randHumanType <= 50)
@@ -236,13 +245,17 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 /* Generate number of friends the object visiting */
                 int noOfFriends = rand() % TRAVEL_MAX + 1;
                 for(int i=0;i<noOfFriends;i++)
-                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+                {
+                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                }
             }
         }
         else
         {
                 nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-                nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+                randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+                nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
         }
     }
     else
@@ -265,13 +278,17 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 /* Generate number of friends the object visiting */
                 int noOfFriends = rand() % TRAVEL_MAX + 1;
                 for(int i=0;i<noOfFriends;i++)
-                    simulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+                {
+                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                }
             }
         }
         else
         {
                 nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-                nonResSimulatedHumanObj.back()->addFloorTravelling(rand() % totalNoOfFloors + 2);
+                randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+                nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
         }
     }
 }

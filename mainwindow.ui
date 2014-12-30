@@ -822,8 +822,8 @@ QTabWidget::tab-bar {
      <property name="title">
       <string>Export .XML</string>
      </property>
-     <addaction name="actionBuilding_Model_2"/>
-     <addaction name="actionHuman_Model_2"/>
+     <addaction name="exportBuildingModel"/>
+     <addaction name="exportHumanModel"/>
     </widget>
     <addaction name="separator"/>
     <addaction name="menuImport_XML"/>
@@ -872,12 +872,12 @@ QTabWidget::tab-bar {
     <string>Human Model</string>
    </property>
   </action>
-  <action name="actionBuilding_Model_2">
+  <action name="exportBuildingModel">
    <property name="text">
     <string>Building Model</string>
    </property>
   </action>
-  <action name="actionHuman_Model_2">
+  <action name="exportHumanModel">
    <property name="text">
     <string>Human Model</string>
    </property>

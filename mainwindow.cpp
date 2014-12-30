@@ -34,10 +34,12 @@ MainWindow::MainWindow(QWidget *parent) :
     /* Create default lift */
     ui->liftCombo->addItem("Lift 1");
 
-    /* Help menu listener */
+    /* Button listener */
     connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(onActionHelp()));
     connect(ui->actionBuilding_Model, SIGNAL(triggered()), this, SLOT(uploadBuildingXML()));
     connect(ui->actionHuman_Model, SIGNAL(triggered()), this, SLOT(uploadHumanXML()));
+    connect(ui->exportBuildingModel, SIGNAL(triggered()), this, SLOT(exportBuildingXML()));
+    connect(ui->exportHumanModel, SIGNAL(triggered()), this, SLOT(exportHumanXML()));
 
     /* Debug menu listener */
     connect(ui->actionCheckObj, SIGNAL(triggered()), this, SLOT(onActionCheckObj()));
@@ -82,7 +84,7 @@ void MainWindow::uploadHumanXML()
 
             /* Validate data */
             bool verify = validateHumanData(filename);
-qDebug() << verify;
+
             /* Check if human data is invalid */
             if(!verify)
             {
@@ -216,24 +218,9 @@ void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
         /* Only update when value is more than or equal to 0 */
         if(arg1 >= 0)
         {
-            /* Undo and clear memory if previous data is loaded */
+            /* Set loadHumanByFile to false */
             if(loadHumanByFile)
-            {
-                ui->inputSummaryBox_2->clear();
-                ui->inputSummaryBox_3->clear();
-
-                /* Free all simulatedHuman object memory (if any) */
-                shh.resetAll();
-
-                /* enable update, set value, disable update */
-                updateChanges = true;
-                ui->humanVisitorSpinBox->setValue(0);
-                ui->humanAvgSpinBox->setValue(0);
-                updateChanges = false;
-
-                /* Set to default */
                 loadHumanByFile=false;
-            }
 
             /* Handle addition of simulated human (resident) */
             if(arg1 > shh.getNumberOfSimulatedHumanObject())
@@ -242,7 +229,7 @@ void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
                 for(int i=shh.getNumberOfSimulatedHumanObject();i<arg1;i++)
                 {
                     /* Create first person */
-                    int randResidentOf = rand() % bh.getNoOfFloor() + 2;
+                    int randResidentOf = 2 + (rand() % (bh.getNoOfFloor() - 2 + 1));
                     shh.createSimulatedHuman(randResidentOf);
                     shh.populateSimulatedHuman(bh.getNoOfFloor(), true);
 
@@ -293,18 +280,9 @@ void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
         /* Only update when value is more than or equal to 0 */
         if(arg1 >= 0)
         {
-            /* Undo and clear memory if previous data is loaded */
+            /* Set loadHumanByFile to false */
             if(loadHumanByFile)
-            {
-                ui->inputSummaryBox_2->clear();
-                ui->inputSummaryBox_3->clear();
-
-                /* Free all simulatedHuman object memory (if any) */
-                shh.resetAll();
-
-                /* Set to default */
                 loadHumanByFile=false;
-            }
 
             /* Handle addition of simulated human (visitor) */
             if(arg1 > shh.getNumberOfVisitorObj())
@@ -692,19 +670,21 @@ bool MainWindow::validateHumanData(const QString &arg1)
 
                             /* person must have a resident value of more than 0 but not 1 and less than building limit */
                             pParm->QueryIntAttribute("resident", &attr);
-                            if((attr < 0) || (attr > bh.getNoOfFloor()) || attr == 1)
+                            if(attr < 0 || attr >= bh.getNoOfFloor()+1 || attr == 1)
                             {
+                                qDebug() << attr;
+                                qDebug() << "HERE2";
                                 return false;
                             }
                             else
                             {
                                 /* Check if is resident */
-                                if(strcmp(pParm->Attribute("resident"),"0") == 0)
+                                if(strcmp(pParm->Attribute("resident"), "0") == 0)
                                     isResident = false;
                                 else
                                     isResident = true;
 
-                                /* Create a simulatedHuman object with resident value*/
+                                /* Create a simulatedHuman object with resident value */
                                 shh.createSimulatedHuman(attr);
                             }
 
@@ -742,8 +722,9 @@ bool MainWindow::validateHumanData(const QString &arg1)
 
                                             /* checks if person is travelling at least to level 2 or more
                                              * but lesser than the total limit in building */
-                                            if(attr2 < 2 || attr2 > bh.getNoOfFloor())
+                                            if(attr2 < 2 || attr2 >= bh.getNoOfFloor()+1)
                                             {
+                                                qDebug() << "HERE";
                                                 return false;
                                             }
                                             else
@@ -798,9 +779,6 @@ bool MainWindow::validateHumanData(const QString &arg1)
     {
         return false;
     }
-
-    //if(shh.getNumberOfSimulatedHumanObject()/bh.getNoOfFloor() == 0)
-    //    QMessageBox::warning(this,tr("Warning"),"Average number of resident per floor cannot be 0");
 
     shh.getAllPersonData();
 
@@ -921,6 +899,7 @@ void MainWindow::onActionCheckObj()
     QMessageBox::information(this,tr("Number of objects"),message);
 }
 
+/* Handle lift combo box selection */
 void MainWindow::on_liftCombo_currentIndexChanged(int index)
 {
     if(index != 0)
@@ -937,10 +916,15 @@ void MainWindow::on_liftCombo_currentIndexChanged(int index)
     }
 }
 
+/* Handle total floor spin box value changed */
 void MainWindow::on_totalFloorSpinBox_valueChanged(int arg1)
 {
     if(!updateChanges)
     {
+        /* Set average floor value */
+        int avgPerFloor = shh.getNumberOfSimulatedHumanObject()/arg1;
+        ui->humanAvgSpinBox->setValue(avgPerFloor);
+
         /* Enable human generation */
         ui->humanVisitorSpinBox->setDisabled(false);
         ui->humanTotalSpinBox->setDisabled(false);
@@ -960,6 +944,7 @@ void MainWindow::on_totalFloorSpinBox_valueChanged(int arg1)
     }
 }
 
+/* Handle metre per floor spin box value changed */
 void MainWindow::on_metreSpinBox_valueChanged(int arg1)
 {
     if(!updateChanges)
@@ -978,6 +963,7 @@ void MainWindow::on_metreSpinBox_valueChanged(int arg1)
     }
 }
 
+/* Handle lift max weight spinbox value changed */
 void MainWindow::on_maxWeightSpinBox_valueChanged(int arg1)
 {
     if(!updateChanges)
@@ -1003,6 +989,7 @@ void MainWindow::on_maxWeightSpinBox_valueChanged(int arg1)
     }
 }
 
+/* Handle lift max speed spin box value changed */
 void MainWindow::on_maxSpeedDoubleSpinBox_valueChanged(double arg1)
 {
     if(!updateChanges)
@@ -1028,6 +1015,7 @@ void MainWindow::on_maxSpeedDoubleSpinBox_valueChanged(double arg1)
     }
 }
 
+/* Handle total number of lift spin box value changed */
 void MainWindow::on_totalLiftsSpinBox_valueChanged(int arg1)
 {
     if(!updateChanges)
@@ -1099,6 +1087,7 @@ void MainWindow::on_totalLiftsSpinBox_valueChanged(int arg1)
     }
 }
 
+/* Update building summary */
 void MainWindow::updateBuildingSummary()
 {
     /* header */
@@ -1135,4 +1124,134 @@ void MainWindow::updateBuildingSummary()
         summary += " metre/second<br>";
     }
     ui->inputSummaryBox->append(summary);
+}
+
+/* Export Building XML */
+void MainWindow::exportBuildingXML()
+{
+    if(!ui->inputSummaryBox->document()->isEmpty())
+    {
+        TiXmlDocument doc;
+        TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "utf-8", "" );
+        doc.LinkEndChild( decl );
+
+        /* Comments */
+        TiXmlComment* comment = new TiXmlComment(" Building/Lift Data ");
+        doc.LinkEndChild( comment );
+
+        /* Save Building */
+        TiXmlElement* element = new TiXmlElement( "building" );
+
+        element->SetAttribute("floors", bh.getNoOfFloor());
+        element->SetAttribute("metrePerFloor", bh.getMetrePerFloor());
+        doc.LinkEndChild( element );
+
+        /* Save Lift */
+        for(long i=0; i<bh.getNoOfLifts(); i++)
+        {
+            TiXmlElement* element2 = new TiXmlElement( "lift" );
+
+            element2->SetAttribute("maxWeight", lh.getLiftWeight(i));
+            element2->SetDoubleAttribute("speed", lh.getLiftSpeed(i));
+
+            element->LinkEndChild( element2 );
+        }
+
+        /* Display QFileDialog prompt */
+        QString fileName = QFileDialog::getSaveFileName(
+                    this,
+                    tr("Save Building .XML"), "BuildingModel.xml",
+                    tr("XML Data File (*.xml)"));
+
+
+        /* Save and display success */
+        if(!fileName.isEmpty())
+        {
+            bool success = doc.SaveFile((fileName.toStdString()).c_str());
+            doc.Clear();
+            if(success)
+                QMessageBox::information(this,tr("Success"),"File saved to " +fileName);
+            else
+                QMessageBox::information(this,tr("Failure"),"File failed to save for unknown reason");
+        }
+    }
+    else
+    {
+        QMessageBox::critical(this,tr("Error"),"No data to be exported!");
+    }
+}
+
+/* Export Human XML */
+void MainWindow::exportHumanXML()
+{
+    if(!ui->inputSummaryBox_2->document()->isEmpty() || !ui->inputSummaryBox_3->document()->isEmpty())
+    {
+        TiXmlDocument doc;
+        TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "utf-8", "" );
+        doc.LinkEndChild( decl );
+
+        /* Comments */
+        TiXmlComment* comment = new TiXmlComment(" Simulated humans data ");
+        doc.LinkEndChild( comment );
+
+        /* Save Human */
+        TiXmlElement* element = new TiXmlElement( "human" );
+        doc.LinkEndChild( element );
+
+        /* Save Resident */
+        for(long i=0; i<shh.getNumberOfSimulatedHumanObject(); i++)
+        {
+            TiXmlElement* element2 = new TiXmlElement( "person" );
+
+            element2->SetAttribute("weight", shh.getWeight(i,true));
+            element2->SetAttribute("resident", shh.getResident(i,true));
+            element->LinkEndChild( element2 );
+
+            for(long j=0;j<shh.getFloorTravellingSize(i,true);j++)
+            {
+                TiXmlElement* element3 = new TiXmlElement( "floor" );
+                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,true));
+                element2->LinkEndChild( element3 );
+            }
+        }
+
+        /* Save Visitor */
+        for(long i=0; i<shh.getNumberOfVisitorObj(); i++)
+        {
+            TiXmlElement* element2 = new TiXmlElement( "person" );
+
+            element2->SetAttribute("weight", shh.getWeight(i,false));
+            element2->SetAttribute("resident", shh.getResident(i,false));
+            element->LinkEndChild( element2 );
+
+            for(long j=0;j<shh.getFloorTravellingSize(i,false);j++)
+            {
+                TiXmlElement* element3 = new TiXmlElement( "floor" );
+                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,false));
+                element2->LinkEndChild( element3 );
+            }
+        }
+
+        /* Display QFileDialog prompt */
+        QString fileName = QFileDialog::getSaveFileName(
+                    this,
+                    tr("Save Human .XML"), "SimulatedHumans.xml",
+                    tr("XML Data File (*.xml)"));
+
+
+        /* Save and display success */
+        if(!fileName.isEmpty())
+        {
+            bool success = doc.SaveFile((fileName.toStdString()).c_str());
+            doc.Clear();
+            if(success)
+                QMessageBox::information(this,tr("Success"),"File saved to " +fileName);
+            else
+                QMessageBox::information(this,tr("Failure"),"File failed to save for unknown reason");
+        }
+    }
+    else
+    {
+        QMessageBox::critical(this,tr("Error"),"No data to be exported!");
+    }
 }
