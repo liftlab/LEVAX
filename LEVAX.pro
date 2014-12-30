@@ -41,3 +41,5 @@ RESOURCES += \
     rsc.qrc
 	
 win32:RC_FILE = application.rc
+
+ICON = Images/icon.icns
