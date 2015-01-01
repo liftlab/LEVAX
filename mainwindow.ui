@@ -825,10 +825,18 @@ QTabWidget::tab-bar {
      <addaction name="exportBuildingModel"/>
      <addaction name="exportHumanModel"/>
     </widget>
+    <widget class="QMenu" name="menuPrint">
+     <property name="title">
+      <string>Print</string>
+     </property>
+     <addaction name="actionPrint_Simulated_Humans"/>
+     <addaction name="actionPrint_Simulation_Result"/>
+    </widget>
     <addaction name="separator"/>
     <addaction name="menuImport_XML"/>
     <addaction name="menuExport_XML"/>
     <addaction name="separator"/>
+    <addaction name="menuPrint"/>
     <addaction name="actionHelp"/>
     <addaction name="actionExit"/>
    </widget>
@@ -880,6 +888,16 @@ QTabWidget::tab-bar {
   <action name="exportHumanModel">
    <property name="text">
     <string>Human Model</string>
+   </property>
+  </action>
+  <action name="actionPrint_Simulated_Humans">
+   <property name="text">
+    <string>Print Simulated Humans</string>
+   </property>
+  </action>
+  <action name="actionPrint_Simulation_Result">
+   <property name="text">
+    <string>Print Simulation Result</string>
    </property>
   </action>
  </widget>
