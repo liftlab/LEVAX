@@ -17,6 +17,7 @@ public:
     ~SimulatedHuman();                          /* Destructor */
 
     int getFloorTravellingSize();               /* Get size of floorTravelling */
+    void removeFloorTravelling(int);            /* Remove floor travelling */
 
     /* Setters */
     void setPersonID(int);                      /* Set person id */

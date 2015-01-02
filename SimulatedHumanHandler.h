@@ -27,7 +27,9 @@ public:
     int getNumberOfSimulatedHumanObject();              /* Return number of simulatedHuman objects */
     int getNumberOfVisitorObj();                        /* Return number of resident objects */
     void removeLastData(bool);                          /* Remove last simulatedHuman from vector */
-    void populateSimulatedHuman(int, bool);             /* Populate simulatedHuman with weight, etc */
+    void populateSimulatedHuman(int, int, bool);        /* Populate simulatedHuman with weight, etc */
+    void removeFloorTravelling(int, int, bool);         /* Remove floor travelling of person idx with key */
+    void updateFloorsEvenly(int, int, int);             /* Update floor evenly based on average number of people per floor */
 
     /* Setters */
     void setPersonID(int, int, bool);                   /* Set person id */

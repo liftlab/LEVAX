@@ -22,14 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
     prevTotalHuman=0;
     prevTotalVisitor=0;
     loadBuildingByFile=false;
-    loadHumanByFile=true;
-    updateChanges=false;
+    loadHumanByFile=false;
 
     /* Set placeholder text */
-    QString phText = "\nFile->Import XML\nor\nGenerate with the spinboxes on the right";
-    ui->inputSummaryBox->setPlaceholderText("Building Summary\n"+phText);
-    ui->inputSummaryBox_2->setPlaceholderText("Resident Summary\n"+phText);
-    ui->inputSummaryBox_3->setPlaceholderText("Visitor Summary\n"+phText);
+    ui->inputSummaryBox->setPlaceholderText("Building Summary");
+    ui->inputSummaryBox_2->setPlaceholderText("Resident Summary");
+    ui->inputSummaryBox_3->setPlaceholderText("Visitor Summary\n\n-Optional-");
 
     /* Create default lift */
     ui->liftCombo->addItem("Lift 1");
@@ -54,72 +52,89 @@ MainWindow::~MainWindow()
 /* humanXMLUploadBtn dialog function */
 void MainWindow::uploadHumanXML()
 {
-    if(loadBuildingByFile || !ui->inputSummaryBox->document()->isEmpty())
+    /* Prompt dialog at current folder, accepting .xml file only */
+    QFileDialog dlg(NULL, tr("Open Simulated Human Data"));
+    dlg.setNameFilter(tr("XML Data File (*.xml)"));
+    QString filename;
+
+    /* Check for Open button pressed */
+    if(dlg.exec())
     {
-        /* Prompt dialog at current folder, accepting .xml file only */
-        QFileDialog dlg(NULL, tr("Open Simulated Human Data"));
-        dlg.setNameFilter(tr("XML Data File (*.xml)"));
-        QString filename;
+        /* Get directory */
+        filename = dlg.selectedFiles().at(0);
 
-        /* Check for Open button pressed */
-        if(dlg.exec())
+        /* Reset all previously loaded simulated human data */
+        if((shh.getNumberOfSimulatedHumanObject() > 0 && loadHumanByFile) || (shh.getNumberOfVisitorObj() > 0 && loadHumanByFile)
+           || (ui->humanTotalSpinBox->value() > 0 || ui->humanVisitorSpinBox->value() > 0))
         {
-            /* Get directory */
-            filename = dlg.selectedFiles().at(0);
+            /* Clear all text box */
+            ui->inputSummaryBox_2->clear();
+            ui->inputSummaryBox_3->clear();
 
-            /* Reset all previously loaded simulated human data */
-            if((shh.getNumberOfSimulatedHumanObject() > 0 && loadHumanByFile) || (shh.getNumberOfVisitorObj() > 0 && loadHumanByFile)
-               || (ui->humanTotalSpinBox->value() > 0 || ui->humanVisitorSpinBox->value() > 0))
+            /* Reset values */
+            ui->humanTotalSpinBox->setValue(0);
+            ui->humanAvgSpinBox->setValue(0);
+            ui->humanVisitorSpinBox->setValue(0);
+            prevTotalHuman=0;
+            prevTotalVisitor=0;
+
+            /* Delete all objects */
+            shh.resetAll();
+        }
+
+        /* Validate data */
+        bool verify = validateHumanData(filename);
+
+        /* Check if human data is invalid */
+        if(!verify)
+        {
+            loadHumanByFile = false;
+
+            /* remove all data */
+            shh.resetAll();
+
+            prevTotalHuman=0;
+            prevTotalVisitor=0;
+
+            /* Display error */
+            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
+        }
+        else
+        {
+            /* Set value */
+            ui->humanTotalSpinBox->setValue(shh.getNumberOfSimulatedHumanObject());
+            ui->humanVisitorSpinBox->setValue(shh.getNumberOfVisitorObj());
+            ui->humanAvgSpinBox->setValue(shh.getNumberOfSimulatedHumanObject()/bh.getNoOfFloor());
+
+            loadHumanByFile=true;
+
+            /* Allow run simulation immediately, do not need to apply settings */
+            if(loadHumanByFile && loadBuildingByFile)
             {
+                ui->runBtn->setDisabled(false);
+                ui->applySettingBtn->setDisabled(true);
 
-                ui->inputSummaryBox_2->clear();
-                ui->inputSummaryBox_3->clear();
-
-                ui->humanTotalSpinBox->setValue(0);
-                ui->humanAvgSpinBox->setValue(0);
-                ui->humanVisitorSpinBox->setValue(0);
-
-                shh.resetAll();
+                ui->exportBuildingModel->setDisabled(false);
+                ui->exportHumanModel->setDisabled(false);
             }
 
-            /* Validate data */
-            bool verify = validateHumanData(filename);
+            /* Display resident */
+            if(shh.getNumberOfSimulatedHumanObject() > 0)
+                updateHumanSummary(true);
 
-            /* Check if human data is invalid */
-            if(!verify)
+            /* Display visitor */
+            if(shh.getNumberOfVisitorObj() > 0)
+                updateHumanSummary(false);
+
+            if(!loadBuildingByFile)
             {
-                loadHumanByFile = false;
-
-                /* remove all data */
-                shh.resetAll();
-
-                /* Display error */
-                QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
-            }
-            else
-            {
-                /* enable update, set value, disable update */
-                updateChanges = true;
-                ui->humanTotalSpinBox->setValue(shh.getNumberOfSimulatedHumanObject());
-                ui->humanVisitorSpinBox->setValue(shh.getNumberOfVisitorObj());
-                ui->humanAvgSpinBox->setValue(shh.getNumberOfSimulatedHumanObject()/bh.getNoOfFloor());
-                updateChanges = false;
-                loadHumanByFile=true;
-
-                /* Display resident */
-                if(shh.getNumberOfSimulatedHumanObject() > 0)
-                    updatePeopleSummary(true);
-                /* Display visitor */
-                if(shh.getNumberOfVisitorObj() > 0)
-                    updatePeopleSummary(false);
-
+                ui->runBtn->setDisabled(false);
+                ui->applySettingBtn->setDisabled(true);
+                ui->exportBuildingModel->setDisabled(false);
+                ui->exportHumanModel->setDisabled(false);
+                updateBuildingSummary();
             }
         }
-    }
-    else
-    {
-        /* Display warning message to load building XML first */
-        QMessageBox::information(this,tr("Notice"), "Please load building XML first");
     }
 }
 
@@ -144,8 +159,12 @@ void MainWindow::uploadBuildingXML()
 
         /* Reset all lift data before any input */
         lh.resetAll();
+
         /* Reset all simulated human data before any input */
         shh.resetAll();
+
+        prevTotalHuman=0;
+        prevTotalVisitor=0;
 
         /* Validate data */
         QString summary = validateBuildingData(filename);
@@ -178,25 +197,23 @@ void MainWindow::uploadBuildingXML()
             /* Display to inputSummaryBox */
             ui->inputSummaryBox->append(summary);
 
-            /* enable update, set value, disable update */
-            updateChanges = true;
             /* Display changes to spinboxes and combo box */
             ui->totalFloorSpinBox->setValue(bh.getNoOfFloor());
             ui->totalLiftsSpinBox->setValue(lh.getNumberOfLiftsObject());
             ui->metreSpinBox->setValue(bh.getMetrePerFloor());
 
+            /* Add lift number to combo box */
             for(int i=0;i<lh.getNumberOfLiftsObject();i++)
             {
                 QString liftStr = "Lift " + QString::number(i+1);
                 ui->liftCombo->addItem(liftStr);
             }
-            updateChanges = false;
 
             /* Set elements to enable */
             loadBuildingByFile=true;
+            loadHumanByFile=false;
             ui->humanTotalSpinBox->setDisabled(false);
             ui->humanVisitorSpinBox->setDisabled(false);
-            loadHumanByFile=false;
             ui->humanTotalSpinBox->setValue(0);
             ui->humanAvgSpinBox->setValue(0);
             ui->humanVisitorSpinBox->setValue(0);
@@ -204,173 +221,136 @@ void MainWindow::uploadBuildingXML()
     }
 }
 
-/* Handle total human spin box value changed */
-void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
+/* Export Human XML */
+void MainWindow::exportHumanXML()
 {
-    if(!updateChanges)
+    /* Export only if text area has data */
+    if(!ui->inputSummaryBox_2->document()->isEmpty() || !ui->inputSummaryBox_3->document()->isEmpty())
     {
-        /* Set average floor value */
-        int avgPerFloor = arg1/bh.getNoOfFloor();
-        ui->humanAvgSpinBox->setValue(avgPerFloor);
+        TiXmlDocument doc;
+        TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "utf-8", "" );
+        doc.LinkEndChild( decl );
 
-        bool update = false;
+        /* Comments */
+        TiXmlComment* comment = new TiXmlComment(" Simulated humans data ");
+        doc.LinkEndChild( comment );
 
-        /* Only update when value is more than or equal to 0 */
-        if(arg1 >= 0)
+        /* Save Human */
+        TiXmlElement* element = new TiXmlElement( "human" );
+        doc.LinkEndChild( element );
+
+        /* Save Resident */
+        for(long i=0; i<shh.getNumberOfSimulatedHumanObject(); i++)
         {
-            /* Set loadHumanByFile to false */
-            if(loadHumanByFile)
-                loadHumanByFile=false;
+            TiXmlElement* element2 = new TiXmlElement( "person" );
 
-            /* Handle addition of simulated human (resident) */
-            if(arg1 > shh.getNumberOfSimulatedHumanObject())
+            element2->SetAttribute("weight", shh.getWeight(i,true));
+            element2->SetAttribute("resident", shh.getResident(i,true));
+            element->LinkEndChild( element2 );
+
+            for(long j=0;j<shh.getFloorTravellingSize(i,true);j++)
             {
-                /* Add remainding object */
-                for(int i=shh.getNumberOfSimulatedHumanObject();i<arg1;i++)
-                {
-                    /* Create first person */
-                    int randResidentOf = 2 + (rand() % (bh.getNoOfFloor() - 2 + 1));
-                    shh.createSimulatedHuman(randResidentOf);
-                    shh.populateSimulatedHuman(bh.getNoOfFloor(), true);
-
-                    update = true;
-                }
-
-                loadHumanByFile=false;
+                TiXmlElement* element3 = new TiXmlElement( "floor" );
+                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,true));
+                element2->LinkEndChild( element3 );
             }
-            else if(arg1 < shh.getNumberOfSimulatedHumanObject()) /* Handle deletion of simulated human (resident) */
-            {
-                /* Delete object from the back until arg1 */
-                for(int i=shh.getNumberOfSimulatedHumanObject();i>arg1;i--)
-                {
-                    ui->inputSummaryBox_2->undo();
-
-                    /* true = remove resident */
-                    shh.removeLastData(true);
-                    ui->inputSummaryBox_2->verticalScrollBar()->setValue(ui->inputSummaryBox_2->verticalScrollBar()->maximum());
-                }
-
-                update = false;
-            }
-            else if(arg1 == shh.getNumberOfSimulatedHumanObject()) /* CPU Management */
-            {
-                update = false;
-            }
-
-            if(update)
-            {
-                updatePeopleSummary(true);
-                ui->inputSummaryBox_2->verticalScrollBar()->setValue(ui->inputSummaryBox_2->verticalScrollBar()->maximum());
-
-                update = false;
-            }
-
-            prevTotalHuman = arg1;
         }
+
+        /* Save Visitor */
+        for(long i=0; i<shh.getNumberOfVisitorObj(); i++)
+        {
+            TiXmlElement* element2 = new TiXmlElement( "person" );
+
+            element2->SetAttribute("weight", shh.getWeight(i,false));
+            element2->SetAttribute("resident", shh.getResident(i,false));
+            element->LinkEndChild( element2 );
+
+            for(long j=0;j<shh.getFloorTravellingSize(i,false);j++)
+            {
+                TiXmlElement* element3 = new TiXmlElement( "floor" );
+                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,false));
+                element2->LinkEndChild( element3 );
+            }
+        }
+
+        /* Display QFileDialog prompt */
+        QString fileName = QFileDialog::getSaveFileName(
+                    this,
+                    tr("Save Human .XML"), "SimulatedHumans.xml",
+                    tr("XML Data File (*.xml)"));
+
+
+        /* Save and display success */
+        if(!fileName.isEmpty())
+        {
+            bool success = doc.SaveFile((fileName.toStdString()).c_str());
+            doc.Clear();
+            if(success)
+                QMessageBox::information(this,tr("Success"),"File saved to " +fileName);
+            else
+                QMessageBox::information(this,tr("Failure"),"File failed to save for unknown reason");
+        }
+    }
+    else
+    {
+        QMessageBox::critical(this,tr("Error"),"No data to be exported!");
     }
 }
 
-/* Handle human visitor spin box value changed */
-void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
+/* Export Building XML */
+void MainWindow::exportBuildingXML()
 {
-    if(!updateChanges)
+    /* Export only if text area has data */
+    if(!ui->inputSummaryBox->document()->isEmpty())
     {
-        bool update = false;
+        TiXmlDocument doc;
+        TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "utf-8", "" );
+        doc.LinkEndChild( decl );
 
-        /* Only update when value is more than or equal to 0 */
-        if(arg1 >= 0)
+        /* Comments */
+        TiXmlComment* comment = new TiXmlComment(" Building/Lift Data ");
+        doc.LinkEndChild( comment );
+
+        /* Save Building */
+        TiXmlElement* element = new TiXmlElement( "building" );
+
+        element->SetAttribute("floors", bh.getNoOfFloor());
+        element->SetAttribute("metrePerFloor", bh.getMetrePerFloor());
+        doc.LinkEndChild( element );
+
+        /* Save Lift */
+        for(long i=0; i<bh.getNoOfLifts(); i++)
         {
-            /* Set loadHumanByFile to false */
-            if(loadHumanByFile)
-                loadHumanByFile=false;
+            TiXmlElement* element2 = new TiXmlElement( "lift" );
 
-            /* Handle addition of simulated human (visitor) */
-            if(arg1 > shh.getNumberOfVisitorObj())
-            {
-                /* Add remainding object */
-                for(int i=shh.getNumberOfVisitorObj();i<arg1;i++)
-                {
-                    /* Create first person */
-                    shh.createSimulatedHuman(0);
-                    shh.populateSimulatedHuman(bh.getNoOfFloor(), false);
+            element2->SetAttribute("maxWeight", lh.getLiftWeight(i));
+            element2->SetDoubleAttribute("speed", lh.getLiftSpeed(i));
 
-                    update = true;
-                }
-            }
-            else if(arg1 < shh.getNumberOfVisitorObj()) /* Handle deletion of simulated human (visitor) */
-            {
-                /* Delete object from the back until arg1 */
-                for(int i=shh.getNumberOfVisitorObj();i>arg1;i--)
-                {
-                    ui->inputSummaryBox_3->undo();
+            element->LinkEndChild( element2 );
+        }
 
-                    /* false = remove visitor */
-                    shh.removeLastData(false);
-                    ui->inputSummaryBox_3->verticalScrollBar()->setValue(ui->inputSummaryBox_3->verticalScrollBar()->maximum());
-                }
-                update = false;
-            }
-            else if(arg1 == shh.getNumberOfVisitorObj()) /* CPU Management */
-            {
-                update = false;
-            }
+        /* Display QFileDialog prompt */
+        QString fileName = QFileDialog::getSaveFileName(
+                    this,
+                    tr("Save Building .XML"), "BuildingModel.xml",
+                    tr("XML Data File (*.xml)"));
 
-            if(update)
-            {
-                updatePeopleSummary(false);
-                ui->inputSummaryBox_3->verticalScrollBar()->setValue(ui->inputSummaryBox_3->verticalScrollBar()->maximum());
-                update = false;
-            }
 
-            prevTotalVisitor = arg1;
+        /* Save and display success */
+        if(!fileName.isEmpty())
+        {
+            bool success = doc.SaveFile((fileName.toStdString()).c_str());
+            doc.Clear();
+            if(success)
+                QMessageBox::information(this,tr("Success"),"File saved to " +fileName);
+            else
+                QMessageBox::information(this,tr("Failure"),"File failed to save for unknown reason");
         }
     }
-}
-
-/* Handle reset button press */
-void MainWindow::on_resetBtn_clicked()
-{
-    /* reset boolean */
-    loadHumanByFile=false;
-    loadBuildingByFile=false;
-    updateChanges=false;
-
-    /* reset values */
-    ui->liftCombo->setCurrentIndex(0);
-    ui->algoCombo->setCurrentIndex(0);
-    ui->humanTotalSpinBox->setValue(0);
-    ui->humanAvgSpinBox->setValue(0);
-    ui->humanVisitorSpinBox->setValue(0);
-    ui->totalFloorSpinBox->setValue(2);
-    ui->totalLiftsSpinBox->setValue(1);
-    ui->metreSpinBox->setValue(3);
-    ui->maxWeightSpinBox->setValue(200);
-    ui->maxSpeedDoubleSpinBox->setValue(1.00);
-
-    /* Remove elements from combobox except index 0 */
-    for(int i=ui->liftCombo->count()-1; i > 0; i--)
-        ui->liftCombo->removeItem(i);
-
-    /* Disable box */
-    ui->saveResultBtn->setDisabled(true);
-    ui->humanTotalSpinBox->setDisabled(true);
-    ui->humanAvgSpinBox->setDisabled(true);
-    ui->humanVisitorSpinBox->setDisabled(true);
-
-    /* reset building/lift data */
-    bh.resetAll();
-    lh.resetAll();
-    shh.resetAll();
-
-    /* Create default lift */
-    lh.createNewLift(lh.getNumberOfLiftsObject()+1,200,1.00);
-    ui->liftCombo->addItem("Lift 1");
-
-    /* clear text box */
-    ui->inputSummaryBox->clear();
-    ui->inputSummaryBox_2->clear();
-    ui->inputSummaryBox_3->clear();
-    ui->outputBox->clear();
+    else
+    {
+        QMessageBox::critical(this,tr("Error"),"No data to be exported!");
+    }
 }
 
 /* Handle help button press */
@@ -415,6 +395,243 @@ void MainWindow::onActionHelp()
     QMessageBox::information(this,tr("Help"),message);
 }
 
+/* Handle total human spin box value changed */
+void MainWindow::on_humanTotalSpinBox_valueChanged(int arg1)
+{
+    /* Set average floor value */
+    int avgPerFloor = arg1/(ui->totalFloorSpinBox->value()-1);
+    ui->humanAvgSpinBox->setValue(avgPerFloor);
+
+    /* Enable apply settings button and disable run button */
+    ui->applySettingBtn->setDisabled(false);
+    ui->runBtn->setDisabled(true);
+
+    /* Disable Export XML Feature */
+    ui->exportBuildingModel->setDisabled(true);
+    ui->exportHumanModel->setDisabled(true);
+}
+
+/* Handle total visitor spin box value changed */
+void MainWindow::on_humanVisitorSpinBox_valueChanged(int arg1)
+{
+    /* Enable apply settings button and disable run button */
+    ui->applySettingBtn->setDisabled(false);
+    ui->runBtn->setDisabled(true);
+
+    /* Disable Export XML Feature */
+    ui->exportBuildingModel->setDisabled(true);
+    ui->exportHumanModel->setDisabled(true);
+}
+
+/* Handle total number of floor spinbox value changed */
+void MainWindow::on_totalFloorSpinBox_valueChanged(int arg1)
+{
+    /* Set new number of floor */
+    bh.setNoOfFloors(ui->totalFloorSpinBox->value());
+
+    /* Set average floor value */
+    int avgPerFloor = ui->humanTotalSpinBox->value()/(arg1-1);
+    ui->humanAvgSpinBox->setValue(avgPerFloor);
+
+    /* Enable apply settings button and disable run button */
+    ui->applySettingBtn->setDisabled(false);
+    ui->runBtn->setDisabled(true);
+
+    /* Disable Export XML Feature */
+    ui->exportBuildingModel->setDisabled(true);
+    ui->exportHumanModel->setDisabled(true);
+}
+
+/* Handle metre per floor spinbox value changed */
+void MainWindow::on_metreSpinBox_valueChanged(int arg1)
+{
+    /* Update new metre per floor */
+    bh.setMetrePerFloor(ui->metreSpinBox->value());
+
+    /* Enable apply settings button and disable run button */
+    ui->applySettingBtn->setDisabled(false);
+    ui->runBtn->setDisabled(true);
+
+    /* Disable Export XML Feature */
+    ui->exportBuildingModel->setDisabled(true);
+    ui->exportHumanModel->setDisabled(true);
+}
+
+/* Handle lift combo box selection */
+void MainWindow::on_liftCombo_currentIndexChanged(int index)
+{
+    /* Set spinbox to current lift values and enable it */
+    if(index != 0)
+    {
+        /* Set values */
+        ui->maxWeightSpinBox->setValue(lh.getLiftWeight(index-1));
+        ui->maxSpeedDoubleSpinBox->setValue(lh.getLiftSpeed(index-1));
+
+        /* Enable */
+        ui->maxWeightSpinBox->setDisabled(false);
+        ui->maxSpeedDoubleSpinBox->setDisabled(false);
+    }
+    else
+    {
+        /* Disable spinbox for max weight and max speed */
+        ui->maxWeightSpinBox->setDisabled(true);
+        ui->maxSpeedDoubleSpinBox->setDisabled(true);
+    }
+}
+
+/* Handle total number of lift spin box value changed */
+void MainWindow::on_totalLiftsSpinBox_valueChanged(int arg1)
+{
+    /* Handle addition of simulated human (visitor) */
+    if(arg1 > lh.getNumberOfLiftsObject())
+    {
+        /* Remove elements from combobox except index 0 */
+        for(int i=ui->liftCombo->count()-1; i > 0; i--)
+            ui->liftCombo->removeItem(i);
+
+        /* Set new number of lifts */
+        bh.setNoOfLifts(arg1);
+
+        /* Add new lift object */
+        for(int i=lh.getNumberOfLiftsObject();i<arg1;i++)
+            lh.createNewLift(lh.getNumberOfLiftsObject()+1, 200, 1.00);
+
+        /* Add to combo box */
+        for(int i=0;i<arg1;i++)
+        {
+            QString liftStr = "Lift " + QString::number(i+1);
+            ui->liftCombo->addItem(liftStr);
+        }
+    }
+    else if(arg1 < lh.getNumberOfLiftsObject()) /* Handle deletion of simulated human (visitor) */
+    {
+
+        /* Remove elements from combobox except index 0 */
+        for(int i=ui->liftCombo->count()-1; i > 0; i--)
+            ui->liftCombo->removeItem(i);
+
+        /* Set new number of lifts */
+        bh.setNoOfLifts(arg1);
+
+        /* Delete object from the back until arg1 */
+        for(int i=lh.getNumberOfLiftsObject();i>arg1;i--)
+            lh.removeLastLift();
+
+        /* Add to combo box */
+        for(int i=0;i<arg1;i++)
+        {
+            QString liftStr = "Lift " + QString::number(i+1);
+            ui->liftCombo->addItem(liftStr);
+        }
+    }
+
+    /* Enable apply settings button and disable run button */
+    ui->applySettingBtn->setDisabled(false);
+    ui->runBtn->setDisabled(true);
+
+    /* Disable spinbox for max weight and max speed */
+    ui->exportBuildingModel->setDisabled(true);
+    ui->exportHumanModel->setDisabled(true);
+}
+
+/* Handle lift max weight spinbox value changed */
+void MainWindow::on_maxWeightSpinBox_valueChanged(int arg1)
+{
+    if(arg1 > 0)
+    {
+        /* Set weight only if current index is not 0 */
+        if(ui->liftCombo->currentIndex() != 0)
+            lh.setLiftWeight(ui->liftCombo->currentIndex()-1, arg1);
+
+        /* Enable apply settings button and disable run button */
+        ui->applySettingBtn->setDisabled(false);
+        ui->runBtn->setDisabled(true);
+
+        /* Disable spinbox for max weight and max speed */
+        ui->exportBuildingModel->setDisabled(true);
+        ui->exportHumanModel->setDisabled(true);
+    }
+}
+
+/* Handle lift max speed spin box value changed */
+void MainWindow::on_maxSpeedDoubleSpinBox_valueChanged(double arg1)
+{
+    if(arg1 > 0.00)
+    {
+        /* Set speed only if current index is not 0 */
+        if(ui->liftCombo->currentIndex() != 0)
+            lh.setLiftSpeed(ui->liftCombo->currentIndex()-1, arg1);
+
+        /* Enable apply settings button and disable run button */
+        ui->applySettingBtn->setDisabled(false);
+        ui->runBtn->setDisabled(true);
+
+        /* Disable spinbox for max weight and max speed */
+        ui->exportBuildingModel->setDisabled(true);
+        ui->exportHumanModel->setDisabled(true);
+    }
+}
+
+/* Handle algo combo box selection */
+void MainWindow::on_algoCombo_currentIndexChanged(int arg1)
+{
+    /* Enable apply settings button and disable run button */
+    ui->applySettingBtn->setDisabled(false);
+    ui->runBtn->setDisabled(true);
+
+    /* Disable Export XML Feature */
+    ui->exportBuildingModel->setDisabled(true);
+    ui->exportHumanModel->setDisabled(true);
+}
+
+/* Handle reset button press */
+void MainWindow::on_resetBtn_clicked()
+{
+    /* Reset variable */
+    loadHumanByFile=false;
+    loadBuildingByFile=false;
+    prevTotalHuman=0;
+    prevTotalVisitor=0;
+
+    /* reset GUI values */
+    ui->liftCombo->setCurrentIndex(0);
+    ui->algoCombo->setCurrentIndex(0);
+    ui->humanTotalSpinBox->setValue(0);
+    ui->humanAvgSpinBox->setValue(0);
+    ui->humanVisitorSpinBox->setValue(0);
+    ui->totalFloorSpinBox->setValue(2);
+    ui->totalLiftsSpinBox->setValue(1);
+    ui->metreSpinBox->setValue(3);
+    ui->maxWeightSpinBox->setValue(200);
+    ui->maxSpeedDoubleSpinBox->setValue(1.00);
+    ui->exportBuildingModel->setDisabled(true);
+    ui->exportHumanModel->setDisabled(true);
+    ui->tabWidget->setCurrentWidget(ui->tab);
+
+    /* Remove elements from combobox except index 0 */
+    for(int i=ui->liftCombo->count()-1; i > 0; i--)
+        ui->liftCombo->removeItem(i);
+
+    /* Disable box */
+    ui->saveResultBtn->setDisabled(true);
+    ui->humanAvgSpinBox->setDisabled(true);
+
+    /* reset building/lift data */
+    bh.resetAll();
+    lh.resetAll();
+    shh.resetAll();
+
+    /* Create default lift */
+    lh.createNewLift(lh.getNumberOfLiftsObject()+1,200,1.00);
+    ui->liftCombo->addItem("Lift 1");
+
+    /* clear text box */
+    ui->inputSummaryBox->clear();
+    ui->inputSummaryBox_2->clear();
+    ui->inputSummaryBox_3->clear();
+    ui->outputBox->clear();
+}
+
 /* Handle run button press */
 void MainWindow::on_runBtn_clicked()
 {
@@ -424,7 +641,7 @@ void MainWindow::on_runBtn_clicked()
     }
     else
     {
-        if((shh.getNumberOfSimulatedHumanObject()/bh.getNoOfFloor()) == 0)
+        if((shh.getNumberOfSimulatedHumanObject()/(bh.getNoOfFloor()-1)) == 0)
             QMessageBox::warning(this,tr("Warning"),"Average people per floor cannot be 0");
         else
         {
@@ -449,6 +666,22 @@ void MainWindow::on_runBtn_clicked()
 
             QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
             QMessageBox::information(this,tr("Completed!"), content);
+
+            if((loadBuildingByFile && loadHumanByFile) || (loadHumanByFile && !loadBuildingByFile))
+            {
+                /* Disable apply settings button and enable run button */
+                ui->runBtn->setDisabled(false);
+                ui->applySettingBtn->setDisabled(true);
+            }
+            else
+            {
+                /* Enable apply settings button and disable run button */
+                ui->runBtn->setDisabled(true);
+                ui->applySettingBtn->setDisabled(false);
+            }
+            /* Enable Export XML Feature */
+            ui->exportBuildingModel->setDisabled(false);
+            ui->exportHumanModel->setDisabled(false);
         }
     }
 }
@@ -469,6 +702,129 @@ void MainWindow::on_saveResultBtn_clicked()
     /* Save and display success */
     if(!fileName.isEmpty())
         QMessageBox::information(this,tr("Help"),"File saved to "+fileName);
+}
+
+/* Handle apply button clicked, create model */
+void MainWindow::on_applySettingBtn_clicked()
+{
+    if(ui->humanTotalSpinBox->value() == 0)
+    {
+        QMessageBox::information(this,tr("Error"),"Unable to apply settings!<br>Resident must be more than 0");
+    }
+    else if(ui->humanAvgSpinBox->value() == 0)
+    {
+        QMessageBox::information(this,tr("Error"),"Unable to apply settings!<br>Average people per level must be more than 0");
+    }
+    else
+    {
+        /* Display building summary */
+        updateBuildingSummary();
+
+        /* Only update when value is more than or equal to 0 */
+        if(ui->humanTotalSpinBox->value() >= 0)
+        {
+            /* Handle addition of simulated human (resident) */
+            if(ui->humanTotalSpinBox->value() > shh.getNumberOfSimulatedHumanObject())
+            {
+                /* Add remainding object */
+                for(int i=shh.getNumberOfSimulatedHumanObject();i<ui->humanTotalSpinBox->value();i++)
+                {
+                    int randResidentOf = 2 + (rand() % (bh.getNoOfFloor() - 2 + 1));
+                    shh.createSimulatedHuman(randResidentOf);
+                    shh.populateSimulatedHuman(i, bh.getNoOfFloor(), true);
+                }
+            }
+            else if(ui->humanTotalSpinBox->value() < shh.getNumberOfSimulatedHumanObject()) /* Handle deletion of simulated human (resident) */
+            {
+                /* Delete object from the back until ui->humanTotalSpinBox->value() */
+                for(int i=shh.getNumberOfSimulatedHumanObject();i>ui->humanTotalSpinBox->value();i--)
+                {
+                    ui->inputSummaryBox_2->undo();
+
+                    /* true = remove resident */
+                    shh.removeLastData(true);
+                }
+            }
+
+            /* Update floors to all resident evenly only if file is not loaded */
+            int avgPerFloor = ui->humanTotalSpinBox->value()/(bh.getNoOfFloor()-1);
+            shh.updateFloorsEvenly(avgPerFloor, bh.getNoOfFloor(), ui->humanTotalSpinBox->value());
+
+
+            /* Update human */
+            updateHumanSummary(true);
+
+            prevTotalHuman = ui->humanTotalSpinBox->value();
+        }
+
+        /* Only update when value is more than or equal to 0 */
+        if(ui->humanVisitorSpinBox->value() >= 0)
+        {
+            /* Handle addition of simulated human (visitor) */
+            if(ui->humanVisitorSpinBox->value() > shh.getNumberOfVisitorObj())
+            {
+                /* Add remainding object */
+                for(int i=shh.getNumberOfVisitorObj();i<ui->humanVisitorSpinBox->value();i++)
+                {
+                    shh.createSimulatedHuman(0);
+                }
+            }
+            else if(ui->humanVisitorSpinBox->value() < shh.getNumberOfVisitorObj()) /* Handle deletion of simulated human (visitor) */
+            {
+                /* Delete object from the back until ui->humanVisitorSpinBox->value() */
+                for(int i=shh.getNumberOfVisitorObj();i>ui->humanVisitorSpinBox->value();i--)
+                {
+                    ui->inputSummaryBox_3->undo();
+
+                    /* false = remove visitor */
+                    shh.removeLastData(false);
+                }
+            }
+
+            /* Update all visitor object with new visit floor */
+            for(int i=0;i<shh.getNumberOfVisitorObj();i++)
+                shh.populateSimulatedHuman(i, bh.getNoOfFloor(), false);
+
+            /* Update human */
+            updateHumanSummary(false);
+
+            prevTotalVisitor = ui->humanVisitorSpinBox->value();
+        }
+
+        /* Scroll to top */
+        ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->minimum());
+        ui->inputSummaryBox_2->verticalScrollBar()->setValue(ui->inputSummaryBox_2->verticalScrollBar()->minimum());
+        ui->inputSummaryBox_3->verticalScrollBar()->setValue(ui->inputSummaryBox_3->verticalScrollBar()->minimum());
+
+        /* Disable apply settings button and enable run button */
+        ui->applySettingBtn->setDisabled(true);
+        ui->runBtn->setDisabled(false);
+
+        /* Switch Tab */
+        ui->tabWidget->setCurrentWidget(ui->tab);
+
+        /* Enable Export XML Feature */
+        ui->exportBuildingModel->setDisabled(false);
+        ui->exportHumanModel->setDisabled(false);
+    }
+}
+
+/* FOR DEBUGGING PURPOSES ONLY */
+/* Check current created object */
+void MainWindow::onActionCheckObj()
+{
+    /* Message */
+    QString message = "Number of lift object(s) = "
+                    + QString::number(lh.getNumberOfLiftsObject())
+                    + "<br>"
+                    + "Number of simulatedHuman object(s) = "
+                    + QString::number(shh.getNumberOfSimulatedHumanObject())
+                    + "<br>"
+                    + "Number of non resident object(s) = "
+                    + QString::number(shh.getNumberOfVisitorObj());
+
+    /* Pop-up message box */
+    QMessageBox::information(this,tr("Number of objects"),message);
 }
 
 /* validate building XML */
@@ -629,7 +985,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
         return "false";
     }
 
-    lh.getAllLiftData();
+   // lh.getAllLiftData();
     return summary;
 }
 
@@ -672,8 +1028,7 @@ bool MainWindow::validateHumanData(const QString &arg1)
                             pParm->QueryIntAttribute("resident", &attr);
                             if(attr < 0 || attr >= bh.getNoOfFloor()+1 || attr == 1)
                             {
-                                qDebug() << attr;
-                                qDebug() << "HERE2";
+                                QMessageBox::critical(this,tr("Inconsistent data!"), "A resident has an invalid floor!\ni.e. Negative or more than the current building model");
                                 return false;
                             }
                             else
@@ -724,7 +1079,7 @@ bool MainWindow::validateHumanData(const QString &arg1)
                                              * but lesser than the total limit in building */
                                             if(attr2 < 2 || attr2 >= bh.getNoOfFloor()+1)
                                             {
-                                                qDebug() << "HERE";
+                                                QMessageBox::critical(this,tr("Inconsistent data!"), "The data has an invalid travel floor!\ni.e. More than the current building model");
                                                 return false;
                                             }
                                             else
@@ -780,13 +1135,13 @@ bool MainWindow::validateHumanData(const QString &arg1)
         return false;
     }
 
-    shh.getAllPersonData();
+   // shh.getAllPersonData();
 
     return true;
 }
 
 /* Update resident/visitor summary */
-void MainWindow::updatePeopleSummary(bool isResident)
+void MainWindow::updateHumanSummary(bool isResident)
 {
     /* Header */
     QString header;
@@ -796,8 +1151,10 @@ void MainWindow::updatePeopleSummary(bool isResident)
         /* Append header */
         if(shh.getNumberOfSimulatedHumanObject() >= 1)
         {
+            ui->inputSummaryBox_2->clear();
+
             /* Create text dynamically */
-            for(int i=prevTotalHuman;i<shh.getNumberOfSimulatedHumanObject();i++)
+            for(int i=0;i<shh.getNumberOfSimulatedHumanObject();i++)
             {
                 if(i == 0)
                 {
@@ -841,8 +1198,10 @@ void MainWindow::updatePeopleSummary(bool isResident)
         /* If there are visitors, update */
         if(shh.getNumberOfVisitorObj() >= 1)
         {
+            ui->inputSummaryBox_3->clear();
+
             /* Create text dynamically */
-            for(int i=prevTotalVisitor;i<shh.getNumberOfVisitorObj();i++)
+            for(int i=0;i<shh.getNumberOfVisitorObj();i++)
             {
                 if(i==0)
                 {
@@ -853,7 +1212,7 @@ void MainWindow::updatePeopleSummary(bool isResident)
                 /* Append data to QString */
                 header += "<b>Visitor number ";
                 header += QString::number(shh.getPersonID(i, false));
-                header += "</b><br>Is not a resident<br>";
+                header += "</b><br>";
 
                 /* Append data to QString */
                 header += "Weighs ";
@@ -879,217 +1238,20 @@ void MainWindow::updatePeopleSummary(bool isResident)
             }
         }
     }
-}
 
-/* FOR DEBUGGING PURPOSES ONLY */
-/* Check current created object */
-void MainWindow::onActionCheckObj()
-{
-    /* Message */
-    QString message = "Number of lift object(s) = "
-                    + QString::number(lh.getNumberOfLiftsObject())
-                    + "<br>"
-                    + "Number of simulatedHuman object(s) = "
-                    + QString::number(shh.getNumberOfSimulatedHumanObject())
-                    + "<br>"
-                    + "Number of non resident object(s) = "
-                    + QString::number(shh.getNumberOfVisitorObj());
+    /* Set text focus to top */
+    ui->inputSummaryBox_2->verticalScrollBar()->setValue(ui->inputSummaryBox_2->verticalScrollBar()->minimum());
+    ui->inputSummaryBox_3->verticalScrollBar()->setValue(ui->inputSummaryBox_3->verticalScrollBar()->minimum());
 
-    /* Pop-up message box */
-    QMessageBox::information(this,tr("Number of objects"),message);
-}
-
-/* Handle lift combo box selection */
-void MainWindow::on_liftCombo_currentIndexChanged(int index)
-{
-    if(index != 0)
-    {
-        ui->maxWeightSpinBox->setDisabled(false);
-        ui->maxWeightSpinBox->setValue(lh.getLiftWeight(index-1));
-        ui->maxSpeedDoubleSpinBox->setDisabled(false);
-        ui->maxSpeedDoubleSpinBox->setValue(lh.getLiftSpeed(index-1));
-    }
-    else
-    {
-        ui->maxWeightSpinBox->setDisabled(true);
-        ui->maxSpeedDoubleSpinBox->setDisabled(true);
-    }
-}
-
-/* Handle total floor spin box value changed */
-void MainWindow::on_totalFloorSpinBox_valueChanged(int arg1)
-{
-    if(!updateChanges)
-    {
-        /* Set average floor value */
-        int avgPerFloor = shh.getNumberOfSimulatedHumanObject()/arg1;
-        ui->humanAvgSpinBox->setValue(avgPerFloor);
-
-        /* Enable human generation */
-        ui->humanVisitorSpinBox->setDisabled(false);
-        ui->humanTotalSpinBox->setDisabled(false);
-
-        /* Clear summary box */
-        ui->inputSummaryBox->clear();
-
-        /* Set new number of floor */
-        bh.setNoOfFloors(arg1);
-
-        /* Update summary box */
-        updateBuildingSummary();
-
-        /* Scroll to top */
-        ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->minimum());
-
-    }
-}
-
-/* Handle metre per floor spin box value changed */
-void MainWindow::on_metreSpinBox_valueChanged(int arg1)
-{
-    if(!updateChanges)
-    {
-        /* Clear summary box */
-        ui->inputSummaryBox->clear();
-
-        /* Update new metre per floor */
-        bh.setMetrePerFloor(arg1);
-
-        /* Update summary box */
-        updateBuildingSummary();
-
-        /* Scroll to top */
-        ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->minimum());
-    }
-}
-
-/* Handle lift max weight spinbox value changed */
-void MainWindow::on_maxWeightSpinBox_valueChanged(int arg1)
-{
-    if(!updateChanges)
-    {
-        if(arg1 > 0)
-        {
-            /* Clear summary box */
-            ui->inputSummaryBox->clear();
-
-            /* Set weight only if current index is not 0 */
-            if(ui->liftCombo->currentIndex() != 0)
-            {
-                /* Set new weight */
-                lh.setLiftWeight(ui->liftCombo->currentIndex()-1, arg1);
-            }
-
-            /* Update summary box */
-            updateBuildingSummary();
-
-            /* Scroll to top */
-            ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->maximum());
-        }
-    }
-}
-
-/* Handle lift max speed spin box value changed */
-void MainWindow::on_maxSpeedDoubleSpinBox_valueChanged(double arg1)
-{
-    if(!updateChanges)
-    {
-        if(arg1 > 0.00)
-        {
-            /* Clear summary box */
-            ui->inputSummaryBox->clear();
-
-            /* Set speed only if current index is not 0 */
-            if(ui->liftCombo->currentIndex() != 0)
-            {
-                /* Set new speed */
-                lh.setLiftSpeed(ui->liftCombo->currentIndex()-1, arg1);
-            }
-
-            /* Update summary box */
-            updateBuildingSummary();
-
-            /* Scroll to top */
-            ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->maximum());
-        }
-    }
-}
-
-/* Handle total number of lift spin box value changed */
-void MainWindow::on_totalLiftsSpinBox_valueChanged(int arg1)
-{
-    if(!updateChanges)
-    {
-        /* Handle addition of simulated human (visitor) */
-        if(arg1 > lh.getNumberOfLiftsObject())
-        {
-            /* Remove elements from combobox except index 0 */
-            for(int i=ui->liftCombo->count()-1; i > 0; i--)
-                ui->liftCombo->removeItem(i);
-
-            /* Clear summary box */
-            ui->inputSummaryBox->clear();
-
-            /* Set new number of lifts */
-            bh.setNoOfLifts(arg1);
-
-            /* Add new lift object */
-            for(int i=lh.getNumberOfLiftsObject();i<arg1;i++)
-            {
-                lh.createNewLift(lh.getNumberOfLiftsObject()+1,200,1.00);
-            }
-
-            /* Update summary box */
-            updateBuildingSummary();
-
-            /* Scroll to top */
-            ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->maximum());
-
-            /* Add to combo box */
-            for(int i=0;i<arg1;i++)
-            {
-                QString liftStr = "Lift " + QString::number(i+1);
-                ui->liftCombo->addItem(liftStr);
-            }
-        }
-        else if(arg1 < lh.getNumberOfLiftsObject()) /* Handle deletion of simulated human (visitor) */
-        {
-
-            /* Remove elements from combobox except index 0 */
-            for(int i=ui->liftCombo->count()-1; i > 0; i--)
-                ui->liftCombo->removeItem(i);
-
-            /* Clear summary box */
-            ui->inputSummaryBox->clear();
-
-            /* Set new number of lifts */
-            bh.setNoOfLifts(arg1);
-
-            /* Delete object from the back until arg1 */
-            for(int i=lh.getNumberOfLiftsObject();i>arg1;i--)
-            {
-                lh.removeLastLift();
-            }
-
-            /* Update summary box */
-            updateBuildingSummary();
-
-            /* Scroll to top */
-            ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->maximum());
-
-            /* Add to combo box */
-            for(int i=0;i<arg1;i++)
-            {
-                QString liftStr = "Lift " + QString::number(i+1);
-                ui->liftCombo->addItem(liftStr);
-            }
-        }
-    }
 }
 
 /* Update building summary */
 void MainWindow::updateBuildingSummary()
 {
+    /* Undo if document is not empty */
+    if(!ui->inputSummaryBox->document()->isEmpty())
+        ui->inputSummaryBox->undo();
+
     /* header */
     QString header = "<b><font size=\"4\">Simulated Building Data</font></b><br>"
                           "====================<br>";
@@ -1108,6 +1270,7 @@ void MainWindow::updateBuildingSummary()
     summary += QString::number(bh.getMetrePerFloor());
     summary += "<br>";
 
+    /* Loop number of lifts */
     for(int i=0;i<lh.getNumberOfLiftsObject();i++)
     {
         /* Append data to QString */
@@ -1123,135 +1286,11 @@ void MainWindow::updateBuildingSummary()
         summary += QString::number(lh.getLiftSpeed(i));
         summary += " metre/second<br>";
     }
+
+    /* Append summary */
     ui->inputSummaryBox->append(summary);
-}
 
-/* Export Building XML */
-void MainWindow::exportBuildingXML()
-{
-    if(!ui->inputSummaryBox->document()->isEmpty())
-    {
-        TiXmlDocument doc;
-        TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "utf-8", "" );
-        doc.LinkEndChild( decl );
+    /* Set text focus to top */
+    ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->minimum());
 
-        /* Comments */
-        TiXmlComment* comment = new TiXmlComment(" Building/Lift Data ");
-        doc.LinkEndChild( comment );
-
-        /* Save Building */
-        TiXmlElement* element = new TiXmlElement( "building" );
-
-        element->SetAttribute("floors", bh.getNoOfFloor());
-        element->SetAttribute("metrePerFloor", bh.getMetrePerFloor());
-        doc.LinkEndChild( element );
-
-        /* Save Lift */
-        for(long i=0; i<bh.getNoOfLifts(); i++)
-        {
-            TiXmlElement* element2 = new TiXmlElement( "lift" );
-
-            element2->SetAttribute("maxWeight", lh.getLiftWeight(i));
-            element2->SetDoubleAttribute("speed", lh.getLiftSpeed(i));
-
-            element->LinkEndChild( element2 );
-        }
-
-        /* Display QFileDialog prompt */
-        QString fileName = QFileDialog::getSaveFileName(
-                    this,
-                    tr("Save Building .XML"), "BuildingModel.xml",
-                    tr("XML Data File (*.xml)"));
-
-
-        /* Save and display success */
-        if(!fileName.isEmpty())
-        {
-            bool success = doc.SaveFile((fileName.toStdString()).c_str());
-            doc.Clear();
-            if(success)
-                QMessageBox::information(this,tr("Success"),"File saved to " +fileName);
-            else
-                QMessageBox::information(this,tr("Failure"),"File failed to save for unknown reason");
-        }
-    }
-    else
-    {
-        QMessageBox::critical(this,tr("Error"),"No data to be exported!");
-    }
-}
-
-/* Export Human XML */
-void MainWindow::exportHumanXML()
-{
-    if(!ui->inputSummaryBox_2->document()->isEmpty() || !ui->inputSummaryBox_3->document()->isEmpty())
-    {
-        TiXmlDocument doc;
-        TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "utf-8", "" );
-        doc.LinkEndChild( decl );
-
-        /* Comments */
-        TiXmlComment* comment = new TiXmlComment(" Simulated humans data ");
-        doc.LinkEndChild( comment );
-
-        /* Save Human */
-        TiXmlElement* element = new TiXmlElement( "human" );
-        doc.LinkEndChild( element );
-
-        /* Save Resident */
-        for(long i=0; i<shh.getNumberOfSimulatedHumanObject(); i++)
-        {
-            TiXmlElement* element2 = new TiXmlElement( "person" );
-
-            element2->SetAttribute("weight", shh.getWeight(i,true));
-            element2->SetAttribute("resident", shh.getResident(i,true));
-            element->LinkEndChild( element2 );
-
-            for(long j=0;j<shh.getFloorTravellingSize(i,true);j++)
-            {
-                TiXmlElement* element3 = new TiXmlElement( "floor" );
-                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,true));
-                element2->LinkEndChild( element3 );
-            }
-        }
-
-        /* Save Visitor */
-        for(long i=0; i<shh.getNumberOfVisitorObj(); i++)
-        {
-            TiXmlElement* element2 = new TiXmlElement( "person" );
-
-            element2->SetAttribute("weight", shh.getWeight(i,false));
-            element2->SetAttribute("resident", shh.getResident(i,false));
-            element->LinkEndChild( element2 );
-
-            for(long j=0;j<shh.getFloorTravellingSize(i,false);j++)
-            {
-                TiXmlElement* element3 = new TiXmlElement( "floor" );
-                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,false));
-                element2->LinkEndChild( element3 );
-            }
-        }
-
-        /* Display QFileDialog prompt */
-        QString fileName = QFileDialog::getSaveFileName(
-                    this,
-                    tr("Save Human .XML"), "SimulatedHumans.xml",
-                    tr("XML Data File (*.xml)"));
-
-
-        /* Save and display success */
-        if(!fileName.isEmpty())
-        {
-            bool success = doc.SaveFile((fileName.toStdString()).c_str());
-            doc.Clear();
-            if(success)
-                QMessageBox::information(this,tr("Success"),"File saved to " +fileName);
-            else
-                QMessageBox::information(this,tr("Failure"),"File failed to save for unknown reason");
-        }
-    }
-    else
-    {
-        QMessageBox::critical(this,tr("Error"),"No data to be exported!");
-    }
 }
