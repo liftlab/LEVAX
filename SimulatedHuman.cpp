@@ -82,3 +82,9 @@ int SimulatedHuman::getFloorTravelling(int idx)
 
     return it->second;
 }
+
+/* Remove floor travelling at key */
+void SimulatedHuman::removeFloorTravelling(int key)
+{
+    floorTravelling.erase(key);
+}

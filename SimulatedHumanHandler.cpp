@@ -143,11 +143,11 @@ int SimulatedHumanHandler::getFloorTravelling(int idxOfPerson, int idxOfFloorTra
 }
 
 /* Populate simulatedHuman with weight, etc */
-void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isResident)
+void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors, bool isResident)
 {
     /* Add own residence floor if its a residence*/
     if(isResident)
-        simulatedHumanObj.back()->addFloorTravelling(simulatedHumanObj.back()->getResident());
+       simulatedHumanObj[idx]->addFloorTravelling(simulatedHumanObj[idx]->getResident());
 
     /* Generate 1-100
      * 1-15     = Child,
@@ -167,7 +167,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
 
         if(isResident)
         {
-            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
 
             /* Generate 1-100
              * 1-90     = Travel only to their residence,
@@ -181,15 +181,15 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 for(int i=0;i<noOfFriends;i++)
                 {
                     randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
                 }
             }
         }
         else
         {
-            nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-            randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-            nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
+            /* Assign weight only if weight is 0 */
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
         }
     }
     else if(randHumanType >= 21 && randHumanType <= 30)
@@ -200,7 +200,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
 
         if(isResident)
         {
-            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
 
             /* Generate 1-100
              * 1-95     = Travel only to their residence,
@@ -214,15 +214,15 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 for(int i=0;i<noOfFriends;i++)
                 {
                     randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
                 }
             }
         }
         else
         {
-                nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-                randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
+            /* Assign weight only if weight is 0 */
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
         }
     }
     else if(randHumanType >= 36 && randHumanType <= 50)
@@ -233,7 +233,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
 
         if(isResident)
         {
-            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
 
             /* Generate 1-100
              * 1-90     = Travel only to their residence,
@@ -247,15 +247,15 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 for(int i=0;i<noOfFriends;i++)
                 {
                     randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
                 }
             }
         }
         else
         {
-                nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-                randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
+            /* Assign weight only if weight is 0 */
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
         }
     }
     else
@@ -266,7 +266,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
 
         if(isResident)
         {
-            simulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
+            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
 
             /* Generate 1-100
              * 1-85     = Travel only to their residence,
@@ -280,16 +280,26 @@ void SimulatedHumanHandler::populateSimulatedHuman(int totalNoOfFloors, bool isR
                 for(int i=0;i<noOfFriends;i++)
                 {
                     randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj.back()->addFloorTravelling(randomFloor);
+                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
                 }
             }
         }
         else
         {
-                nonResSimulatedHumanObj.back()->setWeight(rand() % (max - min) + min);
-                randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                nonResSimulatedHumanObj.back()->addFloorTravelling(randomFloor);
+            /* Assign weight only if weight is 0 */
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
         }
+    }
+
+    if(!isResident)
+    {
+        // If floor exist, remove and re-add for building floor consistency
+        if(getFloorTravellingSize(idx, false) > 0)
+            removeFloorTravelling(idx, getFloorTravelling(idx, 0, false), false);
+
+        randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+        nonResSimulatedHumanObj[idx]->addFloorTravelling(randomFloor);
     }
 }
 
@@ -358,5 +368,69 @@ void SimulatedHumanHandler::getAllPersonData()
         qDebug() << "Travelling: ";
         for(std::size_t j=0; j<numberOfFloorTravelling;j++)
             debug << getFloorTravelling(i, j, false);
+    }
+}
+
+/* Remove floor travelling of person idx with key */
+void SimulatedHumanHandler::removeFloorTravelling(int idx, int key, bool isResident)
+{
+    if(isResident)
+        simulatedHumanObj[idx]->removeFloorTravelling(key);
+    else
+        nonResSimulatedHumanObj[idx]->removeFloorTravelling(key);
+}
+
+/* Update floor evenly based on average number of people per floor */
+void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, int totalPeople)
+{
+
+    int maxNum = totalFloor;
+    int minNum = 2;
+    int randomFloor = 2;
+
+    /* remove all current travelling data for reallocation*/
+    for(int i=0;i<getNumberOfSimulatedHumanObject();i++)
+        removeFloorTravelling(i, getResident(i,true), true);
+
+    /* If floor and number of people is the same */
+    if(avgPerFloor == totalPeople)
+    {
+        /* Set all people to the total floor */
+        for(int i=0;i<totalPeople;i++)
+        {
+            addFloorTravelling(i+1, totalFloor, true);
+            setResident(i,totalFloor,true);
+        }
+    }
+    else
+    {
+        int currentFloor = 2;
+
+        /* Allocate evenly for all people */
+        for(int i=0;i<totalPeople;i++)
+        {
+            if(currentFloor <= totalFloor)
+            {
+                int remainder = totalPeople % (totalFloor-1);
+
+                /* If there are remainder, the floor allocated will be random */
+                if(i < totalPeople-remainder)
+                {
+                    addFloorTravelling(i+1, currentFloor, true);
+                    setResident(i,currentFloor,true);
+                }
+                else
+                {
+                    randomFloor = (rand() % (maxNum-minNum+1)+minNum);
+                    addFloorTravelling(i+1, randomFloor, true);
+                    setResident(i,randomFloor,true);
+                }
+            }
+            /* Reset current floor back to 2 if it has reached totalFloor */
+            if(currentFloor == totalFloor)
+                currentFloor = 2;
+            else
+                currentFloor++;
+        }
     }
 }

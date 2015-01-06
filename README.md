@@ -20,7 +20,8 @@ v2.14	: Fixed issue where simulatedHuman object memory not freed when clicking s
 v2.15	: Generating of SimulatedHumans through spin boxes<br />  
 v2.16	: Generating of visitors through spin boxes. Multiple function flags "isResident" added. Automatic calculate of average number of people per floor<br />  
 v3.0	: New GUI Interface, Modify functions to handle the new GUI, Removed number of household per floor, Update Help Menu, Splashscreen display for 1.5s<br />  
-v3.1	: Fix Bugs pertaining to version 3.0, Create Export XML Feature<br /><br />  
+v3.1	: Fix Bugs pertaining to version 3.0, Create Export XML Feature<br />  
+v3.2	: GUI Update and function change. Removed generating objects on the fly. Allocate floors evenly based on average number of people per floor.<br /><br />  
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  
