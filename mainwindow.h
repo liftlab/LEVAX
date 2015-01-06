@@ -15,6 +15,7 @@
 #include <QSplashScreen>            /* Splash screen */
 #include <QDebug>                   /* Debug, similar to cout. Usage qDebut() << "Hello World" */
 #include <QScrollBar>               /* Scroll bar */
+#include <QtPrintSupport>           /* Printer support */
 
 #include "tinyXML/tinyxml.h"        /* TinyXML XML parser*/
 #include "BuildingHandler.h"        /* Building Handler */
@@ -40,6 +41,7 @@ private slots:
     void exportHumanXML();                              /* Export human XML */
     void exportBuildingXML();                           /* Export building XML */
     void onActionHelp();                                /* Handle help button press */
+    void printSimulatedData();                          /* Print simulated data */
 
     /* HUMAN MODEL */
     void on_humanTotalSpinBox_valueChanged(int args1);  /* Handle total human spin box value changed */
@@ -78,8 +80,9 @@ private:
 
     QString validateBuildingData(const QString &arg1);  /* validate building XML */
     bool validateHumanData(const QString &arg1);        /* validate human XML */
-    void updateHumanSummary(bool);                     /* Update summary box */
-    void updateBuildingSummary();                       /* Display building summary */
+    void updateHumanSummary(bool);                   /* Update summary box */
+    void updateBuildingSummary();                    /* Display building summary */
+    QString generateSimulationData();                   /* Combine simulated humans and simulated building model */
 };
 
 #endif // MAINWINDOW_H

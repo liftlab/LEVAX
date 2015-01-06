@@ -855,7 +855,7 @@ QTabWidget::tab-bar {
      <property name="title">
       <string>Print</string>
      </property>
-     <addaction name="actionPrint_Simulated_Humans"/>
+     <addaction name="actionPrint_Simulated_Data"/>
      <addaction name="actionPrint_Simulation_Result"/>
     </widget>
     <addaction name="separator"/>
@@ -917,9 +917,9 @@ QTabWidget::tab-bar {
     <string>Human Model</string>
    </property>
   </action>
-  <action name="actionPrint_Simulated_Humans">
+  <action name="actionPrint_Simulated_Data">
    <property name="text">
-    <string>Print Simulated Humans</string>
+    <string>Print Simulated Data</string>
    </property>
   </action>
   <action name="actionPrint_Simulation_Result">

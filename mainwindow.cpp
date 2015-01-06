@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionHuman_Model, SIGNAL(triggered()), this, SLOT(uploadHumanXML()));
     connect(ui->exportBuildingModel, SIGNAL(triggered()), this, SLOT(exportBuildingXML()));
     connect(ui->exportHumanModel, SIGNAL(triggered()), this, SLOT(exportHumanXML()));
+    connect(ui->actionPrint_Simulated_Data, SIGNAL(triggered()), this, SLOT(printSimulatedData()));
 
     /* Debug menu listener */
     connect(ui->actionCheckObj, SIGNAL(triggered()), this, SLOT(onActionCheckObj()));
@@ -1292,5 +1293,51 @@ void MainWindow::updateBuildingSummary()
 
     /* Set text focus to top */
     ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->minimum());
+}
+
+/* Combine simulated humans and simulated building model */
+QString MainWindow::generateSimulationData()
+{
+    QString consolidatation;
+
+    consolidatation = "<b><font size=\"6\">Summary of Simulated Data</font></b><br>"
+                    "====================<br><br>";
+
+    consolidatation += "<font size=\"4\">Simulated Building Information:</font><br>";
+
+    consolidatation += ui ->inputSummaryBox->toPlainText();
+
+    consolidatation += "<br><br>Simulated Humans Information<br>";
+
+    consolidatation += ui ->inputSummaryBox_2->toPlainText();
+
+    consolidatation += "<br>";
+
+    consolidatation += ui ->inputSummaryBox_3->toPlainText();
+
+    return consolidatation;
+}
+
+/* Print Simulated data */
+void MainWindow::printSimulatedData()
+{
+    if(!ui->inputSummaryBox_2->document()->isEmpty() || !ui->inputSummaryBox_3->document()->isEmpty())
+    {
+        QPrinter printer;
+
+        QPrintDialog *dialog = new QPrintDialog(&printer, this);
+        dialog ->setWindowTitle("Print Simulated Data");
+
+        if(dialog ->exec() == QDialog::Accepted){
+            QTextDocument doc (generateSimulationData());
+            doc.print(&printer);
+        }
+    }
+    else
+    {
+        QMessageBox::critical(this,tr("Error"),"No data to be printed!");
+    }
 
 }
+
+
