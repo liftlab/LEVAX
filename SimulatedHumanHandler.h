@@ -36,6 +36,9 @@ public:
     void setResident(int, int, bool);                   /* Set resident floor */
     void setWeight(int, int, bool);                     /* Set weight */
     void addFloorTravelling(int, int, bool);            /* Add floor travelling */
+    void addTravelTime(int, int, bool);                 /* Add travel time */
+    void setNoOfTimesTravel(int, int, bool);            /* Set number of times traveled */
+    void setStatus(int, int, bool);                     /* Set the status */
 
     /* Getters */
     int getPersonID(int, bool);                         /* Return person id */
@@ -43,6 +46,9 @@ public:
     int getWeight(int, bool);                           /* Return weight */
     int getFloorTravelling(int, int, bool);             /* Return floor travelling at index */
     int getFloorTravellingSize(int, bool);              /* Get vector size of floorTravelling */
+    int getTravelTime(int, int, bool);                  /* Return the travel time */
+    int getNoOfTimesTravel(int, bool);                  /* Return the number of travel times */
+    int getStatus(int, bool);                           /* Return the status */
 
     /* FOR DEBUGGING PURPOSES ONLY */
     void getAllPersonData();                            /* Print all simulatedHuman object data for debugging */

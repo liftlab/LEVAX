@@ -106,6 +106,33 @@ void SimulatedHumanHandler::addFloorTravelling(int idx, int floor, bool isReside
        nonResSimulatedHumanObj[idx-1]->addFloorTravelling(floor);
 }
 
+/* Add travel time */
+void SimulatedHumanHandler::addTravelTime(int travelTime, int idx, bool isResident)
+{
+    if(isResident)
+        simulatedHumanObj[idx]->addTravelTime(travelTime);
+    else
+       nonResSimulatedHumanObj[idx]->addTravelTime(travelTime);
+}
+
+/* Set number of times traveled */
+void SimulatedHumanHandler::setNoOfTimesTravel(int idx, int noOfTimes, bool isResident)
+{
+    if(isResident)
+        simulatedHumanObj[idx]->setNoOfTimesTravel(noOfTimes);
+    else
+       nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(noOfTimes);
+}
+
+/* Set the status */
+void SimulatedHumanHandler::setStatus(int idx, int status, bool isResident)
+{
+    if(isResident)
+        simulatedHumanObj[idx]->setStatus(status);
+    else
+       nonResSimulatedHumanObj[idx]->setStatus(status);
+}
+
 /* Return person id */
 int SimulatedHumanHandler::getPersonID(int idx, bool isResident)
 {
@@ -142,12 +169,48 @@ int SimulatedHumanHandler::getFloorTravelling(int idxOfPerson, int idxOfFloorTra
         return nonResSimulatedHumanObj[idxOfPerson]->getFloorTravelling(idxOfFloorTravelling);
 }
 
+/* Return the travel time */
+int SimulatedHumanHandler::getTravelTime(int idx, int count, bool isResident)
+{
+    if(isResident)
+        return simulatedHumanObj[idx]->getTravelTime(count);
+    else
+        return nonResSimulatedHumanObj[idx]->getTravelTime(count);
+}
+
+/* Return the number of travel times */
+int SimulatedHumanHandler::getNoOfTimesTravel(int idx, bool isResident)
+{
+    if(isResident)
+        return simulatedHumanObj[idx]->getNoOfTimesTravel();
+    else
+        return nonResSimulatedHumanObj[idx]->getNoOfTimesTravel();
+}
+
+/* Return the status */
+int SimulatedHumanHandler::getStatus(int idx, bool isResident)
+{
+    if(isResident)
+        return simulatedHumanObj[idx]->getStatus();
+    else
+        return nonResSimulatedHumanObj[idx]->getStatus();
+}
+
 /* Populate simulatedHuman with weight, etc */
 void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors, bool isResident)
 {
+    int randomNoOfTimesTravel = 0;
+
     /* Add own residence floor if its a residence*/
     if(isResident)
-       simulatedHumanObj[idx]->addFloorTravelling(simulatedHumanObj[idx]->getResident());
+       simulatedHumanObj[idx]->addFloorTravelling(simulatedHumanObj[idx]->getResident());      
+
+    /* Generate 3 timings
+     * 1 = morning peak
+     * 2 = afternoon peak
+     * 3 = evening peak
+     */
+    int randomPeaks = 0;
 
     /* Generate 1-100
      * 1-15     = Child,
@@ -156,7 +219,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
      * 50-100   = Average Adult
      */
     int randHumanType = rand() % 100 + 1;
-    int randomFloor;
+    int randomFloor, statusType = 0;
 
     /* Set weight base on type*/
     if(randHumanType >= 1 && randHumanType <= 15)
@@ -168,6 +231,27 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         if(isResident)
         {
             simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+            randomNoOfTimesTravel = rand() % 2 + 1;
+            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+            /* Generate timing for residents */
+            for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+            {
+                if(i == 1)
+                    simulatedHumanObj[idx]->addTravelTime(1);
+
+                else
+                {
+                    randomPeaks = rand() % 1 + 2;
+
+                    if(randomPeaks == 2)
+                        simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                    else
+                        simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                }
+            }
 
             /* Generate 1-100
              * 1-90     = Travel only to their residence,
@@ -189,7 +273,55 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         {
             /* Assign weight only if weight is 0 */
             if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+            {
                 nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+                randomNoOfTimesTravel = rand() % 2 + 1;
+                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+                /* Generate timing for non residents */
+                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    randomPeaks = rand() % 3 + 1;
+                    if(i == 1)
+                    {
+                        if(randomPeaks == 1)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else if(randomPeaks == 2)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+
+                    else
+                    {
+                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 2)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
+                        }
+
+                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 3)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                        }
+
+                        else
+                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                    }
+                }
+            }
         }
     }
     else if(randHumanType >= 21 && randHumanType <= 30)
@@ -201,6 +333,81 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         if(isResident)
         {
             simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+            randomNoOfTimesTravel = rand() % 2 + 1;
+            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+            /* Generate 1-2
+             * 1 = Employed
+             * 2 = Unemployed
+             */
+            statusType = rand() % 2 + 1;
+            simulatedHumanObj[idx]->setStatus(statusType);
+
+            if(statusType == 1)
+            {
+                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    if(i == 1)
+                        simulatedHumanObj[idx]->addTravelTime(1);
+
+                    else
+                    {
+                        randomPeaks = rand() % 1 + 2;
+
+                        if(randomPeaks == 2)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+                }
+            }
+
+            else
+            {
+                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    randomPeaks = rand() % 3 + 1;
+                    if(i == 1)
+                    {
+                        if(randomPeaks == 1)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else if(randomPeaks == 2)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+
+                    else
+                    {
+                        if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 2)
+                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                simulatedHumanObj[idx]->addTravelTime(3);
+                        }
+
+                        else if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 3)
+                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                simulatedHumanObj[idx]->addTravelTime(1);
+                        }
+
+                        else
+                           simulatedHumanObj[idx]->addTravelTime(1);
+                    }
+                }
+            }
 
             /* Generate 1-100
              * 1-95     = Travel only to their residence,
@@ -222,7 +429,61 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         {
             /* Assign weight only if weight is 0 */
             if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+            {
                 nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+                randomNoOfTimesTravel = rand() % 2 + 1;
+                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+                /* Generate 1-2
+                 * 1 = Employed
+                 * 2 = Unemployed
+                 */
+                statusType = rand() % 2 + 1;
+                nonResSimulatedHumanObj[idx]->setStatus(statusType);
+
+                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    randomPeaks = rand() % 3 + 1;
+                    if(i == 1)
+                    {
+                        if(randomPeaks == 1)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else if(randomPeaks == 2)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+
+                    else
+                    {
+                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 2)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
+                        }
+
+                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 3)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                        }
+
+                        else
+                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                    }
+                }
+            }
         }
     }
     else if(randHumanType >= 36 && randHumanType <= 50)
@@ -234,6 +495,81 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         if(isResident)
         {
             simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+            randomNoOfTimesTravel = rand() % 2 + 1;
+            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+            /* Generate 1-2
+             * 1 = Employed
+             * 2 = Unemployed
+             */
+            statusType = rand() % 2 + 1;
+            simulatedHumanObj[idx]->setStatus(statusType);
+
+            if(statusType == 1)
+            {
+                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    if(i == 1)
+                        simulatedHumanObj[idx]->addTravelTime(1);
+
+                    else
+                    {
+                        randomPeaks = rand() % 1 + 2;
+
+                        if(randomPeaks == 2)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+                }
+            }
+
+            else
+            {
+                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    randomPeaks = rand() % 3 + 1;
+                    if(i == 1)
+                    {
+                        if(randomPeaks == 1)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else if(randomPeaks == 2)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+
+                    else
+                    {
+                        if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 2)
+                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                simulatedHumanObj[idx]->addTravelTime(3);
+                        }
+
+                        else if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 3)
+                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                simulatedHumanObj[idx]->addTravelTime(1);
+                        }
+
+                        else
+                           simulatedHumanObj[idx]->addTravelTime(1);
+                    }
+                }
+            }
 
             /* Generate 1-100
              * 1-90     = Travel only to their residence,
@@ -255,7 +591,61 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         {
             /* Assign weight only if weight is 0 */
             if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+            {
                 nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+                randomNoOfTimesTravel = rand() % 2 + 1;
+                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+                /* Generate 1-2
+                 * 1 = Employed
+                 * 2 = Unemployed
+                 */
+                statusType = rand() % 2 + 1;
+                nonResSimulatedHumanObj[idx]->setStatus(statusType);
+
+                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    randomPeaks = rand() % 3 + 1;
+                    if(i == 1)
+                    {
+                        if(randomPeaks == 1)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else if(randomPeaks == 2)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+
+                    else
+                    {
+                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 2)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
+                        }
+
+                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 3)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                        }
+
+                        else
+                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                    }
+                }
+            }
         }
     }
     else
@@ -267,6 +657,81 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         if(isResident)
         {
             simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+            randomNoOfTimesTravel = rand() % 2 + 1;
+            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+            /* Generate 1-2
+             * 1 = Employed
+             * 2 = Unemployed
+             */
+            statusType = rand() % 2 + 1;
+            simulatedHumanObj[idx]->setStatus(statusType);
+
+            if(statusType == 1)
+            {
+                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    if(i == 1)
+                        simulatedHumanObj[idx]->addTravelTime(1);
+
+                    else
+                    {
+                        randomPeaks = rand() % 1 + 2;
+
+                        if(randomPeaks == 2)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+                }
+            }
+
+            else
+            {
+                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    randomPeaks = rand() % 3 + 1;
+                    if(i == 1)
+                    {
+                        if(randomPeaks == 1)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else if(randomPeaks == 2)
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+
+                    else
+                    {
+                        if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 2)
+                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                simulatedHumanObj[idx]->addTravelTime(3);
+                        }
+
+                        else if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 3)
+                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                simulatedHumanObj[idx]->addTravelTime(1);
+                        }
+
+                        else
+                           simulatedHumanObj[idx]->addTravelTime(1);
+                    }
+                }
+            }
 
             /* Generate 1-100
              * 1-85     = Travel only to their residence,
@@ -288,7 +753,61 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         {
             /* Assign weight only if weight is 0 */
             if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+            {
                 nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+
+                randomNoOfTimesTravel = rand() % 2 + 1;
+                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
+
+                /* Generate 1-2
+                 * 1 = Employed
+                 * 2 = Unemployed
+                 */
+                statusType = rand() % 2 + 1;
+                nonResSimulatedHumanObj[idx]->setStatus(statusType);
+
+                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                {
+                    randomPeaks = rand() % 3 + 1;
+                    if(i == 1)
+                    {
+                        if(randomPeaks == 1)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else if(randomPeaks == 2)
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                        else
+                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                    }
+
+                    else
+                    {
+                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 2)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
+                        }
+
+                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
+                        {
+                            randomPeaks = rand() % 1 + 2;
+                            if(randomPeaks == 3)
+                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+
+                            else
+                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                        }
+
+                        else
+                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                    }
+                }
+            }
         }
     }
 
@@ -434,3 +953,4 @@ void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, 
         }
     }
 }
+

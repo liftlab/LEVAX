@@ -6,6 +6,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "Algorithm.h"
 
 /* Constructor */
 MainWindow::MainWindow(QWidget *parent) :
@@ -646,27 +647,93 @@ void MainWindow::on_runBtn_clicked()
             QMessageBox::warning(this,tr("Warning"),"Average people per floor cannot be 0");
         else
         {
-            /* Output message */
-            QString message = "Simulation completed in 1.3s<br>"
-                            ".<br>"
-                            "..<br>"
-                            "...<br>"
-                            "....<br>"
-                            ".....<br>"
-                            "......<br>"
-                            ".......<br>"
-                            "........<br>"
-                            ".........<br>"
-                            "..........<br>"
-                            "...........<br>";
+            Algorithm algo;
 
-            /* Set output message */
-            ui->outputBox->setText(message);
-            ui->saveResultBtn->setDisabled(false);
-            ui->tabWidget->setCurrentWidget(ui->tab_2);
+            if(ui->algoCombo->currentIndex() == 1)
+            {
 
-            QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
-            QMessageBox::information(this,tr("Completed!"), content);
+                /* Output message */
+                QString message = "Simulation completed<br>"
+                                  + QString::number(algo.nearestCar());
+
+                /* Set output message */
+                ui->outputBox->setText(message);
+                ui->saveResultBtn->setDisabled(false);
+                ui->tabWidget->setCurrentWidget(ui->tab_2);
+
+                QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
+                QMessageBox::information(this,tr("Completed!"), content);
+            }
+
+            else if(ui->algoCombo->currentIndex() == 2)
+            {
+                /* Output message */
+                QString message = "Simulation completed<br>"
+                                  + QString::number(algo.fixedSectoringCommonSectorSystem(), 'f', 2);
+
+                /* Set output message */
+                ui->outputBox->setText(message);
+                ui->saveResultBtn->setDisabled(false);
+                ui->tabWidget->setCurrentWidget(ui->tab_2);
+
+                QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
+                QMessageBox::information(this,tr("Completed!"), content);
+            }
+
+            else if(ui->algoCombo->currentIndex() == 3)
+            {
+                /* Output message */
+                QString message = "Simulation completed<br>"
+                                  + QString::number(algo.fixedSectoringPriorityTimedSystem(), 'f', 2);
+
+                /* Set output message */
+                ui->outputBox->setText(message);
+                ui->saveResultBtn->setDisabled(false);
+                ui->tabWidget->setCurrentWidget(ui->tab_2);
+
+                QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
+                QMessageBox::information(this,tr("Completed!"), content);
+            }
+
+            else if(ui->algoCombo->currentIndex() == 4)
+            {
+                /* Output message */
+                QString message = "Simulation completed<br>"
+                                  + QString::number(algo.dynamicSectoringSystem(), 'f', 2);
+
+                /* Set output message */
+                ui->outputBox->setText(message);
+                ui->saveResultBtn->setDisabled(false);
+                ui->tabWidget->setCurrentWidget(ui->tab_2);
+
+                QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
+                QMessageBox::information(this,tr("Completed!"), content);
+            }
+
+            else
+            {
+                /* Output message */
+                QString message = "Simulation completed in 1.3s<br>"
+                                ".<br>"
+                                "..<br>"
+                                "...<br>"
+                                "....<br>"
+                                ".....<br>"
+                                "......<br>"
+                                ".......<br>"
+                                "........<br>"
+                                ".........<br>"
+                                "..........<br>"
+                                "...........<br>";
+
+                /* Set output message */
+                ui->outputBox->setText(message);
+                ui->saveResultBtn->setDisabled(false);
+                ui->tabWidget->setCurrentWidget(ui->tab_2);
+
+                QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
+                QMessageBox::information(this,tr("Completed!"), content);
+            }
 
             if((loadBuildingByFile && loadHumanByFile) || (loadHumanByFile && !loadBuildingByFile))
             {
@@ -1188,6 +1255,46 @@ void MainWindow::updateHumanSummary(bool isResident)
                 /* remove last comma */
                 header.remove(header.length()-2,1);
 
+                /* Append data to QStrin */
+                header += "<br>No Of Times Travel ";
+                header += QString::number(shh.getNoOfTimesTravel(i, true));
+                header += "<br>";
+
+                header += "Status ";
+
+                int status = shh.getStatus(i, true);
+                int weight = shh.getWeight(i, true);
+
+                if(weight >= 10 && weight <= 35)
+                    header += "Schooling";
+
+                else if(status == 1 && !(weight >= 10 && weight <= 35))
+                    header += "Employed";
+
+                else if(status == 2 && !(weight >= 10 && weight <= 35))
+                    header += "Unemployed";
+
+                header += "<br>";
+
+                int travelTime = 0;
+
+                for(int m=0;m<shh.getNoOfTimesTravel(i, true);m++)
+                {
+                    travelTime = shh.getTravelTime(i, m, true);
+
+                    header += "Travel Time ";
+
+                    if(travelTime == 1)
+                        header += "morning";
+
+                    else if(travelTime == 2)
+                        header += "afternoon";
+
+                    else
+                        header += "evening";
+
+                    header += "<br>";
+                }
                 ui->inputSummaryBox_2->append(header);
 
                 header.clear();
@@ -1233,6 +1340,30 @@ void MainWindow::updateHumanSummary(bool isResident)
                 /* remove last comma */
                 header.remove(header.length()-2,1);
 
+                /* Append data to QStrin */
+                header += "<br>No Of Times Travel ";
+                header += QString::number(shh.getNoOfTimesTravel(i, false));
+                header += "<br>";
+
+                int travelTime = 0;
+
+                for(int m=0;m<shh.getNoOfTimesTravel(i, false);m++)
+                {
+                    travelTime = shh.getTravelTime(i, m, false);
+
+                    header += "Travel Time ";
+
+                    if(travelTime == 1)
+                        header += "morning";
+
+                    else if(travelTime == 2)
+                        header += "afternoon";
+
+                    else
+                        header += "evening";
+
+                    header += "<br>";
+                }
                 ui->inputSummaryBox_3->append(header);
 
                 header.clear();
@@ -1274,6 +1405,8 @@ void MainWindow::updateBuildingSummary()
     /* Loop number of lifts */
     for(int i=0;i<lh.getNumberOfLiftsObject();i++)
     {
+        lh.setDefaultFloor(i,bh.getNoOfFloor());
+
         /* Append data to QString */
         summary += "<b>Lift no ";
         summary += QString::number(lh.getLiftID(i));
@@ -1286,6 +1419,10 @@ void MainWindow::updateBuildingSummary()
         summary += "Maximum speed ";
         summary += QString::number(lh.getLiftSpeed(i));
         summary += " metre/second<br>";
+
+        summary += "The default floor of the lift ";
+        summary += QString::number(lh.getDefaultFloor(i));
+        summary += "<br>";
     }
 
     /* Append summary */

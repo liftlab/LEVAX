@@ -17,16 +17,19 @@ public:
     void setLiftID(int);                    /* Set lift id */
     void setLiftWeight(int);                /* Set lift weight */
     void setLiftSpeed(double);              /* Set lift speed */
+    void setDefaultFloor(int);              /* Set default floor */
 
     /* Getters */
     int getLiftID();                        /* Return lift id */
     int getLiftWeight();                    /* Return lift weight */
     double getLiftSpeed();                  /* Return lift speed */
+    int getDefaultFloor();                  /* Return default floor */
 
 private:
     int liftID;
     int maxWeight;
     double speedMetrePerSecond;
+    int defaultFloor;
 };
 
 #endif // LIFT_H

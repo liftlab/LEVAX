@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     LiftHandler.cpp \
     Lift.cpp \
     SimulatedHuman.cpp \
-    SimulatedHumanHandler.cpp
+    SimulatedHumanHandler.cpp \
+    Algorithm.cpp
 
 HEADERS  += mainwindow.h \
     tinyXML/tinystr.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     LiftHandler.h \
     Lift.h \
     SimulatedHuman.h \
-    SimulatedHumanHandler.h
+    SimulatedHumanHandler.h \
+    Algorithm.h
 
 FORMS    += mainwindow.ui
 

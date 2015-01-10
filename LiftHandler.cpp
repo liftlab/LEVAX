@@ -78,6 +78,18 @@ void LiftHandler::setLiftSpeed(int idx, double speedMetrePerSecond)
     liftObj[idx]->setLiftSpeed(speedMetrePerSecond);
 }
 
+/* Set default floor */
+void LiftHandler::setDefaultFloor(int idx, int floor)
+{
+    int randomFloor = rand() % 2 + 1;
+
+    if(randomFloor == 1)
+        liftObj[idx]->setDefaultFloor(randomFloor);
+
+    else
+        liftObj[idx]->setDefaultFloor(floor/2);
+}
+
 /* Return lift id */
 int LiftHandler::getLiftID(int idx)
 {
@@ -94,6 +106,12 @@ int LiftHandler::getLiftWeight(int idx)
 double LiftHandler::getLiftSpeed(int idx)
 {
     return liftObj[idx]->getLiftSpeed();
+}
+
+/* Return default floor */
+int LiftHandler::getDefaultFloor(int idx)
+{
+    return liftObj[idx]->getDefaultFloor();
 }
 
 void LiftHandler::removeLastLift()
