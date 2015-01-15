@@ -6,7 +6,6 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "Algorithm.h"
 
 /* Constructor */
 MainWindow::MainWindow(QWidget *parent) :
@@ -651,13 +650,13 @@ void MainWindow::on_runBtn_clicked()
 
             if(ui->algoCombo->currentIndex() == 1)
             {
-
                 /* Output message */
                 QString message = "Simulation completed<br>"
-                                  + QString::number(algo.nearestCar());
+                                + QString::number(algo.nearestCar(&bh, &lh, &shh), 'f', 2);
 
                 /* Set output message */
                 ui->outputBox->setText(message);
+
                 ui->saveResultBtn->setDisabled(false);
                 ui->tabWidget->setCurrentWidget(ui->tab_2);
 
@@ -666,28 +665,32 @@ void MainWindow::on_runBtn_clicked()
             }
 
             else if(ui->algoCombo->currentIndex() == 2)
-            {
+            {               
                 /* Output message */
                 QString message = "Simulation completed<br>"
-                                  + QString::number(algo.fixedSectoringCommonSectorSystem(), 'f', 2);
+                                + QString::number(algo.fixedSectoringCommonSectorSystem(&bh, &lh, &shh), 'f', 2);
 
                 /* Set output message */
                 ui->outputBox->setText(message);
+
                 ui->saveResultBtn->setDisabled(false);
                 ui->tabWidget->setCurrentWidget(ui->tab_2);
 
                 QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
                 QMessageBox::information(this,tr("Completed!"), content);
+
+               // delete algo;
             }
 
             else if(ui->algoCombo->currentIndex() == 3)
             {
                 /* Output message */
                 QString message = "Simulation completed<br>"
-                                  + QString::number(algo.fixedSectoringPriorityTimedSystem(), 'f', 2);
+                                + QString::number(algo.fixedSectoringPriorityTimedSystem(&bh, &lh, &shh), 'f', 2);
 
                 /* Set output message */
                 ui->outputBox->setText(message);
+
                 ui->saveResultBtn->setDisabled(false);
                 ui->tabWidget->setCurrentWidget(ui->tab_2);
 
@@ -699,10 +702,11 @@ void MainWindow::on_runBtn_clicked()
             {
                 /* Output message */
                 QString message = "Simulation completed<br>"
-                                  + QString::number(algo.dynamicSectoringSystem(), 'f', 2);
+                                + QString::number(algo.dynamicSectoringSystem(&bh, &lh, &shh), 'f', 2);
 
                 /* Set output message */
                 ui->outputBox->setText(message);
+
                 ui->saveResultBtn->setDisabled(false);
                 ui->tabWidget->setCurrentWidget(ui->tab_2);
 
@@ -727,7 +731,9 @@ void MainWindow::on_runBtn_clicked()
                                 "...........<br>";
 
                 /* Set output message */
-                ui->outputBox->setText(message);
+                ui->outputBox->append(message);
+                message.clear();
+
                 ui->saveResultBtn->setDisabled(false);
                 ui->tabWidget->setCurrentWidget(ui->tab_2);
 
@@ -750,8 +756,10 @@ void MainWindow::on_runBtn_clicked()
             /* Enable Export XML Feature */
             ui->exportBuildingModel->setDisabled(false);
             ui->exportHumanModel->setDisabled(false);
-        }
-    }
+
+            //delete algo;
+        }       
+    }  
 }
 
 /* Handle save result button clicked */
@@ -1405,7 +1413,7 @@ void MainWindow::updateBuildingSummary()
     /* Loop number of lifts */
     for(int i=0;i<lh.getNumberOfLiftsObject();i++)
     {
-        lh.setDefaultFloor(i,bh.getNoOfFloor());
+        lh.setDefaultFloor(i, bh.getNoOfFloor());
 
         /* Append data to QString */
         summary += "<b>Lift no ";
@@ -1427,6 +1435,9 @@ void MainWindow::updateBuildingSummary()
 
     /* Append summary */
     ui->inputSummaryBox->append(summary);
+
+    summary.clear();
+    header.clear();
 
     /* Set text focus to top */
     ui->inputSummaryBox->verticalScrollBar()->setValue(ui->inputSummaryBox->verticalScrollBar()->minimum());

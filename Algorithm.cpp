@@ -17,35 +17,27 @@ Algorithm::~Algorithm()
 
 }
 
-/* Constructor taking 3 parameters as arguments */
-Algorithm::Algorithm(BuildingHandler bh, LiftHandler lh, SimulatedHumanHandler shh)
-{
-    this->bh = bh;
-    this->lh = lh;
-    this->shh = shh;
-}
-
 /* Nearest Car algorithm */
-double Algorithm::nearestCar()
+double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
 {
-    return lh.getLiftSpeed(0);
+    return lh->getLiftSpeed(0);
 }
 
 /* Fixed Sectoring Common Sector System algorithm */
-double Algorithm::fixedSectoringCommonSectorSystem()
+double Algorithm::fixedSectoringCommonSectorSystem(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
 {
-    return lh.getLiftSpeed(0);
+    return lh->getLiftID(0);
 }
 
 /* Fixed Sectoring Priority Timed System algorithm */
-double Algorithm::fixedSectoringPriorityTimedSystem()
+double Algorithm::fixedSectoringPriorityTimedSystem(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
 {
-    return lh.getLiftSpeed(0);
+    return lh->getLiftID(0);
 }
 
 /* Dynamic Sectoring System algorithm */
-double Algorithm::dynamicSectoringSystem()
+double Algorithm::dynamicSectoringSystem(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
 {
-    return lh.getLiftSpeed(0);
+    return lh->getLiftID(0);
 }
 

@@ -8,20 +8,19 @@
 class Algorithm
 {
 public:
-    Algorithm();                                        /* Constructor */
-    ~Algorithm();                                       /* Destructor */
+    Algorithm();                                                                            /* Constructor */
+    ~Algorithm();                                                                           /* Destructor */
 
-    Algorithm(BuildingHandler bh, LiftHandler lh, SimulatedHumanHandler shh);      /* Constructor taking 3 parameters as arguments */
-
-    double nearestCar();                                /* Nearest Car algorithm */
-    double fixedSectoringCommonSectorSystem();          /* Fixed Sectoring Common Sector System algorithm */
-    double fixedSectoringPriorityTimedSystem();         /* Fixed Sectoring Priority Timed System algorithm */
-    double dynamicSectoringSystem();                    /* Dynamic Sectoring System algorithm */
+    double nearestCar(BuildingHandler *,
+                      LiftHandler *, SimulatedHumanHandler *);                                  /* Nearest Car algorithm */
+    double fixedSectoringCommonSectorSystem(BuildingHandler *,
+                                            LiftHandler *, SimulatedHumanHandler *);            /* Fixed Sectoring Common Sector System algorithm */
+    double fixedSectoringPriorityTimedSystem(BuildingHandler *,
+                                             LiftHandler *, SimulatedHumanHandler *);           /* Fixed Sectoring Priority Timed System algorithm */
+    double dynamicSectoringSystem(BuildingHandler *,
+                                  LiftHandler *, SimulatedHumanHandler *);                      /* Dynamic Sectoring System algorithm */
 
 private:
-    BuildingHandler bh;                                 /* Building handler object */
-    LiftHandler lh;                                     /* Lift handler object */
-    SimulatedHumanHandler shh;                          /* SimulatedHuman handler object */
 
 };
 

@@ -21,6 +21,7 @@
 #include "BuildingHandler.h"        /* Building Handler */
 #include "LiftHandler.h"            /* Lift Handler */
 #include "SimulatedHumanHandler.h"  /* SimulatedHuman Handler */
+#include "Algorithm.h"
 
 namespace Ui {
 class MainWindow;
