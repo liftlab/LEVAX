@@ -27,7 +27,6 @@ private:
     int liftID;
     int maxWeight;
     double speedMetrePerSecond;
-    int defaultFloor;
 };
 
 #endif // LIFT_H

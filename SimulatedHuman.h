@@ -43,7 +43,6 @@ private:
     int personID;
     int residentOf;
     int weight;
-    int status;
     std::vector<pair<int, int> > timeTravel;    /* Stores the time travel */
 };
 
