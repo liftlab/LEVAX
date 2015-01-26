@@ -27,13 +27,11 @@ public:
     void setLiftID(int, int);                   /* Set lift id */
     void setLiftWeight(int, int);               /* Set lift weight */
     void setLiftSpeed(int, double);             /* Set lift speed */
-    void setDefaultFloor(int, int);             /* Set default floor */
 
     /* Getters */
     int getLiftID(int);                         /* Return lift id */
     int getLiftWeight(int);                     /* Return lift weight */
     double getLiftSpeed(int);                   /* Return lift speed */
-    int getDefaultFloor(int);                   /* Return default floor */
 
     /* FOR DEBUGGING PURPOSES ONLY */
     void getAllLiftData();                      /* Print all lift object data for debugging */

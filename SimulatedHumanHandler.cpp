@@ -97,40 +97,13 @@ void SimulatedHumanHandler::setWeight(int idx, int weight, bool isResident)
         nonResSimulatedHumanObj[idx-1]->setWeight(weight);
 }
 
-/* Add floor travelling */
-void SimulatedHumanHandler::addFloorTravelling(int idx, int floor, bool isResident)
-{
-    if(isResident)
-        simulatedHumanObj[idx-1]->addFloorTravelling(floor);
-    else
-       nonResSimulatedHumanObj[idx-1]->addFloorTravelling(floor);
-}
-
 /* Add travel time */
-void SimulatedHumanHandler::addTravelTime(int travelTime, int idx, bool isResident)
+void SimulatedHumanHandler::addTravelTime(int travelTime, int floor, int idx, bool isResident)
 {
     if(isResident)
-        simulatedHumanObj[idx]->addTravelTime(travelTime);
+        simulatedHumanObj[idx]->addTravelTime(travelTime, floor);
     else
-       nonResSimulatedHumanObj[idx]->addTravelTime(travelTime);
-}
-
-/* Set number of times traveled */
-void SimulatedHumanHandler::setNoOfTimesTravel(int idx, int noOfTimes, bool isResident)
-{
-    if(isResident)
-        simulatedHumanObj[idx]->setNoOfTimesTravel(noOfTimes);
-    else
-       nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(noOfTimes);
-}
-
-/* Set the status */
-void SimulatedHumanHandler::setStatus(int idx, int status, bool isResident)
-{
-    if(isResident)
-        simulatedHumanObj[idx]->setStatus(status);
-    else
-       nonResSimulatedHumanObj[idx]->setStatus(status);
+        nonResSimulatedHumanObj[idx]->addTravelTime(travelTime, floor);
 }
 
 /* Return person id */
@@ -160,15 +133,6 @@ int SimulatedHumanHandler::getWeight(int idx, bool isResident)
         return nonResSimulatedHumanObj[idx]->getWeight();
 }
 
-/* Return floor travelling at index */
-int SimulatedHumanHandler::getFloorTravelling(int idxOfPerson, int idxOfFloorTravelling, bool isResident)
-{
-    if(isResident)
-        return simulatedHumanObj[idxOfPerson]->getFloorTravelling(idxOfFloorTravelling);
-    else
-        return nonResSimulatedHumanObj[idxOfPerson]->getFloorTravelling(idxOfFloorTravelling);
-}
-
 /* Return the travel time */
 int SimulatedHumanHandler::getTravelTime(int idx, int count, bool isResident)
 {
@@ -176,6 +140,15 @@ int SimulatedHumanHandler::getTravelTime(int idx, int count, bool isResident)
         return simulatedHumanObj[idx]->getTravelTime(count);
     else
         return nonResSimulatedHumanObj[idx]->getTravelTime(count);
+}
+
+/* Return the travel floor with respect to the time */
+int SimulatedHumanHandler::getTravelFloor(int idx, int count, bool isResident)
+{
+    if(isResident)
+        return simulatedHumanObj[idx]->getTravelFloor(count);
+    else
+        return nonResSimulatedHumanObj[idx]->getTravelFloor(count);
 }
 
 /* Return the number of travel times */
@@ -187,639 +160,614 @@ int SimulatedHumanHandler::getNoOfTimesTravel(int idx, bool isResident)
         return nonResSimulatedHumanObj[idx]->getNoOfTimesTravel();
 }
 
-/* Return the status */
-int SimulatedHumanHandler::getStatus(int idx, bool isResident)
-{
-    if(isResident)
-        return simulatedHumanObj[idx]->getStatus();
-    else
-        return nonResSimulatedHumanObj[idx]->getStatus();
-}
-
 /* Populate simulatedHuman with weight, etc */
 void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors, bool isResident)
 {
-    int randomNoOfTimesTravel = 0;
-
-    /* Add own residence floor if its a residence*/
-    if(isResident)
-       simulatedHumanObj[idx]->addFloorTravelling(simulatedHumanObj[idx]->getResident());      
-
-    /* Generate 3 timings
-     * 1 = morning peak
-     * 2 = afternoon peak
-     * 3 = evening peak
-     */
-    int randomPeaks = 0;
+    /* Generate Weight */
+    int min = 0;
+    int max = 0;
 
     /* Generate 1-100
      * 1-15     = Child,
-     * 21-30    = Heavier Adult,
-     * 36-50    = Thin Adult,
+     * 16-30    = Heavier Adult,
+     * 31-50    = Thin Adult,
      * 50-100   = Average Adult
      */
     int randHumanType = rand() % 100 + 1;
-    int randomFloor, statusType = 0;
 
-    /* Set weight base on type*/
     if(randHumanType >= 1 && randHumanType <= 15)
     {
-        /* Generate weight from 10 to 35 kg */
-        int max = 35;
-        int min = 15;
-
+        min = 15;
+        max = 35;
         if(isResident)
-        {
             simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        else
+        {
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        }
+    }
+    else if(randHumanType >= 16 && randHumanType <= 30)
+    {
+        min = 80;
+        max = 150;
+        if(isResident)
+            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        else
+        {
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        }
+    }
+    else if(randHumanType >= 31 && randHumanType <= 50)
+    {
+        min = 35;
+        max = 55;
+        if(isResident)
+            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        else
+        {
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        }
+    }
+    else
+    {
+        min = 55;
+        max = 79;
+        if(isResident)
+            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        else
+        {
+            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+        }
+    }
 
+    /* Generate time travel */
+    int randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
+
+    int randomNoOfTimesTravel = 0;
+
+    int randomTime = 0;
+    int currentTime = 0;
+
+    if(isResident)
+    {
+        /* Generate 1-100
+         * 1-30     = Schooling
+         * 31-80    = Working
+         * 81-100   = Others
+         */
+        int status = rand() % 100 + 1;
+
+        // Is Schooling
+        if(status >= 1 && status <= 30)
+        {
             randomNoOfTimesTravel = rand() % 2 + 1;
-            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
 
-            /* Generate timing for residents */
-            for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+            /* Generate timing */
+            for(int i = 1; i <= randomNoOfTimesTravel; i++)
             {
+                /* Travel to school and back */
                 if(i == 1)
-                    simulatedHumanObj[idx]->addTravelTime(1);
+                {
+                    /* Student leaves for school at 6AM (21600) to 7:15AM  (26100) */
+                    int timeToSchool = rand() % (26100 - 21600) + 21600;
+                    simulatedHumanObj[idx]->addTravelTime(timeToSchool, 1);
 
+                    /* Student back from school at 1PM (46800) to 7PM  (68400) */
+                    int backFromSchool = rand() % (68400 - 46800) + 46800;
+                    simulatedHumanObj[idx]->addTravelTime(backFromSchool, simulatedHumanObj[idx]->getResident());
+
+                    currentTime = backFromSchool + 600;
+                }
                 else
                 {
-                    randomPeaks = rand() % 1 + 2;
+                    /* Generate a time the student will leave home
+                    * Time ranging from back from school to 8PM (72000)
+                    */
+                    randomTime = rand() % (72000 - currentTime) + currentTime;
+                    simulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+                    currentTime = randomTime + 600;
 
-                    if(randomPeaks == 2)
-                        simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                    else
-                        simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                }
-            }
-
-            /* Generate 1-100
-             * 1-90     = Travel only to their residence,
-             * 90-100    = Travel to other floor to find friends
-             */
-            int travellingType = rand() % 100 + 1;
-            if(travellingType >= 90 && travellingType <= 100)
-            {
-                /* Generate number of friends the object visiting */
-                int noOfFriends = rand() % TRAVEL_MAX + 1;
-                for(int i=0;i<noOfFriends;i++)
-                {
-                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
+                    randomTime = rand() % (79200 - currentTime) + currentTime;
+                    simulatedHumanObj[idx]->addTravelTime(randomTime, simulatedHumanObj[idx]->getResident());
+                    currentTime = randomTime + 600;
                 }
             }
         }
-        else
+        else if(status >= 31 && status <= 80)
         {
-            /* Assign weight only if weight is 0 */
-            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
-            {
-                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
-
-                randomNoOfTimesTravel = rand() % 2 + 1;
-                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
-
-                /* Generate timing for non residents */
-                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
-                {
-                    randomPeaks = rand() % 3 + 1;
-                    if(i == 1)
-                    {
-                        if(randomPeaks == 1)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else if(randomPeaks == 2)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
-
-                    else
-                    {
-                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 2)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
-                        }
-
-                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 3)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
-                        }
-
-                        else
-                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
-                    }
-                }
-            }
-        }
-    }
-    else if(randHumanType >= 21 && randHumanType <= 30)
-    {
-        /* Generate weight from 80 to 150 kg */
-        int max = 150;
-        int min = 80;
-
-        if(isResident)
-        {
-            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
-
             randomNoOfTimesTravel = rand() % 2 + 1;
-            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
 
-            /* Generate 1-2
-             * 1 = Employed
-             * 2 = Unemployed
-             */
-            statusType = rand() % 2 + 1;
-            simulatedHumanObj[idx]->setStatus(statusType);
-
-            if(statusType == 1)
+            for(int i = 1; i <= randomNoOfTimesTravel; i++)
             {
-                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                if(i == 1)
                 {
-                    if(i == 1)
-                        simulatedHumanObj[idx]->addTravelTime(1);
+                    /* Person leaves for work at 5:30AM (19800) to 8:30AM  (30600) */
+                    int timeToWork = rand() % (30600 - 19800) + 19800;
+                    simulatedHumanObj[idx]->addTravelTime(timeToWork, 1);
 
+                    int backFromWork;
+                    if(randomNoOfTimesTravel == 1)
+                    {
+                        /* Person back from work at 6PM (68400) to 11:59PM  (86399) */
+                        backFromWork = rand() % (86399 - 82800) + 82800;
+                    }
                     else
                     {
-                        randomPeaks = rand() % 1 + 2;
-
-                        if(randomPeaks == 2)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                        /* Person back from work at 6PM (68400) to 8PM  (72000) */
+                        backFromWork = rand() % (72000 - 68400) + 68400;
                     }
+
+                    simulatedHumanObj[idx]->addTravelTime(backFromWork, simulatedHumanObj[idx]->getResident());
+                    currentTime = backFromWork + 600;
                 }
-            }
-
-            else
-            {
-                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                else
                 {
-                    randomPeaks = rand() % 3 + 1;
-                    if(i == 1)
-                    {
-                        if(randomPeaks == 1)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else if(randomPeaks == 2)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
-
-                    else
-                    {
-                        if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 2)
-                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                simulatedHumanObj[idx]->addTravelTime(3);
-                        }
-
-                        else if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 3)
-                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                simulatedHumanObj[idx]->addTravelTime(1);
-                        }
-
-                        else
-                           simulatedHumanObj[idx]->addTravelTime(1);
-                    }
-                }
-            }
-
-            /* Generate 1-100
-             * 1-95     = Travel only to their residence,
-             * 95-100    = Travel to other floor to find friends
-             */
-            int travellingType = rand() % 100 + 1;
-            if(travellingType >= 95 && travellingType <= 100)
-            {
-                /* Generate number of friends the object visiting */
-                int noOfFriends = rand() % TRAVEL_MAX + 1;
-                for(int i=0;i<noOfFriends;i++)
-                {
-                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
+                    /* Generate a time the person will leave home
+                     * Time ranging from backFromWork to 23:59PM (86399)
+                     */
+                    randomTime = rand() % (86399 - currentTime) + currentTime;
+                    simulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+                    currentTime = randomTime + 600;
                 }
             }
         }
-        else
+        else if(status >= 81 && status <= 100)
         {
-            /* Assign weight only if weight is 0 */
-            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+            randomNoOfTimesTravel = rand() % 3 + 1;
+
+            int range1 = 0; // 12AM
+            int range2 = 86399; // 23:59PM
+
+            int i = 0;
+            while(i < randomNoOfTimesTravel)
             {
-                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
-
-                randomNoOfTimesTravel = rand() % 2 + 1;
-                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
-
-                /* Generate 1-2
-                 * 1 = Employed
-                 * 2 = Unemployed
-                 */
-                statusType = rand() % 2 + 1;
-                nonResSimulatedHumanObj[idx]->setStatus(statusType);
-
-                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                if(range2 <= 86399 && range1 <= 86399)
                 {
-                    randomPeaks = rand() % 3 + 1;
-                    if(i == 1)
+                    /* Person leaves home at range1 to range2 */
+                    int timeLeaveHome = rand() % (range2 - range1) + range1;
+                    simulatedHumanObj[idx]->addTravelTime(timeLeaveHome, 1);
+                    currentTime = timeLeaveHome+600;
+
+                    /* Person reach home at currentTime to currentTime+7hour*/
+                    int backToHome = rand() % ((currentTime+25200) - currentTime) + currentTime;
+
+                    /* If the time back home is more than 23:59, we are not interested in it as simulated has ended */
+                    if(backToHome <= 86399)
                     {
-                        if(randomPeaks == 1)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                        simulatedHumanObj[idx]->addTravelTime(backToHome, simulatedHumanObj[idx]->getResident());
+                        currentTime = backToHome+600;
 
-                        else if(randomPeaks == 2)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                        range1 = currentTime+14400; // at most 4 hours interval
+                        range2 = range1+25200; // range of 7 hours
                     }
-
                     else
                     {
-                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 2)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
-                        }
-
-                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 3)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
-                        }
-
-                        else
-                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
+                        // exit loop
+                        i = randomNoOfTimesTravel;
                     }
                 }
-            }
-        }
-    }
-    else if(randHumanType >= 36 && randHumanType <= 50)
-    {
-        /* Generate weight from 35 to 55 kg */
-        int max = 55;
-        int min = 35;
-
-        if(isResident)
-        {
-            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
-
-            randomNoOfTimesTravel = rand() % 2 + 1;
-            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
-
-            /* Generate 1-2
-             * 1 = Employed
-             * 2 = Unemployed
-             */
-            statusType = rand() % 2 + 1;
-            simulatedHumanObj[idx]->setStatus(statusType);
-
-            if(statusType == 1)
-            {
-                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
+                else
                 {
-                    if(i == 1)
-                        simulatedHumanObj[idx]->addTravelTime(1);
-
-                    else
-                    {
-                        randomPeaks = rand() % 1 + 2;
-
-                        if(randomPeaks == 2)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
+                    // exit loop;
+                    i = randomNoOfTimesTravel;
                 }
-            }
 
-            else
-            {
-                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
-                {
-                    randomPeaks = rand() % 3 + 1;
-                    if(i == 1)
-                    {
-                        if(randomPeaks == 1)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else if(randomPeaks == 2)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
-
-                    else
-                    {
-                        if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 2)
-                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                simulatedHumanObj[idx]->addTravelTime(3);
-                        }
-
-                        else if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 3)
-                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                simulatedHumanObj[idx]->addTravelTime(1);
-                        }
-
-                        else
-                           simulatedHumanObj[idx]->addTravelTime(1);
-                    }
-                }
-            }
-
-            /* Generate 1-100
-             * 1-90     = Travel only to their residence,
-             * 90-100    = Travel to other floor to find friends
-             */
-            int travellingType = rand() % 100 + 1;
-            if(travellingType >= 90 && travellingType <= 100)
-            {
-                /* Generate number of friends the object visiting */
-                int noOfFriends = rand() % TRAVEL_MAX + 1;
-                for(int i=0;i<noOfFriends;i++)
-                {
-                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
-                }
-            }
-        }
-        else
-        {
-            /* Assign weight only if weight is 0 */
-            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
-            {
-                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
-
-                randomNoOfTimesTravel = rand() % 2 + 1;
-                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
-
-                /* Generate 1-2
-                 * 1 = Employed
-                 * 2 = Unemployed
-                 */
-                statusType = rand() % 2 + 1;
-                nonResSimulatedHumanObj[idx]->setStatus(statusType);
-
-                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
-                {
-                    randomPeaks = rand() % 3 + 1;
-                    if(i == 1)
-                    {
-                        if(randomPeaks == 1)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else if(randomPeaks == 2)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
-
-                    else
-                    {
-                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 2)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
-                        }
-
-                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 3)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
-                        }
-
-                        else
-                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
-                    }
-                }
+                /* if more than 23h 59min 59s, stop loop */
+                if(currentTime > 86399)
+                    i = randomNoOfTimesTravel;
+                else
+                    i++;
             }
         }
     }
     else
     {
-        /* Generate weight from 55 to 79 kg */
-        int max = 79;
-        int min = 55;
-
-        if(isResident)
+        if(nonResSimulatedHumanObj[idx]->getNoOfTimesTravel() > 0)
         {
-            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
-
-            randomNoOfTimesTravel = rand() % 2 + 1;
-            simulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
-
-            /* Generate 1-2
-             * 1 = Employed
-             * 2 = Unemployed
-             */
-            statusType = rand() % 2 + 1;
-            simulatedHumanObj[idx]->setStatus(statusType);
-
-            if(statusType == 1)
+            for(int i=0;i<nonResSimulatedHumanObj[idx]->getNoOfTimesTravel();i++)
             {
-                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
-                {
-                    if(i == 1)
-                        simulatedHumanObj[idx]->addTravelTime(1);
-
-                    else
-                    {
-                        randomPeaks = rand() % 1 + 2;
-
-                        if(randomPeaks == 2)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
-                }
-            }
-
-            else
-            {
-                for(int i = 1; i <= simulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
-                {
-                    randomPeaks = rand() % 3 + 1;
-                    if(i == 1)
-                    {
-                        if(randomPeaks == 1)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else if(randomPeaks == 2)
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                        else
-                            simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
-
-                    else
-                    {
-                        if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 2)
-                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                simulatedHumanObj[idx]->addTravelTime(3);
-                        }
-
-                        else if(simulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 3)
-                                simulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                simulatedHumanObj[idx]->addTravelTime(1);
-                        }
-
-                        else
-                           simulatedHumanObj[idx]->addTravelTime(1);
-                    }
-                }
-            }
-
-            /* Generate 1-100
-             * 1-85     = Travel only to their residence,
-             * 85-100    = Travel to other floor to find friends
-             */
-            int travellingType = rand() % 100 + 1;
-            if(travellingType >= 85 && travellingType <= 100)
-            {
-                /* Generate number of friends the object visiting */
-                int noOfFriends = rand() % TRAVEL_MAX + 1;
-                for(int i=0;i<noOfFriends;i++)
-                {
-                    randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-                    simulatedHumanObj[idx]->addFloorTravelling(randomFloor);
-                }
+                if(nonResSimulatedHumanObj[idx]->getTravelFloor(i) != 1)
+                    nonResSimulatedHumanObj[idx]->setTravelLevel(i,randomFloor);
             }
         }
         else
         {
-            /* Assign weight only if weight is 0 */
-            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+            /* Generate 1-100
+             * 1-10     = Morning
+             * 11-30    = Afternoon
+             * 31-60    = Late Afternoon
+             * 60-100   = Evening
+             */
+            int randomVisitingPeak = rand() % 100 + 1;
+
+            if(randomVisitingPeak >= 1 && randomVisitingPeak <= 10)
             {
-                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+                /* Visit at 7AM (25200) to 9AM  (25200) */
+                randomTime = rand() % (32400 - 25200) + 25200;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+                currentTime = randomTime + 600;
 
-                randomNoOfTimesTravel = rand() % 2 + 1;
-                nonResSimulatedHumanObj[idx]->setNoOfTimesTravel(randomNoOfTimesTravel);
-
-                /* Generate 1-2
-                 * 1 = Employed
-                 * 2 = Unemployed
+                /* Generate a time the visitor will leave
+                 * Time ranging from currentTime to 12PM (43200)
                  */
-                statusType = rand() % 2 + 1;
-                nonResSimulatedHumanObj[idx]->setStatus(statusType);
+                randomTime = rand() % (43200 - currentTime) + currentTime;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+            }
+            else if(randomVisitingPeak >= 11 && randomVisitingPeak <= 30)
+            {
+                /* Visit at 11AM (39600) to 2PM  (50400) */
+                randomTime = rand() % (50400 - 39600) + 39600;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+                currentTime = randomTime + 600;
 
-                for(int i = 1; i <= nonResSimulatedHumanObj[idx]->getNoOfTimesTravel(); i++)
-                {
-                    randomPeaks = rand() % 3 + 1;
-                    if(i == 1)
-                    {
-                        if(randomPeaks == 1)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                /* Generate a time the visitor will leave
+                 * Time ranging from currentTime to 4PM (57600)
+                 */
+                randomTime = rand() % (57600 - currentTime) + currentTime;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+            }
+            else if(randomVisitingPeak >= 31 && randomVisitingPeak <= 60)
+            {
+                /* Visit at 5PM (61200) to 7:30PM  (70200) */
+                randomTime = rand() % (70200 - 61200) + 61200;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+                currentTime = randomTime + 600;
 
-                        else if(randomPeaks == 2)
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
+                /* Generate a time the visitor will leave
+                 * Time ranging from currentTime to 8PM (72000)
+                 */
+                randomTime = rand() % (72000 - currentTime) + currentTime;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+            }
+            else if(randomVisitingPeak >= 60 && randomVisitingPeak <= 100)
+            {
+                /* Visit at 7:30PM (61200) to 9PM  (75600) */
+                randomTime = rand() % (75600 - 61200) + 61200;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+                currentTime = randomTime + 600;
 
-                        else
-                            nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-                    }
-
-                    else
-                    {
-                        if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 1)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 2)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(3);
-                        }
-
-                        else if(nonResSimulatedHumanObj[idx]->getTravelTime(i - 1) == 2)
-                        {
-                            randomPeaks = rand() % 1 + 2;
-                            if(randomPeaks == 3)
-                                nonResSimulatedHumanObj[idx]->addTravelTime(randomPeaks);
-
-                            else
-                                nonResSimulatedHumanObj[idx]->addTravelTime(1);
-                        }
-
-                        else
-                           nonResSimulatedHumanObj[idx]->addTravelTime(1);
-                    }
-                }
+                /* Generate a time the visitor will leave
+                 * Time ranging from currentTime to 11PM (82800)
+                 */
+                randomTime = rand() % (82800 - currentTime) + currentTime;
+                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
             }
         }
     }
+    /* Set weight based on type */
+//    if(randHumanType >= 1 && randHumanType <= 15)
+//    {
+//        min = 15;
+//        max = 35;
+//        if(isResident)
+//            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        else
+//        {
+//            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+//                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        }
+//    }
+//    else if(randHumanType >= 16 && randHumanType <= 30)
+//    {
+//        min = 80;
+//        max = 150;
+//        if(isResident)
+//            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        else
+//        {
+//            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+//                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        }
+//    }
+//    else if(randHumanType >= 31 && randHumanType <= 50)
+//    {
+//        min = 35;
+//        max = 55;
+//        if(isResident)
+//            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        else
+//        {
+//            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+//                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        }
+//    }
+//    else
+//    {
+//        min = 55;
+//        max = 79;
+//        if(isResident)
+//            simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        else
+//        {
+//            if(nonResSimulatedHumanObj[idx]->getWeight() == 0)
+//                nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
+//        }
+//    }
 
-    if(!isResident)
-    {
-        // If floor exist, remove and re-add for building floor consistency
-        if(getFloorTravellingSize(idx, false) > 0)
-            removeFloorTravelling(idx, getFloorTravelling(idx, 0, false), false);
+//    /* Set weight base on type*/
+//    if(randHumanType >= 1 && randHumanType <= 15)
+//    {
+//        if(isResident)
+//        {
+//            /* Set Schooling Status*/
+//            statusType = 3;
 
-        randomFloor = 2 + (rand() % (totalNoOfFloors - 2 + 1));
-        nonResSimulatedHumanObj[idx]->addFloorTravelling(randomFloor);
-    }
+//            randomNoOfTimesTravel = rand() % 2 + 1;
+
+//            /* Generate timing */
+//            for(int i = 1; i <= randomNoOfTimesTravel; i++)
+//            {
+//                /* Travel to school and back */
+//                if(i == 1)
+//                {
+//                    /* Student leaves for school at 6AM (21600) to 7:15AM  (26100) */
+//                    int timeToSchool = rand() % (26100 - 21600) + 21600;
+//                    simulatedHumanObj[idx]->addTravelTime(timeToSchool, 1);
+
+//                    /* Student back from school at 1PM (46800) to 7PM  (68400) */
+//                    int backFromSchool = rand() % (68400 - 46800) + 46800;
+//                    simulatedHumanObj[idx]->addTravelTime(backFromSchool, simulatedHumanObj[idx]->getResident());
+//                    qDebug() << idx << simulatedHumanObj[idx]->getResident();
+//                    currentTime = backFromSchool + 600;
+//                }
+//                else
+//                {
+//                    /* Generate a time the student will leave home
+//                     * Time ranging from back from school to 8PM (72000)
+//                     */
+
+//                    randomTime = rand() % (72000 - currentTime) + currentTime;
+//                    simulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                    currentTime = randomTime + 600;
+
+//                    randomTime = rand() % (79200 - currentTime) + currentTime;
+//                    simulatedHumanObj[idx]->addTravelTime(randomTime, simulatedHumanObj[idx]->getResident());
+//                    currentTime = randomTime + 600;
+//                }
+//            }
+//        }
+//        else
+//        {
+//            if(nonResSimulatedHumanObj[idx]->getNoOfTimesTravel() > 0)
+//            {
+//                for(int i=0;i<nonResSimulatedHumanObj[idx]->getNoOfTimesTravel();i++)
+//                {
+//                    if(nonResSimulatedHumanObj[idx]->getTravelFloor(i) != 1)
+//                        nonResSimulatedHumanObj[idx]->setTravelLevel(i,randomFloor);
+//                }
+//            }
+//            else
+//            {
+//                randomPeaks = rand() % 3 + 1;
+
+//                if(randomPeaks == 1)
+//                {
+//                    /* Visit at 6AM (21600) to 7AM  (25200) */
+//                    randomTime = rand() % (25200 - 21600) + 21600;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+//                    currentTime = randomTime + 600;
+
+//                    /* Generate a time the visitor will leave
+//                     * Time ranging from currentTime to 7:15PM (26100)
+//                     */
+//                    randomTime = rand() % (26100 - currentTime) + currentTime;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                }
+//                else if(randomPeaks == 2)
+//                {
+//                    /* Visit at 11AM (39600) to 12:30PM  (45000) */
+//                    randomTime = rand() % (45000 - 39600) + 39600;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+//                    currentTime = randomTime + 600;
+
+//                    /* Generate a time the visitor will leave
+//                     * Time ranging from currentTime to 1:30PM (48600)
+//                     */
+//                    randomTime = rand() % (48600 - currentTime) + currentTime;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                }
+//                else if(randomPeaks == 3)
+//                {
+//                    /* Visit at 4PM (57600) to 6:30PM  (66600) */
+//                    randomTime = rand() % (66600 - 57600) + 57600;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+//                    currentTime = randomTime + 600;
+
+//                    /* Generate a time the visitor will leave
+//                     * Time ranging from currentTime to 8PM (72000)
+//                     */
+//                    randomTime = rand() % (72000 - currentTime) + currentTime;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                }
+//            }
+//        }
+//    }
+//    else if(randHumanType >= 16)
+//    {
+//        if(isResident)
+//        {
+//            /* Generate 1-3
+//             * 1 = Employed
+//             * 2 = Unemployed
+//             * 3 = Student
+//             */
+//            statusType = rand() % 3 + 1;
+
+//            if(statusType == 1)
+//            {
+//                randomNoOfTimesTravel = rand() % 2 + 1;
+
+//                for(int i = 1; i <= randomNoOfTimesTravel; i++)
+//                {
+//                    if(i == 1)
+//                    {
+//                        /* Person leaves for work at 5:30AM (19800) to 8:30AM  (30600) */
+//                        int timeToWork = rand() % (30600 - 19800) + 19800;
+//                        simulatedHumanObj[idx]->addTravelTime(timeToWork, 1);
+
+//                        int backFromWork;
+//                        if(randomNoOfTimesTravel == 1)
+//                        {
+//                            /* Person back from work at 6PM (68400) to 11:59PM  (86399) */
+//                            backFromWork = rand() % (86399 - 82800) + 82800;
+//                        }
+//                        else
+//                        {
+//                            /* Person back from work at 6PM (68400) to 8PM  (72000) */
+//                            backFromWork = rand() % (72000 - 68400) + 68400;
+//                        }
+
+//                        simulatedHumanObj[idx]->addTravelTime(backFromWork, simulatedHumanObj[idx]->getResident());
+//                        currentTime = backFromWork + 600;
+//                    }
+//                    else
+//                    {
+//                        /* Generate a time the person will leave home
+//                         * Time ranging from backFromWork to 23:59PM (86399)
+//                         */
+//                        randomTime = rand() % (86399 - currentTime) + currentTime;
+//                        simulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                        currentTime = randomTime + 600;
+//                    }
+//                }
+//            }
+//            else if(statusType == 2)
+//            {
+//                // Slight problem
+
+
+//                randomNoOfTimesTravel = rand() % 3 + 1;
+
+//                int range1 = 0; // 12AM
+//                int range2 = 86399; // 23:59PM
+
+//                int i = 0;
+//                while(i < randomNoOfTimesTravel)
+//                {
+//                    /* Person leaves home at range1 to range2 */
+//                    int timeLeaveHome = rand() % (range2 - range1) + range1;
+
+//                    if(range2 <= 86399 && range1 <= 86399)
+//                    {
+//                        simulatedHumanObj[idx]->addTravelTime(timeLeaveHome, 1);
+//                        currentTime = timeLeaveHome+600;
+//                    }
+//                    /* Person reach home at currentTime to currentTime+7hour*/
+//                    int backToHome = rand() % ((currentTime+25200) - currentTime) + currentTime;
+
+//                    /* If the time back home is more than 23:59, we are not interested in it as simulated has ended */
+//                    if(backToHome <= 86399)
+//                    {
+//                        simulatedHumanObj[idx]->addTravelTime(backToHome, simulatedHumanObj[idx]->getResident());
+//                        currentTime = backToHome+600;
+//                        range1 = currentTime+14400; // at most 4 hours interval
+//                        range2 = range1+25200; // range of 7 hours
+//                    }
+//                    else
+//                    {
+//                        i = randomNoOfTimesTravel;
+//                    }
+
+//                    /* if more than 23h 59min 59s, stop loop */
+//                    if(currentTime > 86399)
+//                        i = randomNoOfTimesTravel;
+//                    else
+//                        i++;
+//                }
+//            }
+//            else if(statusType == 3)
+//            {
+//                randomNoOfTimesTravel = rand() % 2 + 1;
+
+//                /* Generate timing */
+//                for(int i = 1; i <= randomNoOfTimesTravel; i++)
+//                {
+//                    /* Travel to school and back */
+//                    if(i == 1)
+//                    {
+//                        /* Student leaves for school at 6AM (21600) to 3PM  (54000) */
+//                        int timeToSchool = rand() % (54000 - 21600) + 21600;
+//                        simulatedHumanObj[idx]->addTravelTime(timeToSchool, 1);
+
+//                        /* Student back from school at 6PM (63000) to 8PM  (72000) */
+//                        int backFromSchool = rand() % (72000 - 63000) + 63000;
+//                        simulatedHumanObj[idx]->addTravelTime(backFromSchool, simulatedHumanObj[idx]->getResident());
+//                        //qDebug() << idx << simulatedHumanObj[idx]->getResident();
+//                        currentTime = backFromSchool + 600;
+//                    }
+//                    else
+//                    {
+//                        /* Generate a time the student will leave home
+//                         * Time ranging from back from school to 11PM (82800)
+//                         */
+//                        randomTime = rand() % (82800 - currentTime) + currentTime;
+//                        simulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                        currentTime = randomTime + 600;
+//                    }
+//                }
+//            }
+//        }
+//        else
+//        {
+//            if(nonResSimulatedHumanObj[idx]->getNoOfTimesTravel() > 0)
+//            {
+//                for(int i=0;i<nonResSimulatedHumanObj[idx]->getNoOfTimesTravel();i++)
+//                {
+//                    if(nonResSimulatedHumanObj[idx]->getTravelFloor(i) != 1)
+//                        nonResSimulatedHumanObj[idx]->setTravelLevel(i,randomFloor);
+//                }
+//            }
+//            else
+//            {
+
+//                randomPeaks = rand() % 3 + 1;
+
+//                if(randomPeaks == 1)
+//                {
+//                    /* Visit at 6AM (21600) to 7AM  (25200) */
+//                    randomTime = rand() % (25200 - 21600) + 21600;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+//                    currentTime = randomTime + 600;
+
+//                    /* Generate a time the visitor will leave
+//                     * Time ranging from currentTime to 7:15PM (26100)
+//                     */
+//                    randomTime = rand() % (26100 - currentTime) + currentTime;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                }
+//                else if(randomPeaks == 2)
+//                {
+//                    /* Visit at 11AM (39600) to 12:30PM  (45000) */
+//                    randomTime = rand() % (45000 - 39600) + 39600;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+//                    currentTime = randomTime + 600;
+
+//                    /* Generate a time the visitor will leave
+//                     * Time ranging from currentTime to 1:30PM (48600)
+//                     */
+//                    randomTime = rand() % (48600 - currentTime) + currentTime;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                }
+//                else if(randomPeaks == 3)
+//                {
+//                    /* Visit at 4PM (57600) to 6:30PM  (66600) */
+//                    randomTime = rand() % (66600 - 57600) + 57600;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
+//                    currentTime = randomTime + 600;
+
+//                    /* Generate a time the visitor will leave
+//                     * Time ranging from currentTime to 8PM (72000)
+//                     */
+//                    randomTime = rand() % (72000 - currentTime) + currentTime;
+//                    nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
+//                }
+//            }
+//        }
+//    }
 }
 
 /* Remove last simulatedHuman from vector. Bool flag true=resident false=visitor */
@@ -843,15 +791,6 @@ void SimulatedHumanHandler::removeLastData(bool isResident)
     }
 }
 
-/* Get vector size of floorTravelling */
-int SimulatedHumanHandler::getFloorTravellingSize(int idx, bool isResident)
-{
-    if(isResident)
-        return simulatedHumanObj[idx]->getFloorTravellingSize();
-    else
-        return nonResSimulatedHumanObj[idx]->getFloorTravellingSize();
-}
-
 /* Return number of resident objects */
 int SimulatedHumanHandler::getNumberOfVisitorObj()
 {
@@ -863,53 +802,27 @@ void SimulatedHumanHandler::getAllPersonData()
 {
     for(std::size_t i=0;i<simulatedHumanObj.size();i++)
     {
-        std::size_t numberOfFloorTravelling = simulatedHumanObj[i]->getFloorTravellingSize();
-
         qDebug() << "PersonID" << simulatedHumanObj[i]->getPersonID();
         qDebug() << "Weight" << simulatedHumanObj[i]->getWeight();
         qDebug() << "Resident of" << simulatedHumanObj[i]->getResident();
 
-        QDebug debug = qDebug();
-        qDebug() << "Travelling: ";
-        for(std::size_t j=0; j<numberOfFloorTravelling;j++)
-            debug << getFloorTravelling(i, j, true);
     }
 
     for(std::size_t i=0;i<nonResSimulatedHumanObj.size();i++)
     {
-        std::size_t numberOfFloorTravelling = nonResSimulatedHumanObj[i]->getFloorTravellingSize();
-
         qDebug() << "VisitorID" << nonResSimulatedHumanObj[i]->getPersonID();
         qDebug() << "Weight" << nonResSimulatedHumanObj[i]->getWeight();
         qDebug() << "Not a resident";
 
-        QDebug debug = qDebug();
-        qDebug() << "Travelling: ";
-        for(std::size_t j=0; j<numberOfFloorTravelling;j++)
-            debug << getFloorTravelling(i, j, false);
     }
-}
-
-/* Remove floor travelling of person idx with key */
-void SimulatedHumanHandler::removeFloorTravelling(int idx, int key, bool isResident)
-{
-    if(isResident)
-        simulatedHumanObj[idx]->removeFloorTravelling(key);
-    else
-        nonResSimulatedHumanObj[idx]->removeFloorTravelling(key);
 }
 
 /* Update floor evenly based on average number of people per floor */
 void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, int totalPeople)
 {
-
     int maxNum = totalFloor;
     int minNum = 2;
     int randomFloor = 2;
-
-    /* remove all current travelling data for reallocation*/
-    for(int i=0;i<getNumberOfSimulatedHumanObject();i++)
-        removeFloorTravelling(i, getResident(i,true), true);
 
     /* If floor and number of people is the same */
     if(avgPerFloor == totalPeople)
@@ -917,8 +830,13 @@ void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, 
         /* Set all people to the total floor */
         for(int i=0;i<totalPeople;i++)
         {
-            addFloorTravelling(i+1, totalFloor, true);
             setResident(i,totalFloor,true);
+
+            for(int j=0;j<simulatedHumanObj[i]->getNoOfTimesTravel();j++)
+            {
+                if(simulatedHumanObj[i]->getTravelFloor(j) != 1)
+                    simulatedHumanObj[i]->setTravelLevel(j,totalFloor);
+            }
         }
     }
     else
@@ -935,14 +853,25 @@ void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, 
                 /* If there are remainder, the floor allocated will be random */
                 if(i < totalPeople-remainder)
                 {
-                    addFloorTravelling(i+1, currentFloor, true);
                     setResident(i,currentFloor,true);
+
+                    for(int j=0;j<simulatedHumanObj[i]->getNoOfTimesTravel();j++)
+                    {
+                        if(simulatedHumanObj[i]->getTravelFloor(j) != 1)
+                            simulatedHumanObj[i]->setTravelLevel(j,currentFloor);
+                    }
                 }
                 else
                 {
                     randomFloor = (rand() % (maxNum-minNum+1)+minNum);
-                    addFloorTravelling(i+1, randomFloor, true);
+
                     setResident(i,randomFloor,true);
+
+                    for(int j=0;j<simulatedHumanObj[i]->getNoOfTimesTravel();j++)
+                    {
+                        if(simulatedHumanObj[i]->getTravelFloor(j) != 1)
+                            simulatedHumanObj[i]->setTravelLevel(j,randomFloor);
+                    }
                 }
             }
             /* Reset current floor back to 2 if it has reached totalFloor */
@@ -950,6 +879,17 @@ void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, 
                 currentFloor = 2;
             else
                 currentFloor++;
+        }
+    }
+
+    for(size_t i=0;i<nonResSimulatedHumanObj.size();i++)
+    {
+        int randomFloor = 2 + (rand() % (totalFloor - 2 + 1));
+
+        for(int j=0;j<nonResSimulatedHumanObj[i]->getNoOfTimesTravel();j++)
+        {
+            if(nonResSimulatedHumanObj[i]->getTravelFloor(j) != 1)
+                nonResSimulatedHumanObj[i]->setTravelLevel(j,randomFloor);
         }
     }
 }

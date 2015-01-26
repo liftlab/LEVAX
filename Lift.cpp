@@ -38,12 +38,6 @@ void Lift::setLiftSpeed(double speedMetrePerSecond)
     this->speedMetrePerSecond = speedMetrePerSecond;
 }
 
-/* Set default floor */
-void Lift::setDefaultFloor(int floor)
-{
-    this->defaultFloor = floor;
-}
-
 /* Return lift id */
 int Lift::getLiftID()
 {
@@ -60,10 +54,4 @@ int Lift::getLiftWeight()
 double Lift::getLiftSpeed()
 {
     return speedMetrePerSecond;
-}
-
-/* Return default floor */
-int Lift::getDefaultFloor()
-{
-    return defaultFloor;
 }

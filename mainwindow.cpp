@@ -249,12 +249,14 @@ void MainWindow::exportHumanXML()
             element2->SetAttribute("resident", shh.getResident(i,true));
             element->LinkEndChild( element2 );
 
-            for(long j=0;j<shh.getFloorTravellingSize(i,true);j++)
+            for(long j=0;j<shh.getNoOfTimesTravel(i,true);j++)
             {
                 TiXmlElement* element3 = new TiXmlElement( "floor" );
-                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,true));
+                element3->SetAttribute("time", shh.getTravelTime(i,j,true));
+                element3->SetAttribute("travelFloor", shh.getTravelFloor(i,j,true));
                 element2->LinkEndChild( element3 );
             }
+
         }
 
         /* Save Visitor */
@@ -266,10 +268,20 @@ void MainWindow::exportHumanXML()
             element2->SetAttribute("resident", shh.getResident(i,false));
             element->LinkEndChild( element2 );
 
+            /*
             for(long j=0;j<shh.getFloorTravellingSize(i,false);j++)
             {
                 TiXmlElement* element3 = new TiXmlElement( "floor" );
                 element3->SetAttribute("travel", shh.getFloorTravelling(i,j,false));
+                element2->LinkEndChild( element3 );
+            }
+            */
+
+            for(long j=0;j<shh.getNoOfTimesTravel(i,false);j++)
+            {
+                TiXmlElement* element3 = new TiXmlElement( "floor" );
+                element3->SetAttribute("time", shh.getTravelTime(i,j,false));
+                element3->SetAttribute("travelFloor", shh.getTravelFloor(i,j,false));
                 element2->LinkEndChild( element3 );
             }
         }
@@ -571,18 +583,6 @@ void MainWindow::on_maxSpeedDoubleSpinBox_valueChanged(double arg1)
         ui->exportBuildingModel->setDisabled(true);
         ui->exportHumanModel->setDisabled(true);
     }
-}
-
-/* Handle algo combo box selection */
-void MainWindow::on_algoCombo_currentIndexChanged(int arg1)
-{
-    /* Enable apply settings button and disable run button */
-    ui->applySettingBtn->setDisabled(false);
-    ui->runBtn->setDisabled(true);
-
-    /* Disable Export XML Feature */
-    ui->exportBuildingModel->setDisabled(true);
-    ui->exportHumanModel->setDisabled(true);
 }
 
 /* Handle reset button press */
@@ -1071,6 +1071,8 @@ bool MainWindow::validateHumanData(const QString &arg1)
     /* Resident Status */
     bool isResident = true;
 
+    int prevTime = 0;
+
     /* Load XML */
     TiXmlDocument doc(arg1.toStdString().c_str());
 
@@ -1136,6 +1138,7 @@ bool MainWindow::validateHumanData(const QString &arg1)
 
                             /* checks if first element of person exist */
                             pParm2 = pParm->FirstChildElement();
+
                             if(pParm2)
                             {
                                 while(pParm2)
@@ -1143,27 +1146,38 @@ bool MainWindow::validateHumanData(const QString &arg1)
                                      /* is the element named "floor" */
                                     if(strcmp(pParm2->Value(),"floor") == 0)
                                     {
-                                        /* check if travel exist */
-                                        if(pParm2->Attribute("travel") != NULL)
+                                        /* check if time and travel exist */
+                                        if(pParm2->Attribute("time") != NULL && pParm2->Attribute("travelFloor") != NULL)
                                         {
                                             /* checks if travel is a number/empty data */
-                                            int attr2;
-                                            if(TIXML_SUCCESS != pParm2->QueryIntAttribute("travel", &attr2))
+                                            int travel;
+                                            if(TIXML_SUCCESS != pParm2->QueryIntAttribute("travelFloor", &travel))
                                                 return false;
 
-                                            /* checks if person is travelling at least to level 2 or more
+                                            int time;
+                                            if(TIXML_SUCCESS != pParm2->QueryIntAttribute("time", &time))
+                                                return false;
+
+                                            /* checks if person is travelling at least to level 1 or more
                                              * but lesser than the total limit in building */
-                                            if(attr2 < 2 || attr2 >= bh.getNoOfFloor()+1)
+                                            if(travel < 1 || travel >= bh.getNoOfFloor()+1)
                                             {
                                                 QMessageBox::critical(this,tr("Inconsistent data!"), "The data has an invalid travel floor!\ni.e. More than the current building model");
                                                 return false;
                                             }
+
+                                            if(time < 0 || time > 86399)
+                                            {
+                                                return false;
+                                            }
+
+                                            if(isResident)
+                                            {
+                                                shh.addTravelTime(time, travel, shh.getNumberOfSimulatedHumanObject()-1, isResident);
+                                            }
                                             else
                                             {
-                                                if(isResident)
-                                                    shh.addFloorTravelling(shh.getNumberOfSimulatedHumanObject(), attr2, isResident);
-                                                else
-                                                    shh.addFloorTravelling(shh.getNumberOfVisitorObj(), attr2, isResident);
+                                                shh.addTravelTime(time, travel, shh.getNumberOfVisitorObj()-1, isResident);
                                             }
 
                                             pParm2 = pParm2->NextSiblingElement();
@@ -1177,6 +1191,7 @@ bool MainWindow::validateHumanData(const QString &arg1)
                                     {
                                         return false;
                                     }
+
                                 }
                                 pParm = pParm->NextSiblingElement();
                             }
@@ -1194,6 +1209,7 @@ bool MainWindow::validateHumanData(const QString &arg1)
                     {
                         return false;
                     }
+                    prevTime = 0;
                 }
             }
             else
@@ -1251,37 +1267,23 @@ void MainWindow::updateHumanSummary(bool isResident)
                 header += "kg<br>";
 
                 /* Append data to QString */
-                header += "Will travel to floor ";
+                //header += "Will travel to floor ";
+                //header += QString::number(shh.getResident(i, true));
 
-                for(int j=0;j<shh.getFloorTravellingSize(i, true);j++)
-                {
-                    /* Append data to QString */
-                    header += QString::number(shh.getFloorTravelling(i, j, true));
-                    header += ", ";
-                }
+//                for(int j=0;j<shh.getFloorTravellingSize(i, true);j++)
+//                {
+//                    /* Append data to QString */
+//                    header += QString::number(shh.getFloorTravelling(i, j, true));
+//                    header += ", ";
+//                }
 
-                /* remove last comma */
-                header.remove(header.length()-2,1);
+//                /* remove last comma */
+//                header.remove(header.length()-2,1);
 
-                /* Append data to QStrin */
+
+                /* Append data to QString */
                 header += "<br>No Of Times Travel ";
                 header += QString::number(shh.getNoOfTimesTravel(i, true));
-                header += "<br>";
-
-                header += "Status ";
-
-                int status = shh.getStatus(i, true);
-                int weight = shh.getWeight(i, true);
-
-                if(weight >= 10 && weight <= 35)
-                    header += "Schooling";
-
-                else if(status == 1 && !(weight >= 10 && weight <= 35))
-                    header += "Employed";
-
-                else if(status == 2 && !(weight >= 10 && weight <= 35))
-                    header += "Unemployed";
-
                 header += "<br>";
 
                 int travelTime = 0;
@@ -1292,14 +1294,10 @@ void MainWindow::updateHumanSummary(bool isResident)
 
                     header += "Travel Time ";
 
-                    if(travelTime == 1)
-                        header += "morning";
+                    header += QDateTime::fromTime_t(travelTime).toUTC().toString("hh:mm:ss");
+                    header += " to floor ";
+                    header += QString::number(shh.getTravelFloor(i, m, true));
 
-                    else if(travelTime == 2)
-                        header += "afternoon";
-
-                    else
-                        header += "evening";
 
                     header += "<br>";
                 }
@@ -1336,19 +1334,20 @@ void MainWindow::updateHumanSummary(bool isResident)
                 header += "kg<br>";
 
                 /* Append data to QString */
-                header += "Will travel to floor ";
+                //header += "Will travel to floor ";
+                //header += QString::number(shh.getResident(i, true));
 
-                for(int j=0;j<shh.getFloorTravellingSize(i, false);j++)
-                {
-                    /* Append data to QString */
-                    header += QString::number(shh.getFloorTravelling(i, j, false));
-                    header += ", ";
-                }
+//                for(int j=0;j<shh.getFloorTravellingSize(i, false);j++)
+//                {
+//                    /* Append data to QString */
+//                    header += QString::number(shh.getFloorTravelling(i, j, false));
+//                    header += ", ";
+//                }
 
-                /* remove last comma */
-                header.remove(header.length()-2,1);
+//                /* remove last comma */
+//                header.remove(header.length()-2,1);
 
-                /* Append data to QStrin */
+                /* Append data to QString */
                 header += "<br>No Of Times Travel ";
                 header += QString::number(shh.getNoOfTimesTravel(i, false));
                 header += "<br>";
@@ -1361,14 +1360,9 @@ void MainWindow::updateHumanSummary(bool isResident)
 
                     header += "Travel Time ";
 
-                    if(travelTime == 1)
-                        header += "morning";
-
-                    else if(travelTime == 2)
-                        header += "afternoon";
-
-                    else
-                        header += "evening";
+                    header += QDateTime::fromTime_t(travelTime).toUTC().toString("hh:mm:ss");
+                    header += " to floor ";
+                    header += QString::number(shh.getTravelFloor(i, m, false));
 
                     header += "<br>";
                 }
@@ -1413,8 +1407,6 @@ void MainWindow::updateBuildingSummary()
     /* Loop number of lifts */
     for(int i=0;i<lh.getNumberOfLiftsObject();i++)
     {
-        lh.setDefaultFloor(i, bh.getNoOfFloor());
-
         /* Append data to QString */
         summary += "<b>Lift no ";
         summary += QString::number(lh.getLiftID(i));
@@ -1427,10 +1419,6 @@ void MainWindow::updateBuildingSummary()
         summary += "Maximum speed ";
         summary += QString::number(lh.getLiftSpeed(i));
         summary += " metre/second<br>";
-
-        summary += "The default floor of the lift ";
-        summary += QString::number(lh.getDefaultFloor(i));
-        summary += "<br>";
     }
 
     /* Append summary */

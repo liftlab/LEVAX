@@ -56,9 +56,6 @@ private slots:
     void on_maxWeightSpinBox_valueChanged(int arg1);    /* Handle lift max weight spinbox value changed */
     void on_maxSpeedDoubleSpinBox_valueChanged(double arg1); /* Handle lift max speed spin box value changed */
 
-    /* ALGORITHM */
-    void on_algoCombo_currentIndexChanged(int arg1);    /* Handle algo combo box selection */
-
     /* BUTTONS */
     void on_resetBtn_clicked();                         /* Handle reset button press */
     void on_runBtn_clicked();                           /* Handle run button press */
@@ -81,8 +78,8 @@ private:
 
     QString validateBuildingData(const QString &arg1);  /* validate building XML */
     bool validateHumanData(const QString &arg1);        /* validate human XML */
-    void updateHumanSummary(bool);                   /* Update summary box */
-    void updateBuildingSummary();                    /* Display building summary */
+    void updateHumanSummary(bool);                      /* Update summary box */
+    void updateBuildingSummary();                       /* Display building summary */
     QString generateSimulationData();                   /* Combine simulated humans and simulated building model */
 };
 

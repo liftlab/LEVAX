@@ -9,6 +9,10 @@
 /* Empty Constructor */
 Algorithm::Algorithm()
 {
+    noOfLifts = 0;
+    noOfFloors = 0;
+    noOfResidents = 0;
+    noOfVisitors = 0;
 }
 
 /* Destructor */
@@ -20,7 +24,21 @@ Algorithm::~Algorithm()
 /* Nearest Car algorithm */
 double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
 {
-    return lh->getLiftSpeed(0);
+    noOfLifts = lh->getNumberOfLiftsObject();
+    noOfFloors = bh->getNoOfFloor();
+    noOfResidents = shh->getNumberOfSimulatedHumanObject();
+    noOfVisitors = shh->getNumberOfVisitorObj();
+
+    // A day consist of 86400 seconds
+    // 0 = 0000H
+    // 86400 = 2359H
+    int timer = 0;
+    while(timer < 86400)
+    {
+        timer++;
+    }
+
+    return 1;
 }
 
 /* Fixed Sectoring Common Sector System algorithm */

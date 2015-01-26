@@ -4,11 +4,12 @@
 #include "BuildingHandler.h"
 #include "LiftHandler.h"
 #include "SimulatedHumanHandler.h"
+#include <QTimer>
 
 class Algorithm
 {
 public:
-    Algorithm();                                                                            /* Constructor */
+    Algorithm();                                                                        /* Constructor */
     ~Algorithm();                                                                           /* Destructor */
 
     double nearestCar(BuildingHandler *,
@@ -22,6 +23,10 @@ public:
 
 private:
 
+    int noOfLifts;
+    int noOfFloors;
+    int noOfResidents;
+    int noOfVisitors;
 };
 
 #endif // ALGORITHM_H
