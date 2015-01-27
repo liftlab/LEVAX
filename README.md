@@ -41,3 +41,4 @@ the DLL archive in dropbox to the release folder.<br /><br />
 10. /platforms/qwindows.dll<br />  
 11. msvcr100.dll<br />  
 12. msvcp100.dll<br />  
+13. Qt5PrintSupport.dll<br />  

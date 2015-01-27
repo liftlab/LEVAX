@@ -343,6 +343,7 @@ void MainWindow::exportBuildingXML()
 
             element2->SetAttribute("maxWeight", lh.getLiftWeight(i));
             element2->SetDoubleAttribute("speed", lh.getLiftSpeed(i));
+            element2->SetAttribute("defaultFloor", lh.getLiftDefaultFloor(i));
 
             element->LinkEndChild( element2 );
         }
