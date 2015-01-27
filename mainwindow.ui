@@ -42,7 +42,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>370</y>
+      <y>390</y>
       <width>281</width>
       <height>16</height>
      </rect>
@@ -55,7 +55,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>340</y>
+      <y>360</y>
       <width>191</width>
       <height>21</height>
      </rect>
@@ -71,7 +71,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>275</y>
+      <y>295</y>
       <width>80</width>
       <height>22</height>
      </rect>
@@ -99,7 +99,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>307</y>
+      <y>327</y>
       <width>80</width>
       <height>22</height>
      </rect>
@@ -124,7 +124,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>338</y>
+      <y>358</y>
       <width>80</width>
       <height>22</height>
      </rect>
@@ -146,7 +146,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>400</y>
+      <y>420</y>
       <width>271</width>
       <height>21</height>
      </rect>
@@ -172,7 +172,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>277</y>
+      <y>297</y>
       <width>191</width>
       <height>21</height>
      </rect>
@@ -185,7 +185,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>430</y>
+      <y>449</y>
       <width>281</width>
       <height>22</height>
      </rect>
@@ -259,7 +259,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>310</y>
+      <y>330</y>
       <width>191</width>
       <height>21</height>
      </rect>
@@ -469,7 +469,7 @@ QTabWidget::tab-bar {
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>240</y>
+      <y>260</y>
       <width>281</width>
       <height>16</height>
      </rect>
@@ -628,7 +628,7 @@ QTabWidget::tab-bar {
       <x>307</x>
       <y>130</y>
       <width>285</width>
-      <height>101</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="title">
@@ -737,6 +737,50 @@ QTabWidget::tab-bar {
       <double>0.250000000000000</double>
      </property>
     </widget>
+    <widget class="QLabel" name="maxWeightLabel_3">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>103</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Default Floor</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="defaultFloorSpinBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>103</y>
+       <width>80</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="toolTipDuration">
+      <number>0</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>700</number>
+     </property>
+     <property name="value">
+      <number>1</number>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="label_1">
     <property name="geometry">
@@ -766,7 +810,7 @@ QTabWidget::tab-bar {
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>250</y>
+      <y>270</y>
       <width>81</width>
       <height>20</height>
      </rect>
@@ -790,7 +834,7 @@ QTabWidget::tab-bar {
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>380</y>
+      <y>400</y>
       <width>81</width>
       <height>20</height>
      </rect>

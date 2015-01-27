@@ -65,6 +65,8 @@ private slots:
     /* FOR DEBUGGING PURPOSES ONLY */
     void onActionCheckObj();                            /* Check current created object */
 
+    void on_defaultFloorSpinBox_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     BuildingHandler bh;                                 /* Building handler object */

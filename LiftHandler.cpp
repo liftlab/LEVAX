@@ -9,7 +9,7 @@
 /* Constructor */
 LiftHandler::LiftHandler()
 {
-    createNewLift(1,200,1.00);
+    createNewLift(1, 200, 1.00, 1);
 }
 
 /* Destructor */
@@ -19,9 +19,9 @@ LiftHandler::~LiftHandler()
 }
 
 /* Create new lift object and store in vector*/
-void LiftHandler::createNewLift(int liftID, int maxWeight, double speedMetrePerSecond)
+void LiftHandler::createNewLift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFloor)
 {
-    Lift *l = new Lift(liftID, maxWeight, speedMetrePerSecond);
+    Lift *l = new Lift(liftID, maxWeight, speedMetrePerSecond, defaultFloor);
 
     liftObj.push_back(l);
 }
@@ -78,6 +78,12 @@ void LiftHandler::setLiftSpeed(int idx, double speedMetrePerSecond)
     liftObj[idx]->setLiftSpeed(speedMetrePerSecond);
 }
 
+/* Set lift default floor */
+void LiftHandler::setLiftDefaultFloor(int idx, int defaultFloor)
+{
+    liftObj[idx]->setLiftDefaultFloor(defaultFloor);
+}
+
 /* Return lift id */
 int LiftHandler::getLiftID(int idx)
 {
@@ -96,6 +102,12 @@ double LiftHandler::getLiftSpeed(int idx)
     return liftObj[idx]->getLiftSpeed();
 }
 
+/* Return lift default floor */
+int LiftHandler::getLiftDefaultFloor(int idx)
+{
+    return liftObj[idx]->getLiftDefaultFloor();
+}
+
 /* Remove last lift */
 void LiftHandler::removeLastLift()
 {
@@ -105,3 +117,5 @@ void LiftHandler::removeLastLift()
     /* Remove from vector */
     liftObj.erase(liftObj.end() - 1);
 }
+
+

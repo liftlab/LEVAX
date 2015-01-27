@@ -5,6 +5,7 @@
  *---------------------------------------------------------------------------*/
 
 #include "Algorithm.h"
+#include <QElapsedTimer>
 
 /* Empty Constructor */
 Algorithm::Algorithm()
@@ -24,6 +25,9 @@ Algorithm::~Algorithm()
 /* Nearest Car algorithm */
 double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
 {
+    QElapsedTimer timer;
+    timer.start();
+
     noOfLifts = lh->getNumberOfLiftsObject();
     noOfFloors = bh->getNoOfFloor();
     noOfResidents = shh->getNumberOfSimulatedHumanObject();
@@ -31,14 +35,14 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
 
     // A day consist of 86400 seconds
     // 0 = 0000H
-    // 86400 = 2359H
-    int timer = 0;
-    while(timer < 86400)
+    // 86399 = 2359H
+    int counter = 0;
+    while(counter < 86399)
     {
-        timer++;
+        counter++;
     }
 
-    return 1;
+    return convertToSeconds(timer.elapsed());
 }
 
 /* Fixed Sectoring Common Sector System algorithm */
@@ -59,3 +63,7 @@ double Algorithm::dynamicSectoringSystem(BuildingHandler *bh, LiftHandler *lh, S
     return lh->getLiftID(0);
 }
 
+double Algorithm::convertToSeconds(qint64 ms)
+{
+    return ms/1000.00;
+}

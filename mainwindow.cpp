@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     /* Set Spinbox Max Values*/
     ui->humanTotalSpinBox->setMaximum(MAX_PEOPLE);
     ui->humanVisitorSpinBox->setMaximum(MAX_VISITOR);
+    ui->defaultFloorSpinBox->setMaximum(bh.getNoOfFloor());
 
     /* Set default value */
     prevTotalHuman=0;
@@ -203,6 +204,10 @@ void MainWindow::uploadBuildingXML()
             ui->totalLiftsSpinBox->setValue(lh.getNumberOfLiftsObject());
             ui->metreSpinBox->setValue(bh.getMetrePerFloor());
 
+            ui->maxSpeedDoubleSpinBox->setValue(lh.getLiftSpeed(0));
+            ui->maxWeightSpinBox->setValue(lh.getLiftWeight(0));
+            ui->defaultFloorSpinBox->setValue(lh.getLiftDefaultFloor(0));
+
             /* Add lift number to combo box */
             for(int i=0;i<lh.getNumberOfLiftsObject();i++)
             {
@@ -373,25 +378,27 @@ void MainWindow::onActionHelp()
     QString message = "<b>E.g. of Simulated Human XML</b><br>"
                        "&lt;human&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person weight=\"60\" resident=\"4\"&gt;<br>"
-                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"4\"/&gt;<br>"
-                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"20\"/&gt;<br>"
+                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor time=\"21968\" travelFloor=\"1\"/&gt;<br>"
+                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor time=\"51414\" travelFloor=\"4\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person weight=\"78\" resident=\"27\"&gt;<br>"
-                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"27\"/&gt;<br>"
+                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor time=\"22307\" travelFloor=\"1\"/&gt;<br>"
+                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor time=\"52965\" travelFloor=\"27\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;person weight=\"69\" resident=\"0\"&gt;<br>"
-                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor travel=\"27\"/&gt;<br>"
+                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor time=\"65946\" travelFloor=\"27\"/&gt;<br>"
+                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;floor time=\"71932\" travelFloor=\"1\"/&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;/person&gt;<br>"
                         "&lt;/human&gt;<br><br>"
                         "-Person 1<br>"
                         "Weighs 60kg, living at 4th floor.<br>"
-                        "He usually travels to 4th floor and 20th floor.<br>"
+                        "He travels to 1st floor at 21968s (06:06:08AM) and back to 4th floor at 51414s (14:16:54PM)<br>"
                         "-Person 2<br>"
                         "Weighs 78kg, living at 27th floor.<br>"
-                        "He usually travels to 27th floor.<br>"
+                        "He travels to 1st floor at 22307s (06:11:47AM) and back to 27th floor at 52965s (14:42:45PM)<br>"
                         "-Person 3<br>"
                         "Weighs 69kg, not a resident here.(resident=0)<br>"
-                        "He usually travels to 27th floor.<br><br>"
+                        "He travels to 27th floor at 65946s (18:19:06PM) and back to 1st floor at 71932s (19:58:52PM)<br>"
                         "<b>E.g. of Building XML</b><br>"
                         "&lt;building floors=\"28\" metrePerFloor=\"3\"&gt;<br>"
                             "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"1.25\"/&gt;<br>"
@@ -442,6 +449,8 @@ void MainWindow::on_totalFloorSpinBox_valueChanged(int arg1)
     /* Set new number of floor */
     bh.setNoOfFloors(ui->totalFloorSpinBox->value());
 
+    ui->defaultFloorSpinBox->setMaximum(arg1);
+
     /* Set average floor value */
     int avgPerFloor = ui->humanTotalSpinBox->value()/(arg1-1);
     ui->humanAvgSpinBox->setValue(avgPerFloor);
@@ -479,16 +488,22 @@ void MainWindow::on_liftCombo_currentIndexChanged(int index)
         /* Set values */
         ui->maxWeightSpinBox->setValue(lh.getLiftWeight(index-1));
         ui->maxSpeedDoubleSpinBox->setValue(lh.getLiftSpeed(index-1));
+        ui->defaultFloorSpinBox->setValue(lh.getLiftDefaultFloor(index-1));
+
+        ui->defaultFloorSpinBox->setMaximum(bh.getNoOfFloor());
+
 
         /* Enable */
         ui->maxWeightSpinBox->setDisabled(false);
         ui->maxSpeedDoubleSpinBox->setDisabled(false);
+        ui->defaultFloorSpinBox->setDisabled(false);
     }
     else
     {
         /* Disable spinbox for max weight and max speed */
         ui->maxWeightSpinBox->setDisabled(true);
         ui->maxSpeedDoubleSpinBox->setDisabled(true);
+        ui->defaultFloorSpinBox->setDisabled(true);
     }
 }
 
@@ -507,7 +522,7 @@ void MainWindow::on_totalLiftsSpinBox_valueChanged(int arg1)
 
         /* Add new lift object */
         for(int i=lh.getNumberOfLiftsObject();i<arg1;i++)
-            lh.createNewLift(lh.getNumberOfLiftsObject()+1, 200, 1.00);
+            lh.createNewLift(lh.getNumberOfLiftsObject()+1, 200, 1.00, 1);
 
         /* Add to combo box */
         for(int i=0;i<arg1;i++)
@@ -608,6 +623,7 @@ void MainWindow::on_resetBtn_clicked()
     ui->exportBuildingModel->setDisabled(true);
     ui->exportHumanModel->setDisabled(true);
     ui->tabWidget->setCurrentWidget(ui->tab);
+    ui->defaultFloorSpinBox->setValue(1);
 
     /* Remove elements from combobox except index 0 */
     for(int i=ui->liftCombo->count()-1; i > 0; i--)
@@ -623,7 +639,7 @@ void MainWindow::on_resetBtn_clicked()
     shh.resetAll();
 
     /* Create default lift */
-    lh.createNewLift(lh.getNumberOfLiftsObject()+1,200,1.00);
+    lh.createNewLift(lh.getNumberOfLiftsObject()+1, 200, 1.00, 1);
     ui->liftCombo->addItem("Lift 1");
 
     /* clear text box */
@@ -652,7 +668,8 @@ void MainWindow::on_runBtn_clicked()
             {
                 /* Output message */
                 QString message = "Simulation completed<br>"
-                                + QString::number(algo.nearestCar(&bh, &lh, &shh), 'f', 2);
+                                + QString::number(algo.nearestCar(&bh, &lh, &shh), 'f', 2)
+                                + " seconds";
 
                 /* Set output message */
                 ui->outputBox->setText(message);
@@ -980,16 +997,16 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                             liftCount++;
 
                             /* check if maxWeight, speed exist */
-                            if(pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL)
+                            if(pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL || pParm->Attribute("defaultFloor") == NULL)
                                 return "false";
                             else
                             {
                                 /* checks for maxWeight, speed is a number/empty data */
                                 int attr2;
-                                if(TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2))
+                                if(TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("defaultFloor", &attr2))
                                     return "false";
 
-                                int maxWeight, speed = 0;
+                                int maxWeight, speed, defaultFloor = 0;
 
                                 /* maxWeight must be at least 200kg */
                                 pParm->QueryIntAttribute("maxWeight", &attr2);
@@ -1026,8 +1043,24 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                     speed = attr2;
                                 }
 
+                                /* defaultFloor must be at least 1 or more and not more than the total no of floor */
+                                pParm->QueryIntAttribute("defaultFloor", &attr2);
+                                if(attr2 < 1 || attr2 >= bh.getNoOfFloor()+1)
+                                {
+                                    return "false";
+                                }
+                                else
+                                {
+                                    /* Append data to QString */
+                                    summary += "Default floor ";
+                                    summary += pParm->Attribute("defaultFloor");
+                                    summary += "<br>";
+
+                                    defaultFloor = attr2;
+                                }
+
                                 /* Create new lift object */
-                                lh.createNewLift(liftCount, maxWeight, speed);
+                                lh.createNewLift(liftCount, maxWeight, speed, defaultFloor);
 
                                 pParm = pParm->NextSiblingElement();
                             }
@@ -1070,8 +1103,6 @@ bool MainWindow::validateHumanData(const QString &arg1)
 {
     /* Resident Status */
     bool isResident = true;
-
-    int prevTime = 0;
 
     /* Load XML */
     TiXmlDocument doc(arg1.toStdString().c_str());
@@ -1209,7 +1240,6 @@ bool MainWindow::validateHumanData(const QString &arg1)
                     {
                         return false;
                     }
-                    prevTime = 0;
                 }
             }
             else
@@ -1419,6 +1449,11 @@ void MainWindow::updateBuildingSummary()
         summary += "Maximum speed ";
         summary += QString::number(lh.getLiftSpeed(i));
         summary += " metre/second<br>";
+
+        /* Append data to QString */
+        summary += "Default floor ";
+        summary += QString::number(lh.getLiftDefaultFloor(i));
+        summary += "<br>";
     }
 
     /* Append summary */
@@ -1436,18 +1471,13 @@ QString MainWindow::generateSimulationData()
 {
     QString consolidatation;
 
-    consolidatation = "<b><font size=\"6\">Summary of Simulated Data</font></b><br>"
-                    "====================<br><br>";
+    consolidatation = ui ->inputSummaryBox->toPlainText();
 
-    consolidatation += "<font size=\"4\">Simulated Building Information:</font><br>";
-
-    consolidatation += ui ->inputSummaryBox->toPlainText();
-
-    consolidatation += "<br><br>Simulated Humans Information<br>";
+    consolidatation += "\n";
 
     consolidatation += ui ->inputSummaryBox_2->toPlainText();
 
-    consolidatation += "<br>";
+    consolidatation += "\n";
 
     consolidatation += ui ->inputSummaryBox_3->toPlainText();
 
@@ -1473,7 +1503,23 @@ void MainWindow::printSimulatedData()
     {
         QMessageBox::critical(this,tr("Error"),"No data to be printed!");
     }
-
 }
 
+/* Handle lift default floor spinbox value changed */
+void MainWindow::on_defaultFloorSpinBox_valueChanged(int arg1)
+{
+    if(arg1 > 0)
+    {
+        /* Set weight only if current index is not 0 */
+        if(ui->liftCombo->currentIndex() != 0)
+            lh.setLiftDefaultFloor(ui->liftCombo->currentIndex()-1, arg1);
 
+        /* Enable apply settings button and disable run button */
+        ui->applySettingBtn->setDisabled(false);
+        ui->runBtn->setDisabled(true);
+
+        /* Disable spinbox for max weight and max speed */
+        ui->exportBuildingModel->setDisabled(true);
+        ui->exportHumanModel->setDisabled(true);
+    }
+}

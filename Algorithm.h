@@ -21,6 +21,7 @@ public:
     double dynamicSectoringSystem(BuildingHandler *,
                                   LiftHandler *, SimulatedHumanHandler *);                      /* Dynamic Sectoring System algorithm */
 
+    double convertToSeconds(qint64);
 private:
 
     int noOfLifts;

@@ -7,11 +7,17 @@
 #include "Lift.h"
 
 /* Constructor */
-Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond)
+Lift::Lift()
+{
+}
+
+/* Constructor */
+Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFloor)
 {
     this->liftID = liftID;
     this->maxWeight = maxWeight;
     this->speedMetrePerSecond = speedMetrePerSecond;
+    this->defaultFloor = defaultFloor;
 }
 
 /* Destructor */
@@ -38,6 +44,12 @@ void Lift::setLiftSpeed(double speedMetrePerSecond)
     this->speedMetrePerSecond = speedMetrePerSecond;
 }
 
+/* Set lift default floor */
+void Lift::setLiftDefaultFloor(int defaultFloor)
+{
+    this->defaultFloor = defaultFloor;
+}
+
 /* Return lift id */
 int Lift::getLiftID()
 {
@@ -54,4 +66,10 @@ int Lift::getLiftWeight()
 double Lift::getLiftSpeed()
 {
     return speedMetrePerSecond;
+}
+
+/* Return lift default floor */
+int Lift::getLiftDefaultFloor()
+{
+    return defaultFloor;
 }
