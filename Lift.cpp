@@ -18,6 +18,11 @@ Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFlo
     this->maxWeight = maxWeight;
     this->speedMetrePerSecond = speedMetrePerSecond;
     this->defaultFloor = defaultFloor;
+
+    this->currentFloor = defaultFloor;
+    this->direction = 1; // 1 = idle, 0 = down, 2 = up
+    this->currentWeight = 0;
+
 }
 
 /* Destructor */
@@ -50,6 +55,30 @@ void Lift::setLiftDefaultFloor(int defaultFloor)
     this->defaultFloor = defaultFloor;
 }
 
+/* Set lift current floor */
+void Lift::setLiftCurrentFloor(int currentFloor)
+{
+    this->currentFloor = currentFloor;
+}
+
+/* Set lift current direction */
+void Lift::setLiftDirection(int direction)
+{
+    this->direction = direction;
+}
+
+/* Set lift current weight */
+void Lift::setLiftCurrentWeight(int currentWeight)
+{
+    this->currentWeight = currentWeight;
+}
+
+/* Set lift FS (Figure of suitability) */
+void Lift::setLiftFS(int FS)
+{
+    this->FS = FS;
+}
+
 /* Return lift id */
 int Lift::getLiftID()
 {
@@ -72,4 +101,28 @@ double Lift::getLiftSpeed()
 int Lift::getLiftDefaultFloor()
 {
     return defaultFloor;
+}
+
+/* Get lift current floor */
+int Lift::getLiftCurrentFloor()
+{
+    return currentFloor;
+}
+
+/* Get lift current direction */
+int Lift::getLiftDirection()
+{
+    return direction;
+}
+
+/* Get lift current weight */
+int Lift::getLiftCurrentWeight()
+{
+    return currentWeight;
+}
+
+/* Get lift FS (Figure of suitability) */
+int Lift::getLiftFS()
+{
+    return FS;
 }

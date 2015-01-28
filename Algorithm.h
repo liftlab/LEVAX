@@ -4,7 +4,7 @@
 #include "BuildingHandler.h"
 #include "LiftHandler.h"
 #include "SimulatedHumanHandler.h"
-#include <QTimer>
+#include <QDateTime>
 
 class Algorithm
 {
@@ -21,7 +21,10 @@ public:
     double dynamicSectoringSystem(BuildingHandler *,
                                   LiftHandler *, SimulatedHumanHandler *);                      /* Dynamic Sectoring System algorithm */
 
-    double convertToSeconds(qint64);
+    double convertToSeconds(qint64);                                                            /* Convert time to seconds */
+
+    multimap<int,pair<bool, pair<int, int> > > getDataSet(SimulatedHumanHandler*);   /* Get data set for simulation */
+
 private:
 
     int noOfLifts;

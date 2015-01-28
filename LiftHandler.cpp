@@ -84,6 +84,30 @@ void LiftHandler::setLiftDefaultFloor(int idx, int defaultFloor)
     liftObj[idx]->setLiftDefaultFloor(defaultFloor);
 }
 
+/* Set lift current floor */
+void LiftHandler::setLiftCurrentFloor(int idx, int currentFloor)
+{
+    liftObj[idx]->setLiftCurrentFloor(currentFloor);
+}
+
+/* Set lift current direction */
+void LiftHandler::setLiftDirection(int idx, int direction)
+{
+    liftObj[idx]->setLiftDirection(direction);
+}
+
+/* Set lift current weight */
+void LiftHandler::setLiftCurrentWeight(int idx, int currentWeight)
+{
+    liftObj[idx]->setLiftCurrentWeight(currentWeight);
+}
+
+/* Set lift FS (Figure of suitability) */
+void LiftHandler::setLiftFS(int idx, int FS)
+{
+    liftObj[idx]->setLiftFS(FS);
+}
+
 /* Return lift id */
 int LiftHandler::getLiftID(int idx)
 {
@@ -106,6 +130,30 @@ double LiftHandler::getLiftSpeed(int idx)
 int LiftHandler::getLiftDefaultFloor(int idx)
 {
     return liftObj[idx]->getLiftDefaultFloor();
+}
+
+/* Get lift current floor */
+int LiftHandler::getLiftCurrentFloor(int idx)
+{
+    return liftObj[idx]->getLiftCurrentFloor();
+}
+
+/* Get lift current direction */
+int LiftHandler::getLiftDirection(int idx)
+{
+    return liftObj[idx]->getLiftDirection();
+}
+
+/* Get lift current weight */
+int LiftHandler::getLiftCurrentWeight(int idx)
+{
+    return liftObj[idx]->getLiftCurrentWeight();
+}
+
+/* Get lift FS (Figure of suitability) */
+int LiftHandler::getLiftFS(int idx)
+{
+    return liftObj[idx]->getLiftFS();
 }
 
 /* Remove last lift */

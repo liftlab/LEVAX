@@ -894,3 +894,11 @@ void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, 
     }
 }
 
+/* Return the SimulatedHuman object at idx*/
+SimulatedHuman* SimulatedHumanHandler::getSimulatedHuman(int idx, bool isResident)
+{
+    if(isResident)
+        return simulatedHumanObj[idx];
+    else
+        return nonResSimulatedHumanObj[idx];
+}
