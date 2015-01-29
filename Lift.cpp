@@ -20,9 +20,8 @@ Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFlo
     this->defaultFloor = defaultFloor;
 
     this->currentFloor = defaultFloor;
-    this->direction = 1; // 1 = idle, 0 = down, 2 = up
+    this->direction = +1; // -1 = DOWN, +1 = UP
     this->currentWeight = 0;
-
 }
 
 /* Destructor */

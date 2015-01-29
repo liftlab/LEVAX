@@ -82,8 +82,43 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                 {
                     int FS = 0;
 
-                    //Compute FS code here
+                    int travelIndex = waitingList[i].second.second.second;
+                    int personIndex = waitingList[i].second.second.first;
+                    bool isResident = waitingList[i].second.first;
+                    int travelFloor = shh->getTravelFloor(personIndex, travelIndex, isResident);
+                    int personCurrentFloor;
 
+                    if(travelFloor != 1)
+                        personCurrentFloor = 1;
+                    else
+                        personCurrentFloor = shh->getResident(personIndex, isResident);
+
+                    int d = personCurrentFloor - lh->getLiftCurrentFloor(j); // 4
+                    int direction; // 0
+                    int N = noOfFloors-1; // 5
+
+                    if(d / lh->getLiftDirection(j) >= 0)
+                    {
+                        if(travelFloor != 1)
+                            direction = +1;
+                        else
+                            direction = -1;
+
+                        if(lh->getLiftDirection(j)  == direction)
+                        {
+                            FS = (N + 2) - abs(d);
+                        }
+                        else
+                        {
+                            FS = (N + 1) - abs(d);
+                        }
+                    }
+                    else
+                    {
+                        FS = 1;
+                    }
+
+                    // Store FS
                     waitingList[i].first[j].second = FS;
                 }
             }
@@ -96,7 +131,7 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
             //...
         }
 
-        waitingList.clear();    //Remove this line after implementing algorithm (See ***)
+        waitingList.clear();    //Remove this line after implementing algorithm or program will crash(See ***)
 
 
         seconds++;
