@@ -6,6 +6,7 @@
 #include "SimulatedHumanHandler.h"
 #include <QDateTime>
 
+
 class Algorithm
 {
 public:
@@ -24,6 +25,10 @@ public:
     double convertToSeconds(qint64);                                                            /* Convert time to seconds */
 
     multimap<int,pair<bool, pair<int, int> > > getDataSet(SimulatedHumanHandler*);   /* Get data set for simulation */
+
+    void calculateFS(vector<pair<vector<pair<int, int> >, pair<bool, pair<int, int> > > >&, SimulatedHumanHandler* shh, LiftHandler* lh);
+
+    vector<int> extractHighestFS(vector<pair<vector<pair<int, int> >, pair<bool, pair<int, int> > > >);
 
 private:
 

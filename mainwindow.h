@@ -55,6 +55,7 @@ private slots:
     void on_totalLiftsSpinBox_valueChanged(int arg1);   /* Handle total number of lift spin box value changed */
     void on_maxWeightSpinBox_valueChanged(int arg1);    /* Handle lift max weight spinbox value changed */
     void on_maxSpeedDoubleSpinBox_valueChanged(double arg1); /* Handle lift max speed spin box value changed */
+    void on_defaultFloorSpinBox_valueChanged(int arg1); /* Handle lift default floor changes */
 
     /* BUTTONS */
     void on_resetBtn_clicked();                         /* Handle reset button press */
@@ -64,8 +65,6 @@ private slots:
 
     /* FOR DEBUGGING PURPOSES ONLY */
     void onActionCheckObj();                            /* Check current created object */
-
-    void on_defaultFloorSpinBox_valueChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;

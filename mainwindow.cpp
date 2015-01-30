@@ -122,8 +122,11 @@ void MainWindow::uploadHumanXML()
 
             /* Display resident */
             if(shh.getNumberOfSimulatedHumanObject() > 0)
+            {
                 updateHumanSummary(true);
+                ui->humanAvgSpinBox->setValue(shh.getNumberOfSimulatedHumanObject()/(bh.getNoOfFloor()-1));
 
+            }
             /* Display visitor */
             if(shh.getNumberOfVisitorObj() > 0)
                 updateHumanSummary(false);
@@ -1063,6 +1066,10 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                 /* Create new lift object */
                                 lh.createNewLift(liftCount, maxWeight, speed, defaultFloor);
 
+                                /* If lift is at the highest level, set direction to DOWN (-1) */
+                                if(defaultFloor == bh.getNoOfFloor())
+                                    lh.setLiftDirection(liftCount-1, -1);
+
                                 pParm = pParm->NextSiblingElement();
                             }
                         }
@@ -1514,6 +1521,10 @@ void MainWindow::on_defaultFloorSpinBox_valueChanged(int arg1)
         /* Set weight only if current index is not 0 */
         if(ui->liftCombo->currentIndex() != 0)
             lh.setLiftDefaultFloor(ui->liftCombo->currentIndex()-1, arg1);
+
+        /* If lift is at the highest level, set direction to DOWN (-1) */
+        if(arg1 == bh.getNoOfFloor())
+            lh.setLiftDirection(ui->liftCombo->currentIndex()-1, -1);
 
         /* Enable apply settings button and disable run button */
         ui->applySettingBtn->setDisabled(false);
