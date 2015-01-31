@@ -102,10 +102,16 @@ void LiftHandler::setLiftCurrentWeight(int idx, int currentWeight)
     liftObj[idx]->setLiftCurrentWeight(currentWeight);
 }
 
-/* Set lift FS (Figure of suitability) */
-void LiftHandler::setLiftFS(int idx, int FS)
+/* Set Lift distance left to floor travellingTo */
+void LiftHandler::setLiftDistanceLeft(int idx, double distanceLeft)
 {
-    liftObj[idx]->setLiftFS(FS);
+    liftObj[idx]->setLiftDistanceLeft(distanceLeft);
+}
+
+/* Set Lift travelling to */
+void LiftHandler::setLiftTravellingTo(int idx, int travellingTo)
+{
+    liftObj[idx]->setLiftTravellingTo(travellingTo);
 }
 
 /* Return lift id */
@@ -150,10 +156,16 @@ int LiftHandler::getLiftCurrentWeight(int idx)
     return liftObj[idx]->getLiftCurrentWeight();
 }
 
-/* Get lift FS (Figure of suitability) */
-int LiftHandler::getLiftFS(int idx)
+/* Get Lift distance left to floor travellingTo */
+double LiftHandler::getLiftDistanceLeft(int idx)
 {
-    return liftObj[idx]->getLiftFS();
+    return liftObj[idx]->getLiftDistanceLeft();
+}
+
+/* Set Lift travelling to */
+int LiftHandler::getLiftTravellingTo(int idx)
+{
+     return liftObj[idx]->getLiftTravellingTo();
 }
 
 /* Remove last lift */
@@ -166,4 +178,7 @@ void LiftHandler::removeLastLift()
     liftObj.erase(liftObj.end() - 1);
 }
 
-
+Lift* LiftHandler::getLiftObj(int idx)
+{
+    return liftObj[idx];
+}

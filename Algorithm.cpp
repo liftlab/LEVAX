@@ -34,14 +34,8 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
     noOfResidents = shh->getNumberOfSimulatedHumanObject();
     noOfVisitors = shh->getNumberOfVisitorObj();
 
-    // multimap stores time path for all people, data will be processed linearly.
-    // multimap <timeTravel, pair<isResident, pair<index, travelIndex> > >
-    std::multimap<int, pair<bool, pair<int, int> > > dataSet = getDataSet(shh);
-    std::multimap<int, pair<bool, pair<int, int> > >::iterator itr;
-
-    // lift waiting list
-    // <vector<pair<vector<liftID, figureOfSuitability> >, pair<isResident, pair<index, travelIndex> > >
-    vector<pair<vector<pair<int, int> >, pair<bool, pair<int, int> > > > waitingList;
+    vector<PassengerInfo> passengerList = processPassenger(shh);
+    vector<WaitingStatus> waitingList;
 
     // A day consist of 86400 seconds
     // 0 = 00:00:00
@@ -49,56 +43,31 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
     int seconds = 0;
     while(seconds < 86399)
     {
-        // check if timing (seconds) exist in dataSet, if exist, add in waitingList
-        itr = dataSet.find(seconds);
-        if(itr != dataSet.end())
+        // Search for passenger that matches seconds, push them into waitingList
+        vector<PassengerInfo>::iterator itr = find(passengerList.begin(),passengerList.end(), seconds);
+        if(itr != passengerList.end())
         {
-            int count = dataSet.count(seconds);
-            for(int i=0;i<count;i++)
+            int totalFound = count(passengerList.begin(), passengerList.end(), seconds);
+            for(int i=0;i<totalFound;i++)
             {
-                vector<pair<int, int> > liftInfo;
-                for(int j=0;j<noOfLifts;j++)
-                {
-                    pair<int, int> liftIDFS = make_pair<int, int>(j, 0);
-                    liftInfo.push_back(liftIDFS);
-                }
-
-                pair<int, int> a = make_pair<int, int>(itr->second.second.first, itr->second.second.second);
-                pair<bool, pair<int, int> > b = make_pair<bool, pair<int, int> >(itr->second.first, a);
-                waitingList.push_back(make_pair<vector<pair<int, int> >, pair<bool, pair<int, int> > >(liftInfo, b));
+                WaitingStatus ws;
+                ws.pi = *itr;
+                for(int i=0;i<noOfLifts;i++)
+                    ws.FS.push_back(make_pair<Lift*,int>(lh->getLiftObj(i),0));
+                ws.idealLift = 0;   //default ideal lift is 0
+                waitingList.push_back(ws);
 
                 itr++;
             }
         }
 
-
-        // vector<liftID> where liftID is {0...noOfLifts-1}
-        // vector[0] -> liftID assign for person 0
-        // vector[1] -> liftID assign for person 1
-        std::vector<int> liftSelection;
-
-        // floor travelling for lift
-        vector<vector<int> > liftMovementPath;
-
-        // Update FS only if waitingList is not empty
+        // Calculate their respective FS if they are not empty
         if(!waitingList.empty())
         {
-            calculateFS(waitingList, shh, lh);
+            computeFS(waitingList, lh);
+            //get ideal lift
 
-            liftSelection = extractHighestFS(waitingList);
-
-            // Do algorithm ***
-            // Move lift, fetch person, remove from waiting list
-            // lift with highest FS will travel to simulated human.
-            for(size_t i=0;i<waitingList.size();i++)
-            {
-//                liftSelection.push_back();
-
-
-
-                // if(reach)
-                    // delete from waitingList
-            }
+            //implement lift movement algo here
         }
 
         waitingList.clear();    //Remove this line after implementing algorithm or program will crash(See ***)
@@ -107,7 +76,7 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
     }
 
     /* Clear data */
-    dataSet.clear();
+    passengerList.clear();
 
     /* return timer */
     return convertToSeconds(timer.elapsed());
@@ -160,33 +129,110 @@ double Algorithm::convertToSeconds(qint64 ms)
     return ms/1000.00;
 }
 
-multimap<int,pair<bool, pair<int, int> > > Algorithm::getDataSet(SimulatedHumanHandler *shh)
-{
-    multimap<int,pair<bool, pair<int, int> > > dataSet;
+/* Select the lift with the highestFS and return */
+//vector<int> Algorithm::extractHighestFS(vector<pair<vector<pair<int, int> >, pair<bool, pair<int, int> > > > waitingList)
+//{
+//    int highestFS = 0;
+//    int highestIndex = 0;
 
+//    vector<int> liftSelection;
+
+//    for(size_t i=0;i<waitingList.size();i++)
+//    {
+//        for(int j=0;j<noOfLifts;j++)
+//        {
+//            if (waitingList[i].first[j].second > highestFS)
+//            {
+//                highestFS = waitingList[i].first[j].second;
+//                highestIndex = j;
+//            }
+//        }
+
+//        qDebug() << "Lift" << highestIndex << "has highest FS";
+//        liftSelection.push_back(highestIndex);
+//    }
+
+//    return liftSelection;
+//}
+
+/* Push all passenger into passengerList and sort by timing they are travelling */
+vector<Algorithm::PassengerInfo> Algorithm::processPassenger(SimulatedHumanHandler *shh)
+{
+    vector<PassengerInfo> passengerList;
+
+    PassengerInfo pi;
+
+    /* Get data of all residents and push into passenger list */
     for(int i=0; i<shh->getNumberOfSimulatedHumanObject();i++)
     {
         for(int j=0;j<shh->getNoOfTimesTravel(i, true);j++)
         {
-            pair<int, int> a = make_pair<int, int>(i, j);
-            pair<bool, pair<int, int> > b = make_pair<bool, pair<int, int> >(true, a);
-            dataSet.insert(std::multimap<int,pair<bool, pair<int, int> > >::value_type(shh->getTravelTime(i,j,true), b));
+
+            pi.isResident = true;
+
+            pi.travelTime = shh->getTravelTime(i,j,pi.isResident);
+            pi.personNo = i;
+            pi.travelNo = j;
+
+            pi.travellingTo = shh->getTravelFloor(i,j,pi.isResident);
+
+            if(pi.travellingTo != 1)
+            {
+                pi.currentFloor = 1;
+                pi.directionHeading = +1;
+            }
+            else
+            {
+                pi.currentFloor = shh->getResident(i, pi.isResident);
+                pi.directionHeading = -1;
+            }
+
+            pi.isInLift = false;
+
+            passengerList.push_back(pi);
         }
     }
 
+    /* Get data of all visitors and push into passenger list */
     for(int i=0; i<shh->getNumberOfVisitorObj();i++)
     {
         for(int j=0;j<shh->getNoOfTimesTravel(i, false);j++)
         {
-            pair<int, int> a = make_pair<int, int>(i, j);
-            pair<bool, pair<int, int> > b = make_pair<bool, pair<int, int> >(false, a);
-            dataSet.insert(std::multimap<int,pair<bool, pair<int, int> > >::value_type(shh->getTravelTime(i,j,false), b));
+            pi.isResident = false;
+
+            pi.travelTime = shh->getTravelTime(i,j,pi.isResident);
+            pi.personNo = i;
+            pi.travelNo = j;
+
+            pi.travellingTo = shh->getTravelFloor(i,j,pi.isResident);
+
+            if(pi.travellingTo != 1)
+            {
+                pi.currentFloor = 1;
+                pi.directionHeading = +1;
+            }
+            else
+            {
+                if(j != 0)
+                    pi.currentFloor = shh->getTravelFloor(i,j-1,pi.isResident);
+
+                pi.directionHeading = -1;
+            }
+
+            pi.isInLift = false;
+
+            passengerList.push_back(pi);
         }
     }
-    return dataSet;
+
+    /* Sort passengerList based on travelTime (ascending) */
+    std::sort(passengerList.begin(), passengerList.end());
+
+    return passengerList;
 }
 
-void Algorithm::calculateFS(vector<pair<vector<pair<int, int> >, pair<bool, pair<int, int> > > > &waitingList, SimulatedHumanHandler *shh, LiftHandler *lh)
+/* Compute FS for individual passenger in the waitingList (parse by reference) */
+void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
 {
     // for each individual people waiting for the lift
     for(size_t i=0;i<waitingList.size();i++)
@@ -196,29 +242,19 @@ void Algorithm::calculateFS(vector<pair<vector<pair<int, int> >, pair<bool, pair
         {
             int FS = 0;
 
-            int travelIndex = waitingList[i].second.second.second;
-            int personIndex = waitingList[i].second.second.first;
-            bool isResident = waitingList[i].second.first;
-            int travelFloor = shh->getTravelFloor(personIndex, travelIndex, isResident);
-            int personCurrentFloor;
+            int personIndex = waitingList[i].pi.personNo;
+            bool isResident = waitingList[i].pi.isResident;
+            int currentFloor = waitingList[i].pi.currentFloor;
+            int callDirection = waitingList[i].pi.directionHeading;
 
-            if(travelFloor != 1)
-                personCurrentFloor = 1;
-            else
-                personCurrentFloor = shh->getResident(personIndex, isResident);
+            int d = currentFloor - lh->getLiftCurrentFloor(j);
+            int N = noOfFloors-1;
 
-            int d = personCurrentFloor - lh->getLiftCurrentFloor(j); // 4
-            int direction; // 0
-            int N = noOfFloors-1; // 5
+            int liftDirection = lh->getLiftDirection(j);
 
-            if(d / lh->getLiftDirection(j) >= 0)
+            if(d / liftDirection >= 0)
             {
-                if(travelFloor != 1)
-                    direction = +1;
-                else
-                    direction = -1;
-
-                if(lh->getLiftDirection(j)  == direction)
+                if(liftDirection  == callDirection)
                     FS = (N + 2) - abs(d);
                 else
                     FS = (N + 1) - abs(d);
@@ -229,7 +265,7 @@ void Algorithm::calculateFS(vector<pair<vector<pair<int, int> >, pair<bool, pair
             }
 
             // Store FS
-            waitingList[i].first[j].second = FS;
+            waitingList[i].FS[j].second = FS;
 
             QDebug deb = qDebug();
             if(isResident)
@@ -240,30 +276,4 @@ void Algorithm::calculateFS(vector<pair<vector<pair<int, int> >, pair<bool, pair
             deb << personIndex << "- lift" << j << "has FS of" << FS;
         }
     }
-}
-
-/* Select the lift with the highestFS and return */
-vector<int> Algorithm::extractHighestFS(vector<pair<vector<pair<int, int> >, pair<bool, pair<int, int> > > > waitingList)
-{
-    int highestFS = 0;
-    int highestIndex = 0;
-
-    vector<int> liftSelection;
-
-    for(size_t i=0;i<waitingList.size();i++)
-    {
-        for(int j=0;j<noOfLifts;j++)
-        {
-            if (waitingList[i].first[j].second > highestFS)
-            {
-                highestFS = waitingList[i].first[j].second;
-                highestIndex = j;
-            }
-        }
-
-        qDebug() << "Lift" << highestIndex << "has highest FS";
-        liftSelection.push_back(highestIndex);
-    }
-
-    return liftSelection;
 }

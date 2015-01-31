@@ -22,6 +22,9 @@ Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFlo
     this->currentFloor = defaultFloor;
     this->direction = +1; // -1 = DOWN, +1 = UP
     this->currentWeight = 0;
+
+    this->distanceLeft = 0;
+    this->travellingTo = defaultFloor;
 }
 
 /* Destructor */
@@ -72,10 +75,16 @@ void Lift::setLiftCurrentWeight(int currentWeight)
     this->currentWeight = currentWeight;
 }
 
-/* Set lift FS (Figure of suitability) */
-void Lift::setLiftFS(int FS)
+/* Set Lift distance left to floor travellingTo */
+void Lift::setLiftDistanceLeft(double distanceLeft)
 {
-    this->FS = FS;
+    this->distanceLeft = distanceLeft;
+}
+
+/* Set Lift travelling to */
+void Lift::setLiftTravellingTo(int travellingTo)
+{
+    this->travellingTo = travellingTo;
 }
 
 /* Return lift id */
@@ -120,8 +129,14 @@ int Lift::getLiftCurrentWeight()
     return currentWeight;
 }
 
-/* Get lift FS (Figure of suitability) */
-int Lift::getLiftFS()
+/* Get Lift distance left to floor travellingTo */
+double Lift::getLiftDistanceLeft()
 {
-    return FS;
+    return distanceLeft;
+}
+
+/* Set Lift travelling to */
+int Lift::getLiftTravellingTo()
+{
+    return travellingTo;
 }

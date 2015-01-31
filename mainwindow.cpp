@@ -405,15 +405,15 @@ void MainWindow::onActionHelp()
                         "He travels to 27th floor at 65946s (18:19:06PM) and back to 1st floor at 71932s (19:58:52PM)<br>"
                         "<b>E.g. of Building XML</b><br>"
                         "&lt;building floors=\"28\" metrePerFloor=\"3\"&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"1.25\"/&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"340\" speed=\"1.50\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"1.25\" defaultFloor=\"1\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"340\" speed=\"1.50\" defaultFloor=\"15\"/&gt;<br>"
                         "&lt;/building&gt;<br><br>"
                         "Building is 28 stories high<br>"
                         "Each level is 3 metres apart. It has two lift<br>"
                         "-Lift 1<br>"
-                        "Maximum weight of 400kg and travels 1.25 metre per second<br>"
+                        "Maximum weight of 400kg and travels 1.25 metre per second with default floor at 1<br>"
                         "-Lift 2<br>"
-                        "Maximum weight of 340kg and travels 1.50 metre per second<br>";
+                        "Maximum weight of 340kg and travels 1.50 metre per second with default floor at 15<br>";
 
     /* Pop-up message box */
     QMessageBox::information(this,tr("Help"),message);

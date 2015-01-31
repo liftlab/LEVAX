@@ -22,7 +22,9 @@ public:
     void setLiftCurrentFloor(int);          /* Set lift current floor */
     void setLiftDirection(int);             /* Set lift current direction */
     void setLiftCurrentWeight(int);         /* Set lift current weight */
-    void setLiftFS(int);                    /* Set Lift FS (Figure of suitability) */
+    void setLiftDistanceLeft(double);       /* Set Lift distance left to floor travellingTo */
+    void setLiftTravellingTo(int);          /* Set Lift travelling to */
+
 
     /* Getters */
     int getLiftID();                        /* Return lift id */
@@ -32,7 +34,8 @@ public:
     int getLiftCurrentFloor();              /* Get lift current floor */
     int getLiftDirection();                 /* Get lift current direction */
     int getLiftCurrentWeight();             /* Get lift current weight */
-    int getLiftFS();                        /* Get lift FS (Figure of suitability) */
+    double getLiftDistanceLeft();           /* Get Lift distance left to floor travellingTo */
+    int getLiftTravellingTo();          /* Get Lift travelling to */
 
 private:
     int liftID;
@@ -44,7 +47,8 @@ private:
     int direction;
     int currentWeight;
 
-    int FS;
+    double distanceLeft;
+    int travellingTo;
 };
 
 #endif // LIFT_H
