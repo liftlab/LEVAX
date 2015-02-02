@@ -61,13 +61,17 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
             }
         }
 
+        vector<vector<int> > liftTravelPath;
+
         // Calculate their respective FS if they are not empty
         if(!waitingList.empty())
         {
+            // Compute FS for each person and the respective lift and choose an ideal lift
             computeFS(waitingList, lh);
-            //get ideal lift
 
-            //implement lift movement algo here
+
+            // Implement lift movement algo here
+            // push the ideal path to lifttravelpath
         }
 
         waitingList.clear();    //Remove this line after implementing algorithm or program will crash(See ***)
@@ -128,32 +132,6 @@ double Algorithm::convertToSeconds(qint64 ms)
 {
     return ms/1000.00;
 }
-
-/* Select the lift with the highestFS and return */
-//vector<int> Algorithm::extractHighestFS(vector<pair<vector<pair<int, int> >, pair<bool, pair<int, int> > > > waitingList)
-//{
-//    int highestFS = 0;
-//    int highestIndex = 0;
-
-//    vector<int> liftSelection;
-
-//    for(size_t i=0;i<waitingList.size();i++)
-//    {
-//        for(int j=0;j<noOfLifts;j++)
-//        {
-//            if (waitingList[i].first[j].second > highestFS)
-//            {
-//                highestFS = waitingList[i].first[j].second;
-//                highestIndex = j;
-//            }
-//        }
-
-//        qDebug() << "Lift" << highestIndex << "has highest FS";
-//        liftSelection.push_back(highestIndex);
-//    }
-
-//    return liftSelection;
-//}
 
 /* Push all passenger into passengerList and sort by timing they are travelling */
 vector<Algorithm::PassengerInfo> Algorithm::processPassenger(SimulatedHumanHandler *shh)
@@ -237,6 +215,8 @@ void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
     // for each individual people waiting for the lift
     for(size_t i=0;i<waitingList.size();i++)
     {
+        int highestFS = 0;
+
         //update the FS for each lift
         for(int j=0;j<noOfLifts;j++)
         {
@@ -267,6 +247,13 @@ void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
             // Store FS
             waitingList[i].FS[j].second = FS;
 
+            // Selecting most ideal lift
+            if (FS > highestFS)
+            {
+                highestFS = FS;
+                waitingList[i].idealLift = j;
+            }
+
             QDebug deb = qDebug();
             if(isResident)
                 deb << "Resident";
@@ -275,5 +262,7 @@ void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
 
             deb << personIndex << "- lift" << j << "has FS of" << FS;
         }
+
+        qDebug() << "Lift" << waitingList[i].idealLift << "most ideal";
     }
 }
