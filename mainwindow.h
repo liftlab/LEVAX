@@ -27,6 +27,8 @@ namespace Ui {
 class MainWindow;
 }
 
+#define MAX_FLOORS 90               /* Define maximum floor */
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -36,6 +38,7 @@ public:
     ~MainWindow();
 
 private slots:
+
     /* FILE MENU */
     void uploadHumanXML();                              /* humanXMLUploadBtn dialog function */
     void uploadBuildingXML();                           /* buildingXMLUploadBtn dialog function */

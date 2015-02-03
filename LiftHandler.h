@@ -46,9 +46,6 @@ public:
     int getLiftTravellingTo(int);               /* Set Lift travelling to */
     Lift* getLiftObj(int idx);
 
-    /* FOR DEBUGGING PURPOSES ONLY */
-    void getAllLiftData();                      /* Print all lift object data for debugging */
-
 private:
     std::vector<Lift*> liftObj;
 };

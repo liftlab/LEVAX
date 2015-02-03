@@ -797,26 +797,6 @@ int SimulatedHumanHandler::getNumberOfVisitorObj()
     return nonResSimulatedHumanObj.size();
 }
 
-/* Print all simulatedHuman object data for debugging */
-void SimulatedHumanHandler::getAllPersonData()
-{
-    for(std::size_t i=0;i<simulatedHumanObj.size();i++)
-    {
-        qDebug() << "PersonID" << simulatedHumanObj[i]->getPersonID();
-        qDebug() << "Weight" << simulatedHumanObj[i]->getWeight();
-        qDebug() << "Resident of" << simulatedHumanObj[i]->getResident();
-
-    }
-
-    for(std::size_t i=0;i<nonResSimulatedHumanObj.size();i++)
-    {
-        qDebug() << "VisitorID" << nonResSimulatedHumanObj[i]->getPersonID();
-        qDebug() << "Weight" << nonResSimulatedHumanObj[i]->getWeight();
-        qDebug() << "Not a resident";
-
-    }
-}
-
 /* Update floor evenly based on average number of people per floor */
 void SimulatedHumanHandler::updateFloorsEvenly(int avgPerFloor, int totalFloor, int totalPeople)
 {

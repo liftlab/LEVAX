@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     /* Set Spinbox Max Values*/
     ui->humanTotalSpinBox->setMaximum(MAX_PEOPLE);
     ui->humanVisitorSpinBox->setMaximum(MAX_VISITOR);
+    ui->totalFloorSpinBox->setMaximum(MAX_FLOORS);
     ui->defaultFloorSpinBox->setMaximum(bh.getNoOfFloor());
 
     /* Set default value */
@@ -98,8 +99,6 @@ void MainWindow::uploadHumanXML()
             prevTotalHuman=0;
             prevTotalVisitor=0;
 
-            /* Display error */
-            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
         }
         else
         {
@@ -190,8 +189,6 @@ void MainWindow::uploadBuildingXML()
             /* reset all building due to error */
             bh.resetAll();
 
-            /* Display error */
-            QMessageBox::critical(this,tr("Error!"),"The XML file selected has errors in them<br>See Help to learn more about XML structures");
         }
         else
         {
@@ -953,12 +950,16 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                 /* checks for floors, metrePerFloor, householdPerFloor is a number/empty data */
                 int attr;
                 if(TIXML_SUCCESS != pRoot->QueryIntAttribute("floors", &attr) || TIXML_SUCCESS != pRoot->QueryIntAttribute("metrePerFloor", &attr))
+                {
+                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"floors\" or \"metrePerFloor\" is either empty or not a number");
                     return "false";
+                }
 
                 /* Floors must be at least 2 level */
                 pRoot->QueryIntAttribute("floors", &attr);
-                if(attr < 2)
+                if(attr < 2 || attr > MAX_FLOORS)
                 {
+                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"floors\" must be in the range of 2 to " + QString::number(MAX_FLOORS));
                     return "false";
                 }
                 else
@@ -976,6 +977,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                 pRoot->QueryIntAttribute("metrePerFloor", &attr);
                 if(attr < 3)
                 {
+                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"metrePerFloor\" must be 3 or more");
                     return "false";
                 }
                 else
@@ -1002,20 +1004,26 @@ QString MainWindow::validateBuildingData(const QString &arg1)
 
                             /* check if maxWeight, speed exist */
                             if(pParm->Attribute("maxWeight") == NULL || pParm->Attribute("speed") == NULL || pParm->Attribute("defaultFloor") == NULL)
+                            {
+                                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nElement \"maxWeight\", \"speed\" or \"defaultFloor\" missing");
                                 return "false";
+                            }
                             else
                             {
                                 /* checks for maxWeight, speed is a number/empty data */
                                 int attr2;
                                 if(TIXML_SUCCESS != pParm->QueryIntAttribute("maxWeight", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("speed", &attr2) || TIXML_SUCCESS != pParm->QueryIntAttribute("defaultFloor", &attr2))
+                                {
+                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"maxWeight\", \"speed\" or \"defaultFloor\" is either \nempty or not a number");
                                     return "false";
-
+                                }
                                 int maxWeight, speed, defaultFloor = 0;
 
                                 /* maxWeight must be at least 200kg */
                                 pParm->QueryIntAttribute("maxWeight", &attr2);
                                 if(attr2 < 200)
                                 {
+                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"maxWeight\" must be more than or equal to 200kg");
                                     return "false";
                                 }
                                 else
@@ -1035,6 +1043,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                 pParm->QueryIntAttribute("speed", &attr2);
                                 if(attr2 < 1)
                                 {
+                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"speed\" must be more than or equal to 1");
                                     return "false";
                                 }
                                 else
@@ -1051,6 +1060,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                 pParm->QueryIntAttribute("defaultFloor", &attr2);
                                 if(attr2 < 1 || attr2 >= bh.getNoOfFloor()+1)
                                 {
+                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"defaultFloor\" must be from 1 to " + QString::number(bh.getNoOfFloor()));
                                     return "false";
                                 }
                                 else
@@ -1075,6 +1085,7 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                         }
                         else
                         {
+                            QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nSibling element must be named <lift>");
                             return "false";
                         }
                     }
@@ -1084,25 +1095,27 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                 }
                 else
                 {
+                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nSibling element <lift> missing");
                     return "false";
                 }
             }
             else
             {
+                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nElement \"floors\" or \"metrePerFloor\" missing");
                 return "false";
             }
         }
         else
         {
+            QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nNo building data found");
             return "false";
         }
     }
     else
     {
+        QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nError in XML structure\nSee Help to learn more about XML structures");
         return "false";
     }
-
-   // lh.getAllLiftData();
     return summary;
 }
 
@@ -1139,13 +1152,15 @@ bool MainWindow::validateHumanData(const QString &arg1)
                             /* checks for weight, resident is a number/empty data */
                             int attr;
                             if(TIXML_SUCCESS != pParm->QueryIntAttribute("weight", &attr) || TIXML_SUCCESS != pParm->QueryIntAttribute("resident", &attr))
+                            {
+                                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"weight\" or \"resident\" is either empty or not a number");
                                 return false;
-
+                            }
                             /* person must have a resident value of more than 0 but not 1 and less than building limit */
                             pParm->QueryIntAttribute("resident", &attr);
                             if(attr < 0 || attr >= bh.getNoOfFloor()+1 || attr == 1)
                             {
-                                QMessageBox::critical(this,tr("Inconsistent data!"), "A resident has an invalid floor!\ni.e. Negative or more than the current building model");
+                                QMessageBox::critical(this,tr("Inconsistent data!"), "Load XML Fail!\nA resident has an invalid floor!\ni.e. Negative or more than the current building model");
                                 return false;
                             }
                             else
@@ -1164,6 +1179,7 @@ bool MainWindow::validateHumanData(const QString &arg1)
                             pParm->QueryIntAttribute("weight", &attr);
                             if(attr > 150 || attr < 1)
                             {
+                                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"weight\" has to be 1 to 150");
                                 return false;
                             }
                             else
@@ -1191,22 +1207,29 @@ bool MainWindow::validateHumanData(const QString &arg1)
                                             /* checks if travel is a number/empty data */
                                             int travel;
                                             if(TIXML_SUCCESS != pParm2->QueryIntAttribute("travelFloor", &travel))
+                                            {
+                                                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"travelFloor\" is either empty or not a number");
                                                 return false;
+                                            }
 
                                             int time;
                                             if(TIXML_SUCCESS != pParm2->QueryIntAttribute("time", &time))
+                                            {
+                                                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"time\" is either empty or not a number");
                                                 return false;
+                                            }
 
                                             /* checks if person is travelling at least to level 1 or more
                                              * but lesser than the total limit in building */
                                             if(travel < 1 || travel >= bh.getNoOfFloor()+1)
                                             {
-                                                QMessageBox::critical(this,tr("Inconsistent data!"), "The data has an invalid travel floor!\ni.e. More than the current building model");
+                                                QMessageBox::critical(this,tr("Inconsistent data!"), "Load XML Fail!\nThe data has an invalid travel floor!\ni.e. More than the current building model");
                                                 return false;
                                             }
 
                                             if(time < 0 || time > 86399)
                                             {
+                                                QMessageBox::critical(this,tr("Load XML Fail!!"), "Load XML Fail!\nTime has to be from 0 to 86399 seconds");
                                                 return false;
                                             }
 
@@ -1223,11 +1246,13 @@ bool MainWindow::validateHumanData(const QString &arg1)
                                         }
                                         else
                                         {
+                                            QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nElement \"time\" or \"travel\" missing");
                                             return false;
                                         }
                                     }
                                     else
                                     {
+                                        QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nSibling Element must be named <floor>");
                                         return false;
                                     }
 
@@ -1236,36 +1261,41 @@ bool MainWindow::validateHumanData(const QString &arg1)
                             }
                             else
                             {
+                                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nSibling Element <floor> missing");
                                 return false;
                             }
                         }
                         else
                         {
+                            QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nElement \"weight\" or \"resident\" missing");
                             return false;
                         }
                     }
                     else
                     {
+
+                        QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nElement must be named \"Person\"");
                         return false;
                     }
                 }
             }
             else
             {
+                QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nElement <person> not found");
                 return false;
             }
         }
         else
         {
+            QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nNo simulated human data found");
             return false;
         }
     }
     else
     {
+        QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nError in XML structure\nSee Help to learn more about XML structures");
         return false;
     }
-
-   // shh.getAllPersonData();
 
     return true;
 }

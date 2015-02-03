@@ -43,17 +43,6 @@ void LiftHandler::resetAll()
     }
 }
 
-/* Print all lift object data for debugging */
-void LiftHandler::getAllLiftData()
-{
-    for(std::size_t i=0;i<liftObj.size();i++)
-    {
-        qDebug() << "Lift ID" << liftObj[i]->getLiftID();
-        qDebug() << "Max Weight" << liftObj[i]->getLiftWeight();
-        qDebug() << "Speed(sec/floor)" << liftObj[i]->getLiftSpeed();
-    }
-}
-
 /* Return number of lift objects */
 int LiftHandler::getNumberOfLiftsObject()
 {
