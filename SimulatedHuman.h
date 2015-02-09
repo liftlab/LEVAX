@@ -7,7 +7,6 @@
 #ifndef SIMULATEDHUMAN_H
 #define SIMULATEDHUMAN_H
 
-#include <map>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -40,7 +39,7 @@ private:
     int personID;
     int residentOf;
     int weight;
-    std::vector<pair<int, int> > timeTravel;    /* Stores the time travel */
+    std::vector<pair<int, int> > timeTravel;    /* Stores the time travel (start to end in seconds) */
 };
 
 #endif // SIMULATEDHUMAN_H

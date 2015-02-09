@@ -706,7 +706,7 @@ QTabWidget::tab-bar {
       <number>700</number>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="maxSpeedDoubleSpinBox">
+    <widget class="QSpinBox" name="maxSpeedSpinBox">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -727,14 +727,11 @@ QTabWidget::tab-bar {
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
-     <property name="minimum">
-      <double>1.000000000000000</double>
-     </property>
      <property name="maximum">
-      <double>10.000000000000000</double>
+      <number>6</number>
      </property>
-     <property name="singleStep">
-      <double>0.250000000000000</double>
+     <property name="value">
+      <number>1</number>
      </property>
     </widget>
     <widget class="QLabel" name="maxWeightLabel_3">

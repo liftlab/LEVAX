@@ -18,7 +18,7 @@ public:
     LiftHandler();                              /* Constructor */
     ~LiftHandler();                             /* Destructor */
 
-    void createNewLift(int, int, double, int);  /* Create new lift object and store in vector*/
+    void createNewLift(int, int, int, int);     /* Create new lift object and store in vector*/
     void resetAll();                            /* Free and reset all lift object in liftObj vector */
     int getNumberOfLiftsObject();               /* Return number of lift objects */
     void removeLastLift();                      /* Remove last lift */
@@ -26,25 +26,37 @@ public:
     /* Setters */
     void setLiftID(int, int);                   /* Set lift id */
     void setLiftWeight(int, int);               /* Set lift weight */
-    void setLiftSpeed(int, double);             /* Set lift speed */
+    void setLiftSpeed(int, int);                /* Set lift speed */
     void setLiftDefaultFloor(int, int);         /* Set lift default floor */
     void setLiftCurrentFloor(int, int);         /* Set lift current floor */
     void setLiftDirection(int, int);            /* Set lift current direction */
     void setLiftCurrentWeight(int, int);        /* Set lift current weight */
-    void setLiftDistanceLeft(int, double);      /* Set Lift distance left to floor travellingTo */
+    void setLiftIsMoving(int, bool);            /* Set lift moving status */
+    void setLiftDistanceLeft(int, double);      /* Set Lift distance to next target (travellingTo) */
     void setLiftTravellingTo(int, int);         /* Set Lift travelling to */
+    void setLiftMoveNextRound(int, bool);       /* Set Lift to move only next second */
+    void setLiftDistanceCount(int, int);        /* Set Lift distanceCount */
+    void setLiftTotalDistance(int, int);        /* Set Lift totalDistance */
+    void setLiftPark(int, bool);                /* Set Lift park */
+    void increaseDistance(int, int);            /* Increase lift distance moved */
 
     /* Getters */
     int getLiftID(int);                         /* Return lift id */
     int getLiftWeight(int);                     /* Return lift weight */
-    double getLiftSpeed(int);                   /* Return lift speed */
+    int getLiftSpeed(int);                      /* Return lift speed */
     int getLiftDefaultFloor(int);               /* Return lift default floor */
     int getLiftCurrentFloor(int);               /* Get lift current floor */
     int getLiftDirection(int);                  /* Get lift current direction */
     int getLiftCurrentWeight(int);              /* Get lift current weight */
-    double getLiftDistanceLeft(int);            /* Get Lift distance left to floor travellingTo */
+    bool getLiftIsMoving(int);                  /* Get lift moving status */
+    double getLiftDistanceLeft(int);            /* Get Lift distance to next target (travellingTo) */
     int getLiftTravellingTo(int);               /* Set Lift travelling to */
-    Lift* getLiftObj(int idx);
+    bool getLiftMoveNextRound(int);             /* Get Lift to move only next second */
+    int getLiftDistanceCount(int);              /* Get Lift distanceCount */
+    int getLiftTotalDistance(int);              /* Get Lift totalDistance */
+    bool getLiftPark(int);                      /* Get Lift park */
+
+    void resetLift(int);
 
 private:
     std::vector<Lift*> liftObj;

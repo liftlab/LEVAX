@@ -12,7 +12,7 @@ Lift::Lift()
 }
 
 /* Constructor */
-Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFloor)
+Lift::Lift(int liftID, int maxWeight, int speedMetrePerSecond, int defaultFloor)
 {
     this->liftID = liftID;
     this->maxWeight = maxWeight;
@@ -25,6 +25,13 @@ Lift::Lift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFlo
 
     this->distanceLeft = 0;
     this->travellingTo = defaultFloor;
+    this->isMoving = false;
+    this->moveNextRound = false;
+
+    this->distanceCount = 0;
+    this->totalDistance = 0;
+
+    this->parkingLift = false;
 }
 
 /* Destructor */
@@ -46,7 +53,7 @@ void Lift::setLiftWeight(int maxWeight)
 }
 
 /* Set lift speed */
-void Lift::setLiftSpeed(double speedMetrePerSecond)
+void Lift::setLiftSpeed(int speedMetrePerSecond)
 {
     this->speedMetrePerSecond = speedMetrePerSecond;
 }
@@ -75,6 +82,12 @@ void Lift::setLiftCurrentWeight(int currentWeight)
     this->currentWeight = currentWeight;
 }
 
+/* Set lift moving status */
+void Lift::setLiftIsMoving(bool isMoving)
+{
+    this->isMoving = isMoving;
+}
+
 /* Set Lift distance left to floor travellingTo */
 void Lift::setLiftDistanceLeft(double distanceLeft)
 {
@@ -85,6 +98,30 @@ void Lift::setLiftDistanceLeft(double distanceLeft)
 void Lift::setLiftTravellingTo(int travellingTo)
 {
     this->travellingTo = travellingTo;
+}
+
+/* Set Lift to move only next second */
+void Lift::setLiftMoveNextRound(bool moveNextRound)
+{
+    this->moveNextRound = moveNextRound;
+}
+
+/* Set Lift distanceCount */
+void Lift::setLiftDistanceCount(int val)
+{
+    this->distanceCount = val;
+}
+
+/* Set Lift totalDistance */
+void Lift::setLiftTotalDistance(int val)
+{
+    this->totalDistance = val;
+}
+
+/* Set Lift park */
+void Lift::setLiftPark(bool parkingLift)
+{
+    this->parkingLift = parkingLift;
 }
 
 /* Return lift id */
@@ -100,7 +137,7 @@ int Lift::getLiftWeight()
 }
 
 /* Return lift speed */
-double Lift::getLiftSpeed()
+int Lift::getLiftSpeed()
 {
     return speedMetrePerSecond;
 }
@@ -129,6 +166,12 @@ int Lift::getLiftCurrentWeight()
     return currentWeight;
 }
 
+/* Get Lift total distance to next floor (travellingTo) */
+bool Lift::getLiftIsMoving()
+{
+    return isMoving;
+}
+
 /* Get Lift distance left to floor travellingTo */
 double Lift::getLiftDistanceLeft()
 {
@@ -139,4 +182,50 @@ double Lift::getLiftDistanceLeft()
 int Lift::getLiftTravellingTo()
 {
     return travellingTo;
+}
+
+/* Get Lift to move only next second */
+bool Lift::getLiftMoveNextRound()
+{
+    return moveNextRound;
+}
+
+/* Get Lift distanceCount */
+int Lift::getLiftDistanceCount()
+{
+    return distanceCount;
+}
+
+/* Get Lift totalDistance */
+int Lift::getLiftTotalDistance()
+{
+    return totalDistance;
+}
+
+/* Get Lift park */
+bool Lift::getLiftPark()
+{
+    return parkingLift;
+}
+
+/* Reset lift data */
+void Lift::resetLift(int noOfFloors)
+{
+    currentFloor = defaultFloor;
+
+    if(currentFloor == noOfFloors)
+        direction = -1;
+    else
+        direction = +1;
+
+    currentWeight = 0;
+    distanceLeft = 0;
+    travellingTo = defaultFloor;
+    isMoving = false;
+    moveNextRound = false;
+    isMoving = false;
+    moveNextRound = false;
+    distanceCount = 0;
+    totalDistance = 0;
+    parkingLift = false;
 }

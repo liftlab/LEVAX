@@ -19,7 +19,7 @@ LiftHandler::~LiftHandler()
 }
 
 /* Create new lift object and store in vector*/
-void LiftHandler::createNewLift(int liftID, int maxWeight, double speedMetrePerSecond, int defaultFloor)
+void LiftHandler::createNewLift(int liftID, int maxWeight, int speedMetrePerSecond, int defaultFloor)
 {
     Lift *l = new Lift(liftID, maxWeight, speedMetrePerSecond, defaultFloor);
 
@@ -62,7 +62,7 @@ void LiftHandler::setLiftWeight(int idx, int maxWeight)
 }
 
 /* Set lift speed */
-void LiftHandler::setLiftSpeed(int idx, double speedMetrePerSecond)
+void LiftHandler::setLiftSpeed(int idx, int speedMetrePerSecond)
 {
     liftObj[idx]->setLiftSpeed(speedMetrePerSecond);
 }
@@ -91,7 +91,13 @@ void LiftHandler::setLiftCurrentWeight(int idx, int currentWeight)
     liftObj[idx]->setLiftCurrentWeight(currentWeight);
 }
 
-/* Set Lift distance left to floor travellingTo */
+/* Set Lift distance moving status */
+void LiftHandler::setLiftIsMoving(int idx, bool isMoving)
+{
+    liftObj[idx]->setLiftIsMoving(isMoving);
+}
+
+/* Set lift distance to next target (travellingTo) */
 void LiftHandler::setLiftDistanceLeft(int idx, double distanceLeft)
 {
     liftObj[idx]->setLiftDistanceLeft(distanceLeft);
@@ -101,6 +107,39 @@ void LiftHandler::setLiftDistanceLeft(int idx, double distanceLeft)
 void LiftHandler::setLiftTravellingTo(int idx, int travellingTo)
 {
     liftObj[idx]->setLiftTravellingTo(travellingTo);
+}
+
+/* Set Lift to move only next second */
+void LiftHandler::setLiftMoveNextRound(int idx, bool moveNextRound)
+{
+    liftObj[idx]->setLiftMoveNextRound(moveNextRound);
+}
+
+/* Set Lift distanceCount */
+void LiftHandler::setLiftDistanceCount(int idx, int val)
+{
+    liftObj[idx]->setLiftDistanceCount(val);
+}
+
+/* Set Lift totalDistance */
+void LiftHandler::setLiftTotalDistance(int idx, int val)
+{
+    liftObj[idx]->setLiftTotalDistance(val);
+}
+
+/* Set Lift park */
+void LiftHandler::setLiftPark(int idx, bool parkingLift)
+{
+    liftObj[idx]->setLiftPark(parkingLift);
+}
+
+/* Increase lift distance moved */
+void LiftHandler::increaseDistance(int idx, int val)
+{
+    int distanceCount = liftObj[idx]->getLiftDistanceCount();
+    int totalDistance = liftObj[idx]->getLiftTotalDistance();
+    liftObj[idx]->setLiftDistanceCount(distanceCount + val);
+    liftObj[idx]->setLiftTotalDistance(totalDistance + val);
 }
 
 /* Return lift id */
@@ -116,7 +155,7 @@ int LiftHandler::getLiftWeight(int idx)
 }
 
 /* Return lift speed */
-double LiftHandler::getLiftSpeed(int idx)
+int LiftHandler::getLiftSpeed(int idx)
 {
     return liftObj[idx]->getLiftSpeed();
 }
@@ -145,6 +184,12 @@ int LiftHandler::getLiftCurrentWeight(int idx)
     return liftObj[idx]->getLiftCurrentWeight();
 }
 
+/* Get lift moving status */
+bool LiftHandler::getLiftIsMoving(int idx)
+{
+    return liftObj[idx]->getLiftIsMoving();
+}
+
 /* Get Lift distance left to floor travellingTo */
 double LiftHandler::getLiftDistanceLeft(int idx)
 {
@@ -167,7 +212,35 @@ void LiftHandler::removeLastLift()
     liftObj.erase(liftObj.end() - 1);
 }
 
-Lift* LiftHandler::getLiftObj(int idx)
+/* Get Lift to move only next second */
+bool LiftHandler::getLiftMoveNextRound(int idx)
 {
-    return liftObj[idx];
+    return liftObj[idx]->getLiftMoveNextRound();
 }
+
+/* Get Lift distanceCount */
+int LiftHandler::getLiftDistanceCount(int idx)
+{
+    return liftObj[idx]->getLiftDistanceCount();
+}
+
+/* Get Lift totalDistance */
+int LiftHandler::getLiftTotalDistance(int idx)
+{
+    return liftObj[idx]->getLiftTotalDistance();
+}
+
+/* Get Lift park */
+bool LiftHandler::getLiftPark(int idx)
+{
+    return liftObj[idx]->getLiftPark();
+}
+
+void LiftHandler::resetLift(int noOfFloors)
+{
+    for(int i=0;i<liftObj.size();i++)
+    {
+        liftObj[i]->resetLift(noOfFloors);
+    }
+}
+

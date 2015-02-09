@@ -204,7 +204,7 @@ void MainWindow::uploadBuildingXML()
             ui->totalLiftsSpinBox->setValue(lh.getNumberOfLiftsObject());
             ui->metreSpinBox->setValue(bh.getMetrePerFloor());
 
-            ui->maxSpeedDoubleSpinBox->setValue(lh.getLiftSpeed(0));
+            ui->maxSpeedSpinBox->setValue(lh.getLiftSpeed(0));
             ui->maxWeightSpinBox->setValue(lh.getLiftWeight(0));
             ui->defaultFloorSpinBox->setValue(lh.getLiftDefaultFloor(0));
 
@@ -342,7 +342,7 @@ void MainWindow::exportBuildingXML()
             TiXmlElement* element2 = new TiXmlElement( "lift" );
 
             element2->SetAttribute("maxWeight", lh.getLiftWeight(i));
-            element2->SetDoubleAttribute("speed", lh.getLiftSpeed(i));
+            element2->SetAttribute("speed", lh.getLiftSpeed(i));
             element2->SetAttribute("defaultFloor", lh.getLiftDefaultFloor(i));
 
             element->LinkEndChild( element2 );
@@ -402,15 +402,15 @@ void MainWindow::onActionHelp()
                         "He travels to 27th floor at 65946s (18:19:06PM) and back to 1st floor at 71932s (19:58:52PM)<br>"
                         "<b>E.g. of Building XML</b><br>"
                         "&lt;building floors=\"28\" metrePerFloor=\"3\"&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"1.25\" defaultFloor=\"1\"/&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"340\" speed=\"1.50\" defaultFloor=\"15\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"1\" defaultFloor=\"1\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"340\" speed=\"2\" defaultFloor=\"15\"/&gt;<br>"
                         "&lt;/building&gt;<br><br>"
                         "Building is 28 stories high<br>"
                         "Each level is 3 metres apart. It has two lift<br>"
                         "-Lift 1<br>"
-                        "Maximum weight of 400kg and travels 1.25 metre per second with default floor at 1<br>"
+                        "Maximum weight of 400kg and travels 1 metre per second with default floor at 1<br>"
                         "-Lift 2<br>"
-                        "Maximum weight of 340kg and travels 1.50 metre per second with default floor at 15<br>";
+                        "Maximum weight of 340kg and travels 2 metre per second with default floor at 15<br>";
 
     /* Pop-up message box */
     QMessageBox::information(this,tr("Help"),message);
@@ -488,7 +488,7 @@ void MainWindow::on_liftCombo_currentIndexChanged(int index)
     {
         /* Set values */
         ui->maxWeightSpinBox->setValue(lh.getLiftWeight(index-1));
-        ui->maxSpeedDoubleSpinBox->setValue(lh.getLiftSpeed(index-1));
+        ui->maxSpeedSpinBox->setValue(lh.getLiftSpeed(index-1));
         ui->defaultFloorSpinBox->setValue(lh.getLiftDefaultFloor(index-1));
 
         ui->defaultFloorSpinBox->setMaximum(bh.getNoOfFloor());
@@ -496,14 +496,14 @@ void MainWindow::on_liftCombo_currentIndexChanged(int index)
 
         /* Enable */
         ui->maxWeightSpinBox->setDisabled(false);
-        ui->maxSpeedDoubleSpinBox->setDisabled(false);
+        ui->maxSpeedSpinBox->setDisabled(false);
         ui->defaultFloorSpinBox->setDisabled(false);
     }
     else
     {
         /* Disable spinbox for max weight and max speed */
         ui->maxWeightSpinBox->setDisabled(true);
-        ui->maxSpeedDoubleSpinBox->setDisabled(true);
+        ui->maxSpeedSpinBox->setDisabled(true);
         ui->defaultFloorSpinBox->setDisabled(true);
     }
 }
@@ -583,9 +583,9 @@ void MainWindow::on_maxWeightSpinBox_valueChanged(int arg1)
 }
 
 /* Handle lift max speed spin box value changed */
-void MainWindow::on_maxSpeedDoubleSpinBox_valueChanged(double arg1)
+void MainWindow::on_maxSpeedSpinBox_valueChanged(int arg1)
 {
-    if(arg1 > 0.00)
+    if(arg1 > 0)
     {
         /* Set speed only if current index is not 0 */
         if(ui->liftCombo->currentIndex() != 0)
@@ -620,7 +620,7 @@ void MainWindow::on_resetBtn_clicked()
     ui->totalLiftsSpinBox->setValue(1);
     ui->metreSpinBox->setValue(3);
     ui->maxWeightSpinBox->setValue(200);
-    ui->maxSpeedDoubleSpinBox->setValue(1.00);
+    ui->maxSpeedSpinBox->setValue(1.00);
     ui->exportBuildingModel->setDisabled(true);
     ui->exportHumanModel->setDisabled(true);
     ui->tabWidget->setCurrentWidget(ui->tab);
@@ -1039,9 +1039,9 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                     maxWeight = attr2;
                                 }
 
-                                /* speed must be at least 1 or more*/
-                                pParm->QueryIntAttribute("speed", &attr2);
-                                if(attr2 < 1)
+                                /* speed must be at least 1.00 or more*/
+                                pParm->QueryIntAttribute("speed", &speed);
+                                if(speed < 1)
                                 {
                                     QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"speed\" must be more than or equal to 1");
                                     return "false";
@@ -1052,8 +1052,6 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                     summary += "Maximum speed ";
                                     summary += pParm->Attribute("speed");
                                     summary += " metre/second<br>";
-
-                                    speed = attr2;
                                 }
 
                                 /* defaultFloor must be at least 1 or more and not more than the total no of floor */

@@ -57,7 +57,7 @@ private slots:
     void on_liftCombo_currentIndexChanged(int index);   /* Handle lift combo box selection */
     void on_totalLiftsSpinBox_valueChanged(int arg1);   /* Handle total number of lift spin box value changed */
     void on_maxWeightSpinBox_valueChanged(int arg1);    /* Handle lift max weight spinbox value changed */
-    void on_maxSpeedDoubleSpinBox_valueChanged(double arg1); /* Handle lift max speed spin box value changed */
+    void on_maxSpeedSpinBox_valueChanged(int arg1);     /* Handle lift max speed spin box value changed */
     void on_defaultFloorSpinBox_valueChanged(int arg1); /* Handle lift default floor changes */
 
     /* BUTTONS */
