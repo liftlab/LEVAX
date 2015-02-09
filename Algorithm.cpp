@@ -90,7 +90,10 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                             if(lh->getLiftIsMoving(liftCounter))
                             {
                                 qDebug() << "Ideal lift is already moving... find new ideal lift";
-                                //break;
+
+
+                                // if within lift target and lift current and moving, intercept.
+
                                 /*
                                 if(distance < lh->getLiftDistanceLeft(liftCounter))
                                 {
@@ -120,15 +123,27 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                                     qDebug() << "Time person board:" << QString::number(seconds);
 
                                 }
-                                /*
                                 else
                                 {
-                                    // move lift to target floor.
-                                    lh->setLiftDistanceLeft(liftCounter, distance);
-                                    lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi.currentFloor);
-                                }*/
-                                //lh->setLiftIsMoving(liftCounter, true);
+                                    // Move lift if lift is not picking any passenger
+                                    if(!lh->getLiftPickPassenger(liftCounter))
+                                    {
+                                        qDebug() << "Moving lift" << liftCounter;
 
+                                        // Calculate distance
+                                        distance = abs(lh->getLiftCurrentFloor(liftCounter) - waitingList[queueCounter].pi.currentFloor) * bh->getMetrePerFloor();
+                                        lh->setLiftDistanceLeft(liftCounter, distance);
+                                        lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi.currentFloor);
+
+                                        // Allows travel to pick passenger
+                                        lh->setLiftPickPassenger(liftCounter, true);
+
+                                        // lift to start move next second
+                                        lh->setLiftMoveNextRound(liftCounter, true);
+
+                                        qDebug() << "Lift" << liftCounter << "moving towards" << lh->getLiftTravellingTo(liftCounter);
+                                    }
+                                }
                             }
                             break;
                         }
@@ -143,7 +158,7 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
         for(int i=0;i<noOfLifts;i++)
         {
             // If there are passenger for lift i
-            if(passengersInLift[i].size() > 0 || lh->getLiftPark(i))
+            if(passengersInLift[i].size() > 0 || lh->getLiftPark(i) || lh->getLiftPickPassenger(i))
             {
                 // Set lift moving state
                 lh->setLiftIsMoving(i,true);
@@ -207,8 +222,11 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
 
                             lh->setLiftIsMoving(i, false);
 
-                            if(lh->getLiftPark(i) == true)
+                            if(lh->getLiftPark(i))
                                 lh->setLiftPark(i, false);
+
+                            if(lh->getLiftPickPassenger(i))
+                                lh->setLiftPickPassenger(i, false);
 
                             // clear passengers that reached destination
                             vector<PassengerInfo>::iterator iter = passengersInLift[i].begin();
@@ -307,8 +325,8 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
          * enable it to break out of the loop so that
          * the output will not be flooded with text
          */
-        //if(seconds >= 49999)
-        //    break;
+        if(seconds >= 49999)
+            break;
     }
 
     /* Clear data and reset data */
@@ -497,14 +515,7 @@ void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
                     waitingList[i].idealLift = j;
                 }
 
-                QDebug deb = qDebug();
-                if(isResident)
-                    deb << "Resident";
-                else
-                    deb << "Visitor";
-
-                deb << personIndex << "- lift" << j << "has FS of" << FS;
-
+                qDebug() << (isResident?"Resident":"Visitor") << personIndex << "- lift" << j << "has FS of" << FS;
             }
             qDebug() << "Lift" << waitingList[i].idealLift << "most ideal for" << (isResident?"Resident":"Visitor") << personIndex;
         }

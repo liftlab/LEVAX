@@ -32,6 +32,7 @@ Lift::Lift(int liftID, int maxWeight, int speedMetrePerSecond, int defaultFloor)
     this->totalDistance = 0;
 
     this->parkingLift = false;
+    this->isPicking = false;
 }
 
 /* Destructor */
@@ -124,6 +125,12 @@ void Lift::setLiftPark(bool parkingLift)
     this->parkingLift = parkingLift;
 }
 
+/* Set lift isPicking */
+void Lift::setLiftPickPassenger(bool isPicking)
+{
+    this->isPicking = isPicking;
+}
+
 /* Return lift id */
 int Lift::getLiftID()
 {
@@ -208,6 +215,12 @@ bool Lift::getLiftPark()
     return parkingLift;
 }
 
+/* Get lift isPicking */
+bool Lift::getLiftPickPassenger()
+{
+    return isPicking;
+}
+
 /* Reset lift data */
 void Lift::resetLift(int noOfFloors)
 {
@@ -228,4 +241,5 @@ void Lift::resetLift(int noOfFloors)
     distanceCount = 0;
     totalDistance = 0;
     parkingLift = false;
+    isPicking = false;
 }

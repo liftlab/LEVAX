@@ -38,6 +38,7 @@ public:
     void setLiftDistanceCount(int, int);        /* Set Lift distanceCount */
     void setLiftTotalDistance(int, int);        /* Set Lift totalDistance */
     void setLiftPark(int, bool);                /* Set Lift park */
+    void setLiftPickPassenger(int, bool);       /* Set Lift isPicking */
     void increaseDistance(int, int);            /* Increase lift distance moved */
 
     /* Getters */
@@ -55,6 +56,7 @@ public:
     int getLiftDistanceCount(int);              /* Get Lift distanceCount */
     int getLiftTotalDistance(int);              /* Get Lift totalDistance */
     bool getLiftPark(int);                      /* Get Lift park */
+    bool getLiftPickPassenger(int);             /* Get Lift isPicking */
 
     void resetLift(int);
 

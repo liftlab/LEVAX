@@ -133,6 +133,12 @@ void LiftHandler::setLiftPark(int idx, bool parkingLift)
     liftObj[idx]->setLiftPark(parkingLift);
 }
 
+/* set lift isPicking */
+void LiftHandler::setLiftPickPassenger(int idx, bool isPicking)
+{
+    liftObj[idx]->setLiftPickPassenger(isPicking);
+}
+
 /* Increase lift distance moved */
 void LiftHandler::increaseDistance(int idx, int val)
 {
@@ -234,6 +240,12 @@ int LiftHandler::getLiftTotalDistance(int idx)
 bool LiftHandler::getLiftPark(int idx)
 {
     return liftObj[idx]->getLiftPark();
+}
+
+/* Get lift isPicking */
+bool LiftHandler::getLiftPickPassenger(int idx)
+{
+    return liftObj[idx]->getLiftPickPassenger();
 }
 
 void LiftHandler::resetLift(int noOfFloors)
