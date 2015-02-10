@@ -250,7 +250,7 @@ bool LiftHandler::getLiftPickPassenger(int idx)
 
 void LiftHandler::resetLift(int noOfFloors)
 {
-    for(int i=0;i<liftObj.size();i++)
+    for(size_t i=0;i<liftObj.size();i++)
     {
         liftObj[i]->resetLift(noOfFloors);
     }
