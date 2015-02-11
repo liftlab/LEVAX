@@ -43,7 +43,6 @@ public:
     int getTravelTime(int, int, bool);                  /* Return the travel time */
     int getTravelFloor(int, int, bool);                 /* Return the travel floor with respect to the time */
     int getNoOfTimesTravel(int, bool);                  /* Return the number of travel times */
-    SimulatedHuman* getSimulatedHuman(int, bool);
 
 private:
     std::vector<SimulatedHuman*> simulatedHumanObj;         /* Stores resident */

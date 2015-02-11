@@ -57,23 +57,20 @@ private:
     int maxWeight;
     int speedMetrePerSecond;
     int defaultFloor;
+
+    /* Values should be reset to default after simulation completed */
     int currentFloor;
-
     int currentWeight;
-
     int direction;
-
     double distanceLeft;
     double distanceCount;
     double totalDistance;
-
     int travellingTo;
     bool isMoving;
     bool moveNextRound;
-
     bool parkingLift;
-
     bool isPicking;
+
 };
 
 #endif // LIFT_H

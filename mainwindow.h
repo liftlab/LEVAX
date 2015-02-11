@@ -66,9 +66,6 @@ private slots:
     void on_saveResultBtn_clicked();                    /* Handle save result button clicked */
     void on_applySettingBtn_clicked();                  /* Handle apply button clicked, create model */
 
-    /* FOR DEBUGGING PURPOSES ONLY */
-    void onActionCheckObj();                            /* Check current created object */
-
 private:
     Ui::MainWindow *ui;
     BuildingHandler bh;                                 /* Building handler object */

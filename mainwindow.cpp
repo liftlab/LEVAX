@@ -42,8 +42,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->exportHumanModel, SIGNAL(triggered()), this, SLOT(exportHumanXML()));
     connect(ui->actionPrint_Simulated_Data, SIGNAL(triggered()), this, SLOT(printSimulatedData()));
 
-    /* Debug menu listener */
-    connect(ui->actionCheckObj, SIGNAL(triggered()), this, SLOT(onActionCheckObj()));
 }
 
 /* Destructor */
@@ -272,15 +270,6 @@ void MainWindow::exportHumanXML()
             element2->SetAttribute("weight", shh.getWeight(i,false));
             element2->SetAttribute("resident", shh.getResident(i,false));
             element->LinkEndChild( element2 );
-
-            /*
-            for(long j=0;j<shh.getFloorTravellingSize(i,false);j++)
-            {
-                TiXmlElement* element3 = new TiXmlElement( "floor" );
-                element3->SetAttribute("travel", shh.getFloorTravelling(i,j,false));
-                element2->LinkEndChild( element3 );
-            }
-            */
 
             for(long j=0;j<shh.getNoOfTimesTravel(i,false);j++)
             {
@@ -664,13 +653,21 @@ void MainWindow::on_runBtn_clicked()
         else
         {
             Algorithm algo;
+            pair<QString, pair<double, int> > result;
 
             if(ui->algoCombo->currentIndex() == 1)
             {
+                // returns simulation data, elapsed time, average human wait time
+                result = algo.nearestCar(&bh, &lh, &shh);
+
                 /* Output message */
-                QString message = "Simulation completed<br>"
-                                + QString::number(algo.nearestCar(&bh, &lh, &shh), 'f', 2)
-                                + " seconds";
+                QString message = "Simulation completed in "
+                                + QString::number(result.second.first, 'f', 2)
+                                + " seconds<br><br>";
+
+                message += "Average passenger wait time: " + QString::number(result.second.second) + "s";
+                message += "<br><br>Data sorted by lift call time<br>";
+                message += result.first;
 
                 /* Set output message */
                 ui->outputBox->setText(message);
@@ -697,7 +694,6 @@ void MainWindow::on_runBtn_clicked()
                 QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
                 QMessageBox::information(this,tr("Completed!"), content);
 
-               // delete algo;
             }
 
             else if(ui->algoCombo->currentIndex() == 3)
@@ -774,8 +770,6 @@ void MainWindow::on_runBtn_clicked()
             /* Enable Export XML Feature */
             ui->exportBuildingModel->setDisabled(false);
             ui->exportHumanModel->setDisabled(false);
-
-            //delete algo;
         }       
     }  
 }
@@ -901,24 +895,6 @@ void MainWindow::on_applySettingBtn_clicked()
         ui->exportBuildingModel->setDisabled(false);
         ui->exportHumanModel->setDisabled(false);
     }
-}
-
-/* FOR DEBUGGING PURPOSES ONLY */
-/* Check current created object */
-void MainWindow::onActionCheckObj()
-{
-    /* Message */
-    QString message = "Number of lift object(s) = "
-                    + QString::number(lh.getNumberOfLiftsObject())
-                    + "<br>"
-                    + "Number of simulatedHuman object(s) = "
-                    + QString::number(shh.getNumberOfSimulatedHumanObject())
-                    + "<br>"
-                    + "Number of non resident object(s) = "
-                    + QString::number(shh.getNumberOfVisitorObj());
-
-    /* Pop-up message box */
-    QMessageBox::information(this,tr("Number of objects"),message);
 }
 
 /* validate building XML */
@@ -1333,21 +1309,6 @@ void MainWindow::updateHumanSummary(bool isResident)
                 header += "kg<br>";
 
                 /* Append data to QString */
-                //header += "Will travel to floor ";
-                //header += QString::number(shh.getResident(i, true));
-
-//                for(int j=0;j<shh.getFloorTravellingSize(i, true);j++)
-//                {
-//                    /* Append data to QString */
-//                    header += QString::number(shh.getFloorTravelling(i, j, true));
-//                    header += ", ";
-//                }
-
-//                /* remove last comma */
-//                header.remove(header.length()-2,1);
-
-
-                /* Append data to QString */
                 header += "<br>No Of Times Travel ";
                 header += QString::number(shh.getNoOfTimesTravel(i, true));
                 header += "<br>";
@@ -1398,20 +1359,6 @@ void MainWindow::updateHumanSummary(bool isResident)
                 header += "Weighs ";
                 header += QString::number(shh.getWeight(i, false));
                 header += "kg<br>";
-
-                /* Append data to QString */
-                //header += "Will travel to floor ";
-                //header += QString::number(shh.getResident(i, true));
-
-//                for(int j=0;j<shh.getFloorTravellingSize(i, false);j++)
-//                {
-//                    /* Append data to QString */
-//                    header += QString::number(shh.getFloorTravelling(i, j, false));
-//                    header += ", ";
-//                }
-
-//                /* remove last comma */
-//                header.remove(header.length()-2,1);
 
                 /* Append data to QString */
                 header += "<br>No Of Times Travel ";

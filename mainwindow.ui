@@ -907,14 +907,7 @@ QTabWidget::tab-bar {
     <addaction name="actionHelp"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuDebug">
-    <property name="title">
-     <string>Debug</string>
-    </property>
-    <addaction name="actionCheckObj"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuDebug"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">

@@ -23,7 +23,7 @@ Algorithm::~Algorithm()
 }
 
 /* Nearest Car algorithm */
-double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
+pair<QString, pair<double, int> > Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHumanHandler *shh)
 {
     /* Start timer */
     QElapsedTimer timer;
@@ -57,7 +57,7 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
             for(int i=0;i<totalFound;i++)
             {
                 WaitingStatus ws;
-                ws.pi = *itr;
+                ws.pi = &(*itr);
                 for(int i=0;i<noOfLifts;i++)
                     ws.FS.push_back(0);
                 ws.idealLift = 0;   //default ideal lift is 0
@@ -79,7 +79,7 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
             size_t queueCounter = 0;
             while(queueCounter < waitingList.size())
             {
-                if(!waitingList[queueCounter].pi.isInLift)
+                if(!waitingList[queueCounter].pi->isInLift)
                 {
                     qDebug() << "Person is not in lift";
                     int liftCounter = 0;
@@ -88,12 +88,12 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                         if(waitingList[queueCounter].idealLift == liftCounter)
                         {
                             qDebug() << "Ideal lift found";
-                            int distance = abs(lh->getLiftCurrentFloor(liftCounter) - waitingList[queueCounter].pi.currentFloor) * bh->getMetrePerFloor();
+                            int distance = abs(lh->getLiftCurrentFloor(liftCounter) - waitingList[queueCounter].pi->currentFloor) * bh->getMetrePerFloor();
 
                             if(lh->getLiftIsMoving(liftCounter))
                             {
                                 // if lift is travelling to fetch, do nothing
-                                if(lh->getLiftTravellingTo(liftCounter) == waitingList[queueCounter].pi.currentFloor)
+                                if(lh->getLiftTravellingTo(liftCounter) == waitingList[queueCounter].pi->currentFloor)
                                 {
                                     qDebug() << "Lift is already travelling to call!";
                                 }
@@ -104,28 +104,41 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
 
                                     if(distance <= lh->getLiftDistanceLeft(liftCounter) && distance >= 0)
                                     {
-                                        int personDirection = +1;
-                                        if(waitingList[queueCounter].pi.travellingTo < waitingList[queueCounter].pi.currentFloor)
-                                            personDirection = -1;
-                                        else if(waitingList[queueCounter].pi.travellingTo > waitingList[queueCounter].pi.currentFloor)
-                                            personDirection = +1;
 
                                         // if going up
-                                        if(lh->getLiftDirection(liftCounter) == +1 && personDirection == lh->getLiftDirection(liftCounter))
+                                        if(lh->getLiftDirection(liftCounter) == +1 && waitingList[queueCounter].pi->directionHeading == lh->getLiftDirection(liftCounter))
                                         {
-                                            qDebug() << "Lift will be stopping at floor" << waitingList[queueCounter].pi.currentFloor << "to pick up passenger";
+                                            qDebug() << "Lift" << liftCounter << "will be stopping at floor" << waitingList[queueCounter].pi->currentFloor << "to pick up passenger";
 
                                             // Calculate distance
                                             lh->setLiftDistanceLeft(liftCounter, distance);
-                                            lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi.currentFloor);
+                                            lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi->currentFloor);
                                         }
-                                        else if(lh->getLiftDirection(liftCounter) == -1 && personDirection == lh->getLiftDirection(liftCounter))
+                                        else if(lh->getLiftDirection(liftCounter) == -1 && waitingList[queueCounter].pi->directionHeading == lh->getLiftDirection(liftCounter))
                                         {
-                                            qDebug() << "Lift will be stopping at floor" << waitingList[queueCounter].pi.currentFloor << "to pick up passenger";
+                                            qDebug() << "Lift" << liftCounter << "will be stopping at floor" << waitingList[queueCounter].pi->currentFloor << "to pick up passenger";
 
                                             // Calculate distance
                                             lh->setLiftDistanceLeft(liftCounter, distance);
-                                            lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi.currentFloor);
+                                            lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi->currentFloor);
+                                        }
+                                        else if(lh->getLiftDirection(liftCounter) == +1 && waitingList[queueCounter].pi->directionHeading != lh->getLiftDirection(liftCounter) && lh->getLiftPark(liftCounter))
+                                        {
+                                            qDebug() << "Lift" << liftCounter << "will be stopping at floor" << waitingList[queueCounter].pi->currentFloor << "to pick up passenger";
+
+                                            // Calculate distance
+                                            lh->setLiftDistanceLeft(liftCounter, distance);
+                                            lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi->currentFloor);
+                                            lh->setLiftPark(liftCounter, false);
+                                        }
+                                        else if(lh->getLiftDirection(liftCounter) == -1 && waitingList[queueCounter].pi->directionHeading != lh->getLiftDirection(liftCounter) && lh->getLiftPark(liftCounter))
+                                        {
+                                            qDebug() << "Lift" << liftCounter << "will be stopping at floor" << waitingList[queueCounter].pi->currentFloor << "to pick up passenger";
+
+                                            // Calculate distance
+                                            lh->setLiftDistanceLeft(liftCounter, distance);
+                                            lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi->currentFloor);
+                                            lh->setLiftPark(liftCounter, false);
                                         }
                                         else
                                         {
@@ -137,61 +150,59 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                             else
                             {
                                 // if lift is at the same floor as the person
-                                if(lh->getLiftCurrentFloor(liftCounter) == waitingList[queueCounter].pi.currentFloor)
+                                if(lh->getLiftCurrentFloor(liftCounter) == waitingList[queueCounter].pi->currentFloor)
                                 {
                                     /* Remove from travelPath */
                                     std::map<int,int>::iterator searchPathIter;
-                                    searchPathIter = travelPath[liftCounter].find(waitingList[queueCounter].pi.currentFloor);
+                                    searchPathIter = travelPath[liftCounter].find(waitingList[queueCounter].pi->currentFloor);
                                     if(searchPathIter != travelPath[liftCounter].end())
                                         travelPath[liftCounter].erase(searchPathIter);
 
-                                    // push to travelPath
-                                    travelPath[liftCounter].insert(pair<int,int>(waitingList[queueCounter].pi.travellingTo, waitingList[queueCounter].pi.travellingTo));
-
-                                    // get first value
-                                    int temp = travelPath[liftCounter].begin()->first;
-
-                                    // Check direction to head
-                                    if(temp < lh->getLiftCurrentFloor(liftCounter))
+                                    int weight = shh->getWeight(waitingList[queueCounter].pi->personNo, waitingList[queueCounter].pi->isResident);
+                                    int liftCurrentWeight = lh->getLiftCurrentWeight(liftCounter);
+                                    if((weight+liftCurrentWeight) <= lh->getLiftWeight(liftCounter))
                                     {
-                                        lh->setLiftDirection(liftCounter, -1);
-                                        distance = abs(lh->getLiftCurrentFloor(liftCounter) - travelPath[liftCounter].rbegin()->first) * bh->getMetrePerFloor();
-                                        lh->setLiftDistanceLeft(liftCounter, distance);
-                                        lh->setLiftTravellingTo(liftCounter, travelPath[liftCounter].rbegin()->first);
+                                        // push to travelPath
+                                        travelPath[liftCounter].insert(pair<int,int>(waitingList[queueCounter].pi->travellingTo, waitingList[queueCounter].pi->travellingTo));
 
+                                        // get first value
+                                        int temp = travelPath[liftCounter].begin()->first;
+
+                                        // Check direction to head
+                                        if(temp < lh->getLiftCurrentFloor(liftCounter))
+                                        {
+                                            lh->setLiftDirection(liftCounter, -1);
+                                            distance = abs(lh->getLiftCurrentFloor(liftCounter) - travelPath[liftCounter].rbegin()->first) * bh->getMetrePerFloor();
+                                            lh->setLiftDistanceLeft(liftCounter, distance);
+                                            lh->setLiftTravellingTo(liftCounter, travelPath[liftCounter].rbegin()->first);
+                                        }
+                                        else
+                                        {
+                                            lh->setLiftDirection(liftCounter, +1);
+                                            distance = abs(lh->getLiftCurrentFloor(liftCounter) - travelPath[liftCounter].begin()->first) * bh->getMetrePerFloor();
+                                            lh->setLiftDistanceLeft(liftCounter, distance);
+                                            lh->setLiftTravellingTo(liftCounter, travelPath[liftCounter].begin()->first);
+                                        }
+
+                                        // Push passenger into lift
+                                        waitingList[queueCounter].pi->isInLift = true;
+                                        passengersInLift[liftCounter].push_back(*waitingList[queueCounter].pi);
+                                        lh->setLiftCurrentWeight(liftCounter, (liftCurrentWeight+weight));
+
+                                        // Time
+                                        waitingList[queueCounter].pi->liftBoardTime = seconds;
+
+                                        // lift to start move next second
+                                        lh->setLiftMoveNextRound(liftCounter, true);
+
+                                        qDebug() << "Lift is on the same floor as caller, push in waitingList";
+                                        qDebug() << "Pushed successfully";
+                                        qDebug() << "Time person board:" << QString::number(seconds);
                                     }
                                     else
                                     {
-                                        lh->setLiftDirection(liftCounter, +1);
-                                        distance = abs(lh->getLiftCurrentFloor(liftCounter) - travelPath[liftCounter].begin()->first) * bh->getMetrePerFloor();
-                                        lh->setLiftDistanceLeft(liftCounter, distance);
-                                        lh->setLiftTravellingTo(liftCounter, travelPath[liftCounter].begin()->first);
+                                        qDebug() << "Lift Overweight! Ignoring passenger!";
                                     }
-
-
-
-                                    // Calculate distance
-//                                    distance = abs(lh->getLiftCurrentFloor(liftCounter) - waitingList[queueCounter].pi.travellingTo) * bh->getMetrePerFloor();
-//                                    lh->setLiftDistanceLeft(liftCounter, distance);
-//                                    lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi.travellingTo);
-
-                                    // Push passenger into lift
-                                    waitingList[queueCounter].pi.isInLift = true;
-                                    passengersInLift[liftCounter].push_back(waitingList[queueCounter].pi);
-
-
-//                                    if(waitingList[queueCounter].pi.travellingTo < lh->getLiftCurrentFloor(liftCounter))
-//                                        lh->setLiftDirection(liftCounter, -1);
-//                                    else
-//                                        lh->setLiftDirection(liftCounter, +1);
-
-                                    // lift to start move next second
-                                    lh->setLiftMoveNextRound(liftCounter, true);
-
-                                    qDebug() << "Lift is on the same floor as caller, push in waitingList";
-                                    qDebug() << "Pushed successfully";
-                                    qDebug() << "Time person board:" << QString::number(seconds);
-
                                 }
                                 else
                                 {
@@ -201,14 +212,14 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                                         qDebug() << "Moving lift" << liftCounter;
 
                                         // Calculate distance
-                                        distance = abs(lh->getLiftCurrentFloor(liftCounter) - waitingList[queueCounter].pi.currentFloor) * bh->getMetrePerFloor();
+                                        distance = abs(lh->getLiftCurrentFloor(liftCounter) - waitingList[queueCounter].pi->currentFloor) * bh->getMetrePerFloor();
                                         lh->setLiftDistanceLeft(liftCounter, distance);
-                                        lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi.currentFloor);
+                                        lh->setLiftTravellingTo(liftCounter, waitingList[queueCounter].pi->currentFloor);
 
                                         // push to travelPath
-                                        travelPath[liftCounter].insert(pair<int,int>(waitingList[queueCounter].pi.currentFloor, waitingList[queueCounter].pi.currentFloor));
+                                        travelPath[liftCounter].insert(pair<int,int>(waitingList[queueCounter].pi->currentFloor, waitingList[queueCounter].pi->currentFloor));
 
-                                        if(waitingList[queueCounter].pi.currentFloor < lh->getLiftCurrentFloor(liftCounter))
+                                        if(waitingList[queueCounter].pi->currentFloor < lh->getLiftCurrentFloor(liftCounter))
                                             lh->setLiftDirection(liftCounter, -1);
                                         else
                                             lh->setLiftDirection(liftCounter, +1);
@@ -332,8 +343,7 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
 
                             if(!travelPath[i].empty())
                             {
-                                qDebug() << "travelPath still has" << travelPath[i].size() << "more floor to gos";
-                                //lh->setLiftMoveNextRound(i, true);
+                                qDebug() << "travelPath still has" << travelPath[i].size() << "more floor to go";
 
                                 // get first value
                                 int temp = travelPath[i].begin()->first;
@@ -376,13 +386,21 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                                 vector<WaitingStatus>::iterator itr = find(waitingList.begin(),waitingList.end(), searchPair);
                                 if(itr != waitingList.end())
                                 {
-                                    int personIndex = itr->pi.personNo;
-                                    bool isResident = itr->pi.isResident;
+                                    int personIndex = itr->pi->personNo;
+                                    bool isResident = itr->pi->isResident;
+
+                                    // Time
+                                    itr->pi->liftExitTime = seconds+1;
 
                                     if(isResident)
-                                        qDebug() << "Resident" << personIndex << "board on" << itr->pi.travelTime << "travelled on" << itr->pi.travelTime+1 << "removed from waitingList on" << seconds+1;
+
+                                        qDebug() << "Resident" << personIndex << "board on" << itr->pi->travelTime << "travelled on" << itr->pi->travelTime+1 << "removed from waitingList on" << seconds+1;
                                     else
-                                        qDebug() << "Visitor" << personIndex << "board on" << itr->pi.travelTime << "travelled on" << itr->pi.travelTime+1 << "removed from waitingList on" << seconds+1;
+                                        qDebug() << "Visitor" << personIndex << "board on" << itr->pi->travelTime << "travelled on" << itr->pi->travelTime+1 << "removed from waitingList on" << seconds+1;
+
+                                    int weight = shh->getWeight(personIndex, isResident);
+                                    int liftCurrentWeight = lh->getLiftCurrentWeight(i);
+                                    lh->setLiftCurrentWeight(i, (liftCurrentWeight-weight));
 
                                     waitingList.erase(itr);
                                 }
@@ -405,40 +423,13 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
                                     ++iter;
                                 }
                             }
-
-                            // Park lift if idealLift in waitingList does not match lift number
-//                            int check = count(waitingList.begin(), waitingList.end(), i);
-//                            qDebug() << "Lift" << i << "Check is" << check;
-//                            if(check == 0)
-//                            {
-//                                if(lh->getLiftCurrentFloor(i) != lh->getLiftDefaultFloor(i))
-//                                {
-//                                    // Set direction to travel back to default floor
-//                                    if(lh->getLiftDefaultFloor(i) >= lh->getLiftCurrentFloor(i))
-//                                        lh->setLiftDirection(i, +1);
-//                                    else
-//                                        lh->setLiftDirection(i, -1);
-
-//                                    //lh->setLiftMoveNextRound(i, false);
-//                                    int dist = abs(lh->getLiftCurrentFloor(i) - lh->getLiftDefaultFloor(i)) * bh->getMetrePerFloor();
-//                                    lh->setLiftDistanceLeft(i, dist);
-//                                    lh->setLiftTravellingTo(i, lh->getLiftDefaultFloor(i));
-
-//                                    lh->setLiftDistanceCount(i,0);
-//                                    lh->setLiftTotalDistance(i, 0);
-
-//                                    lh->setLiftIsMoving(i, true);
-//                                    lh->setLiftPark(i, true); // park lift
-//                                    qDebug() << "No people board, going back default floor" << lh->getLiftDefaultFloor(i);// << lh->getLiftTravellingTo(i) << lh->getLiftDistanceLeft(i) << lh->getLiftDirection(i);
-//                                }
-//                            }
                             break;
                         }
 
                         if(lh->getLiftDistanceCount(i) >= speed)
                         {
                             qDebug() << "Speed of" << speed << "metre per second reached. Continue in next second(loop)...";
-                            //qDebug() <<lh->getLiftDistanceCount(i) << lh->getLiftTotalDistance(i) << lh->getLiftDistanceLeft(i);
+
                             lh->setLiftDistanceCount(i,0);
                             break;
                         }
@@ -455,18 +446,13 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
             }
         }
         seconds++;
-
-        /* The code below is for debugging purposes
-         * enable it to break out of the loop so that
-         * the output will not be flooded with text
-         */
-        //if(seconds >= 49999)
-        //    break;
     }
 
-    /* Clear data and reset data */
-    passengerList.clear();
-    waitingList.clear();
+    QString summary = getSummary(passengerList);
+    pair<double, int> resultTime;
+    resultTime = getTiming(convertToSeconds(timer.elapsed()), passengerList);
+
+    pair<QString, pair<double, int> > result = make_pair(summary, resultTime); //convertToSeconds(timer.elapsed()));
 
     lh->resetLift(noOfFloors);
     noOfLifts = 0;
@@ -474,8 +460,12 @@ double Algorithm::nearestCar(BuildingHandler *bh, LiftHandler *lh, SimulatedHuma
     noOfResidents = 0;
     noOfVisitors = 0;
 
+    /* Clear data and reset data */
+    waitingList.clear();
+    passengerList.clear();
+
     /* return timer */
-    return convertToSeconds(timer.elapsed());
+    return result;
 }
 
 /* Fixed Sectoring Common Sector System algorithm */
@@ -544,6 +534,10 @@ vector<Algorithm::PassengerInfo> Algorithm::processPassenger(SimulatedHumanHandl
             pi.personNo = i;
             pi.travelNo = j;
 
+            pi.liftPressTime = shh->getTravelTime(i,j,pi.isResident);
+            pi.liftBoardTime = 0;
+            pi.liftExitTime = 0;
+
             pi.travellingTo = shh->getTravelFloor(i,j,pi.isResident);
 
             if(pi.travellingTo != 1)
@@ -573,6 +567,10 @@ vector<Algorithm::PassengerInfo> Algorithm::processPassenger(SimulatedHumanHandl
             pi.travelTime = shh->getTravelTime(i,j,pi.isResident);
             pi.personNo = i;
             pi.travelNo = j;
+
+            pi.liftPressTime = shh->getTravelTime(i,j,pi.isResident);
+            pi.liftBoardTime = 0;
+            pi.liftExitTime = 0;
 
             pi.travellingTo = shh->getTravelFloor(i,j,pi.isResident);
 
@@ -609,7 +607,7 @@ void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
     // for each individual people waiting for the lift
     for(size_t i=0;i<waitingList.size();i++)
     {
-        if(!waitingList[i].pi.isInLift)
+        if(!waitingList[i].pi->isInLift)
         {
             int highestFS = 0;
 
@@ -618,10 +616,10 @@ void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
             {
                 int FS = 0;
 
-                personIndex = waitingList[i].pi.personNo;
-                isResident = waitingList[i].pi.isResident;
-                int currentFloor = waitingList[i].pi.currentFloor;
-                int callDirection = waitingList[i].pi.directionHeading;
+                personIndex = waitingList[i].pi->personNo;
+                isResident = waitingList[i].pi->isResident;
+                int currentFloor = waitingList[i].pi->currentFloor;
+                int callDirection = waitingList[i].pi->directionHeading;
 
                 int d = currentFloor - lh->getLiftCurrentFloor(j);
                 int N = noOfFloors-1;
@@ -655,4 +653,42 @@ void Algorithm::computeFS(vector<WaitingStatus>& waitingList, LiftHandler* lh)
             qDebug() << "Lift" << waitingList[i].idealLift << "most ideal for" << (isResident?"Resident":"Visitor") << personIndex;
         }
     }
+}
+
+QString Algorithm::getSummary(vector<PassengerInfo> passengerList)
+{
+    QString summary;
+    for(size_t i=0;i<passengerList.size();i++)
+    {
+        bool isResident = passengerList[i].isResident;
+        if(isResident)
+            summary += "Resident " + QString::number(passengerList[i].personNo+1);
+        else
+            summary += "Visitor " + QString::number(passengerList[i].personNo+1);
+
+        summary += ":<br>";
+        summary += "Time pressed lift: ";
+        summary += QDateTime::fromTime_t(passengerList[i].liftPressTime).toUTC().toString("hh:mm:ss");
+        summary += "<br>Time board lift: ";
+        summary += QDateTime::fromTime_t(passengerList[i].liftBoardTime).toUTC().toString("hh:mm:ss");
+        summary += "<br>Time exit lift: ";
+        summary += QDateTime::fromTime_t(passengerList[i].liftExitTime).toUTC().toString("hh:mm:ss");
+        summary += "<br>";
+    }
+
+    return summary;
+}
+
+pair<double, int> Algorithm::getTiming(double elapsedTime, vector<PassengerInfo> passengerList)
+{
+    int averageWaitTime = 0;
+    for(size_t i=0;i<passengerList.size();i++)
+        averageWaitTime += (passengerList[i].liftBoardTime - passengerList[i].liftPressTime);
+
+    averageWaitTime /= passengerList.size();
+
+    pair<double, int> resultTime;
+    resultTime = make_pair(elapsedTime, averageWaitTime);
+
+    return resultTime;
 }

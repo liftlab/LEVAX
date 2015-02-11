@@ -233,13 +233,12 @@ void Lift::resetLift(int noOfFloors)
 
     currentWeight = 0;
     distanceLeft = 0;
+    distanceCount = 0;
+    totalDistance = 0;
     travellingTo = defaultFloor;
     isMoving = false;
     moveNextRound = false;
     isMoving = false;
-    moveNextRound = false;
-    distanceCount = 0;
-    totalDistance = 0;
     parkingLift = false;
     isPicking = false;
 }

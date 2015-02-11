@@ -12,13 +12,17 @@ class Algorithm
     struct PassengerInfo {
         int travelTime;
 
-        int isResident;
+        bool isResident;
         int personNo;
         int travelNo;
         int currentFloor;
         int travellingTo;
         int directionHeading;
         bool isInLift;
+
+        int liftPressTime;
+        int liftBoardTime;
+        int liftExitTime;
 
         /* Functor to assist sorting in ascending order */
         bool operator<(const PassengerInfo& a) const { return travelTime < a.travelTime; }
@@ -44,7 +48,7 @@ class Algorithm
     };
 
     struct WaitingStatus {
-        PassengerInfo pi;
+        PassengerInfo *pi;
         vector<int> FS;
 
         int idealLift;
@@ -52,7 +56,7 @@ class Algorithm
         /* Functor to find if passenger matches the one in the queues */
         bool operator==(const pair<PassengerInfo, int>& a) const
         {
-            if(pi == a.first && pi.travellingTo == a.second)
+            if(*pi == a.first && pi->travellingTo == a.second)
                 return true;
             return false;
         }
@@ -65,7 +69,7 @@ public:
     Algorithm();                /* Constructor */
     ~Algorithm();               /* Destructor */
 
-    double nearestCar(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);                           /* Nearest Car algorithm */
+    pair<QString, pair<double, int> > nearestCar(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);                           /* Nearest Car algorithm */
     double fixedSectoringCommonSectorSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);     /* Fixed Sectoring Common Sector System algorithm */
     double fixedSectoringPriorityTimedSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);    /* Fixed Sectoring Priority Timed System algorithm */
     double dynamicSectoringSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);               /* Dynamic Sectoring System algorithm */
@@ -73,6 +77,9 @@ public:
     double convertToSeconds(qint64);                                        /* Convert time to seconds */
     vector<PassengerInfo> processPassenger(SimulatedHumanHandler*);         /* Push all passenger into passengerList and sort by timing they are travelling */
     void computeFS(vector<WaitingStatus>&, LiftHandler*);                   /* Compute FS for individual passenger in the waitingList (parse by reference) */
+
+    QString getSummary(vector<PassengerInfo>);                              /* Get summary of simulation */
+    pair<double, int> getTiming(double, vector<PassengerInfo>);             /* Get elapsed time and average waiting time */
 
 private:
     int noOfLifts;
