@@ -16,6 +16,8 @@
 #include <QDebug>                   /* Debug, similar to cout. Usage qDebut() << "Hello World" */
 #include <QScrollBar>               /* Scroll bar */
 #include <QtPrintSupport>           /* Printer support */
+#include <QTextStream>              /* Write to file */
+#include <QFile>                    /* Write to file */
 
 #include "tinyXML/tinyxml.h"        /* TinyXML XML parser*/
 #include "BuildingHandler.h"        /* Building Handler */
@@ -46,6 +48,7 @@ private slots:
     void exportBuildingXML();                           /* Export building XML */
     void onActionHelp();                                /* Handle help button press */
     void printSimulatedData();                          /* Print simulated data */
+    void printSimulatedResult();                        /* Print simulated result */
 
     /* HUMAN MODEL */
     void on_humanTotalSpinBox_valueChanged(int args1);  /* Handle total human spin box value changed */

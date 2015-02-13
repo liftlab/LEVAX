@@ -48,3 +48,5 @@ win32:RC_FILE = application.rc
 ICON = Images/icon.icns
 
 DEFINES *= QT_USE_QSTRINGBUILDER
+
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT

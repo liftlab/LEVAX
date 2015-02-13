@@ -169,8 +169,8 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
 
     /* Generate 1-100
      * 1-15     = Child,
-     * 16-30    = Heavier Adult,
-     * 31-50    = Thin Adult,
+     * 16-25    = Heavier Adult,
+     * 26-50    = Thin Adult,
      * 50-100   = Average Adult
      */
     int randHumanType = rand() % 100 + 1;
@@ -187,10 +187,10 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
                 nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
         }
     }
-    else if(randHumanType >= 16 && randHumanType <= 30)
+    else if(randHumanType >= 16 && randHumanType <= 25)
     {
         min = 80;
-        max = 150;
+        max = 110;
         if(isResident)
             simulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
         else
@@ -199,7 +199,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
                 nonResSimulatedHumanObj[idx]->setWeight(rand() % (max - min) + min);
         }
     }
-    else if(randHumanType >= 31 && randHumanType <= 50)
+    else if(randHumanType >= 26 && randHumanType <= 50)
     {
         min = 35;
         max = 55;
@@ -285,8 +285,8 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
             {
                 if(i == 1)
                 {
-                    /* Person leaves for work at 5:30AM (19800) to 8:30AM  (30600) */
-                    int timeToWork = rand() % (30600 - 19800) + 19800;
+                    /* Person leaves for work at 6:30AM (23400) to 8:30AM  (30600) */
+                    int timeToWork = rand() % (30600 - 23400) + 23400;
                     simulatedHumanObj[idx]->addTravelTime(timeToWork, 1);
 
                     int backFromWork;
@@ -319,7 +319,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         {
             randomNoOfTimesTravel = rand() % 3 + 1;
 
-            int range1 = 0; // 12AM
+            int range1 = 19800; // 5:30AM
             int range2 = 86399; // 23:59PM
 
             int i = 0;

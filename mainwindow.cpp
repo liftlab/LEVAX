@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->exportBuildingModel, SIGNAL(triggered()), this, SLOT(exportBuildingXML()));
     connect(ui->exportHumanModel, SIGNAL(triggered()), this, SLOT(exportHumanXML()));
     connect(ui->actionPrint_Simulated_Data, SIGNAL(triggered()), this, SLOT(printSimulatedData()));
+    connect(ui->actionPrint_Simulation_Result, SIGNAL(triggered()), this, SLOT(printSimulatedResult()));
 
 }
 
@@ -186,7 +187,6 @@ void MainWindow::uploadBuildingXML()
 
             /* reset all building due to error */
             bh.resetAll();
-
         }
         else
         {
@@ -786,10 +786,18 @@ void MainWindow::on_saveResultBtn_clicked()
                 tr("Save File"), "Result_"+local.toString("dMMM_HHmmap")+".txt",
                 tr("Text Documents (*.txt);;"));
 
-
     /* Save and display success */
     if(!fileName.isEmpty())
+    {
+        QFile file;
+        file.setFileName(fileName);
+        file.open(QIODevice::WriteOnly|QIODevice::Text);
+        QTextStream stream(&file);
+        stream << ui->outputBox->toPlainText();
+        file.close();
+
         QMessageBox::information(this,tr("Help"),"File saved to "+fileName);
+    }
 }
 
 /* Handle apply button clicked, create model */
@@ -887,6 +895,9 @@ void MainWindow::on_applySettingBtn_clicked()
         /* Disable apply settings button and enable run button */
         ui->applySettingBtn->setDisabled(true);
         ui->runBtn->setDisabled(false);
+
+        /* Clear simulation result, if any */
+        ui->outputBox->clear();
 
         /* Switch Tab */
         ui->tabWidget->setCurrentWidget(ui->tab);
@@ -1488,25 +1499,53 @@ void MainWindow::printSimulatedData()
     }
 }
 
+/* Print Simulated result */
+void MainWindow::printSimulatedResult()
+{
+    if(!ui->outputBox->document()->isEmpty())
+    {
+        QPrinter printer;
+
+        QPrintDialog *dialog = new QPrintDialog(&printer, this);
+        dialog->setWindowTitle("Print Simulated Result");
+
+        if(dialog ->exec() == QDialog::Accepted){
+            QTextDocument doc (ui->outputBox->toPlainText());
+            doc.print(&printer);
+        }
+    }
+    else
+    {
+        QMessageBox::critical(this,tr("Error"),"No result to be printed!");
+    }
+}
+
 /* Handle lift default floor spinbox value changed */
 void MainWindow::on_defaultFloorSpinBox_valueChanged(int arg1)
 {
     if(arg1 > 0)
     {
-        /* Set weight only if current index is not 0 */
-        if(ui->liftCombo->currentIndex() != 0)
-            lh.setLiftDefaultFloor(ui->liftCombo->currentIndex()-1, arg1);
+        if(ui->defaultFloorSpinBox->isEnabled())
+        {
+            /* Set weight only if current index is not 0 */
+            if(ui->liftCombo->currentIndex() != 0)
+                lh.setLiftDefaultFloor(ui->liftCombo->currentIndex()-1, arg1);
 
-        /* If lift is at the highest level, set direction to DOWN (-1) */
-        if(arg1 == bh.getNoOfFloor())
-            lh.setLiftDirection(ui->liftCombo->currentIndex()-1, -1);
 
-        /* Enable apply settings button and disable run button */
-        ui->applySettingBtn->setDisabled(false);
-        ui->runBtn->setDisabled(true);
+            qDebug() << ui->liftCombo->currentIndex()-1;
 
-        /* Disable spinbox for max weight and max speed */
-        ui->exportBuildingModel->setDisabled(true);
-        ui->exportHumanModel->setDisabled(true);
+            /* If lift is at the highest level, set direction to DOWN (-1) */
+            if(arg1 == bh.getNoOfFloor())
+            {
+                lh.setLiftDirection(ui->liftCombo->currentIndex()-1, -1);
+            }
+            /* Enable apply settings button and disable run button */
+            ui->applySettingBtn->setDisabled(false);
+            ui->runBtn->setDisabled(true);
+
+            /* Disable spinbox for max weight and max speed */
+            ui->exportBuildingModel->setDisabled(true);
+            ui->exportHumanModel->setDisabled(true);
+        }
     }
 }
