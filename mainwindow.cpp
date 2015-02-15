@@ -178,9 +178,6 @@ void MainWindow::uploadBuildingXML()
             /* Reset all elements */
             loadBuildingByFile=false;
             loadHumanByFile=false;
-            ui->humanTotalSpinBox->setDisabled(true);
-            ui->humanAvgSpinBox->setDisabled(true);
-            ui->humanVisitorSpinBox->setDisabled(true);
             ui->humanTotalSpinBox->setValue(0);
             ui->humanAvgSpinBox->setValue(0);
             ui->humanVisitorSpinBox->setValue(0);
@@ -512,7 +509,7 @@ void MainWindow::on_totalLiftsSpinBox_valueChanged(int arg1)
 
         /* Add new lift object */
         for(int i=lh.getNumberOfLiftsObject();i<arg1;i++)
-            lh.createNewLift(lh.getNumberOfLiftsObject()+1, 200, 1.00, 1);
+            lh.createNewLift(lh.getNumberOfLiftsObject()+1, 400, 3, 1);
 
         /* Add to combo box */
         for(int i=0;i<arg1;i++)
@@ -605,11 +602,14 @@ void MainWindow::on_resetBtn_clicked()
     ui->humanTotalSpinBox->setValue(0);
     ui->humanAvgSpinBox->setValue(0);
     ui->humanVisitorSpinBox->setValue(0);
+    ui->humanTotalSpinBox->setDisabled(false);
+    ui->humanVisitorSpinBox->setDisabled(false);
+    ui->humanAvgSpinBox->setDisabled(true);
     ui->totalFloorSpinBox->setValue(2);
     ui->totalLiftsSpinBox->setValue(1);
     ui->metreSpinBox->setValue(3);
-    ui->maxWeightSpinBox->setValue(200);
-    ui->maxSpeedSpinBox->setValue(1.00);
+    ui->maxWeightSpinBox->setValue(400);
+    ui->maxSpeedSpinBox->setValue(3);
     ui->exportBuildingModel->setDisabled(true);
     ui->exportHumanModel->setDisabled(true);
     ui->tabWidget->setCurrentWidget(ui->tab);
@@ -623,13 +623,13 @@ void MainWindow::on_resetBtn_clicked()
     ui->saveResultBtn->setDisabled(true);
     ui->humanAvgSpinBox->setDisabled(true);
 
-    /* reset building/lift data */
+    /* Reset building/lift data */
     bh.resetAll();
     lh.resetAll();
     shh.resetAll();
 
     /* Create default lift */
-    lh.createNewLift(lh.getNumberOfLiftsObject()+1, 200, 1.00, 1);
+    lh.createNewLift(lh.getNumberOfLiftsObject()+1, 400, 3, 1);
     ui->liftCombo->addItem("Lift 1");
 
     /* clear text box */
@@ -653,7 +653,7 @@ void MainWindow::on_runBtn_clicked()
         else
         {
             Algorithm algo;
-            pair<QString, pair<double, int> > result;
+            pair<QString, pair<pair<double, vector<int> >, pair<int, int> > > result;
 
             if(ui->algoCombo->currentIndex() == 1)
             {
@@ -661,12 +661,21 @@ void MainWindow::on_runBtn_clicked()
                 result = algo.nearestCar(&bh, &lh, &shh);
 
                 /* Output message */
-                QString message = "Simulation completed in "
-                                + QString::number(result.second.first, 'f', 2)
-                                + " seconds<br><br>";
+                QString message = "<b>Nearest Car simulation completed in "
+                                + QString::number(result.second.first.first, 'f', 2)
+                                + " seconds</b><br><br>";
 
-                message += "Average passenger wait time: " + QString::number(result.second.second) + "s";
-                message += "<br><br>Data sorted by lift call time<br>";
+                message += "Average passenger wait time: <b>" + QString::number(result.second.second.first) + "s</b><br>";
+                message += "Average passenger travel time: <b>" + QString::number(result.second.second.second) + "s</b><br>";
+
+                for(int i=0;i<lh.getNumberOfLiftsObject();i++)
+                {
+                    message += "Lift " + QString::number(i+1) + " idle time: <b>" + QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("h") + "hr ";
+                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("m") + "min ";
+                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("s") + "sec</b><br>";
+                }
+
+                message += "<br>";
                 message += result.first;
 
                 /* Set output message */
@@ -1006,11 +1015,11 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                 }
                                 int maxWeight, speed, defaultFloor = 0;
 
-                                /* maxWeight must be at least 200kg */
+                                /* maxWeight must be at least 400kg */
                                 pParm->QueryIntAttribute("maxWeight", &attr2);
-                                if(attr2 < 200)
+                                if(attr2 < 400)
                                 {
-                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"maxWeight\" must be more than or equal to 200kg");
+                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"maxWeight\" must be more than or equal to 400kg");
                                     return "false";
                                 }
                                 else
@@ -1026,11 +1035,11 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                                     maxWeight = attr2;
                                 }
 
-                                /* speed must be at least 1.00 or more*/
+                                /* speed must be in the range of 3 to 6 */
                                 pParm->QueryIntAttribute("speed", &speed);
-                                if(speed < 1)
+                                if(speed < 3 || speed > 6)
                                 {
-                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"speed\" must be more than or equal to 1");
+                                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nAttribute \"speed\" must range from 3 to 6");
                                     return "false";
                                 }
                                 else
@@ -1076,7 +1085,13 @@ QString MainWindow::validateBuildingData(const QString &arg1)
                     }
 
                     /* set number of lifts */
-                    bh.setNoOfLifts(liftCount);
+                    if(liftCount > MAX_LIFTS)
+                    {
+                        QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nThere can only be a maximum of " + QString::number(MAX_LIFTS) + " lifts");
+                        return "false";
+                    }
+                    else
+                        bh.setNoOfLifts(liftCount);
                 }
                 else
                 {
@@ -1126,6 +1141,8 @@ bool MainWindow::validateHumanData(const QString &arg1)
             pParm = pRoot->FirstChildElement();
             if(pParm)
             {
+                int residentCount = 0;
+                int visitorCount = 0;
                 while(pParm)
                 {
                     /* is the element named "person" */
@@ -1152,10 +1169,15 @@ bool MainWindow::validateHumanData(const QString &arg1)
                             {
                                 /* Check if is resident */
                                 if(strcmp(pParm->Attribute("resident"), "0") == 0)
+                                {
+                                    visitorCount++;
                                     isResident = false;
+                                }
                                 else
+                                {
+                                    residentCount++;
                                     isResident = true;
-
+                                }
                                 /* Create a simulatedHuman object with resident value */
                                 shh.createSimulatedHuman(attr);
                             }
@@ -1258,10 +1280,19 @@ bool MainWindow::validateHumanData(const QString &arg1)
                     }
                     else
                     {
-
                         QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nElement must be named \"Person\"");
                         return false;
                     }
+                }
+                if(visitorCount > MAX_VISITOR)
+                {
+                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nThere can only be a maximum of " + QString::number(MAX_VISITOR) + " visitors");
+                    return false;
+                }
+                if(residentCount > MAX_PEOPLE)
+                {
+                    QMessageBox::critical(this,tr("Load XML Fail!"), "Load XML Fail!\nThere can only be a maximum of " + QString::number(MAX_PEOPLE) + " residents");
+                    return false;
                 }
             }
             else
@@ -1332,7 +1363,7 @@ void MainWindow::updateHumanSummary(bool isResident)
 
                     header += "Travel Time ";
 
-                    header += QDateTime::fromTime_t(travelTime).toUTC().toString("hh:mm:ss");
+                    header += QDateTime::fromTime_t(travelTime).toUTC().toString("h:mm:ss ap");
                     header += " to floor ";
                     header += QString::number(shh.getTravelFloor(i, m, true));
 
@@ -1384,7 +1415,7 @@ void MainWindow::updateHumanSummary(bool isResident)
 
                     header += "Travel Time ";
 
-                    header += QDateTime::fromTime_t(travelTime).toUTC().toString("hh:mm:ss");
+                    header += QDateTime::fromTime_t(travelTime).toUTC().toString("h:mm:ss ap");
                     header += " to floor ";
                     header += QString::number(shh.getTravelFloor(i, m, false));
 

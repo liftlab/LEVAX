@@ -9,7 +9,7 @@
 /* Constructor */
 LiftHandler::LiftHandler()
 {
-    createNewLift(1, 200, 1.00, 1);
+    createNewLift(1, 400, 3, 1);
 }
 
 /* Destructor */

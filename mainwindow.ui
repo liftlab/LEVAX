@@ -89,7 +89,7 @@
      <bool>true</bool>
     </property>
     <property name="maximum">
-     <number>1000</number>
+     <number>500</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="humanVisitorSpinBox">
@@ -114,7 +114,7 @@
      <bool>true</bool>
     </property>
     <property name="maximum">
-     <number>500</number>
+     <number>200</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="humanAvgSpinBox">
@@ -488,7 +488,7 @@ QTabWidget::tab-bar {
      </rect>
     </property>
     <property name="text">
-     <string>Total no. of floors (min 2)</string>
+     <string>Total no. of floors (2-50)</string>
     </property>
    </widget>
    <widget class="QLabel" name="metrePerFloorLabel">
@@ -501,7 +501,7 @@ QTabWidget::tab-bar {
      </rect>
     </property>
     <property name="text">
-     <string>No of metre per floor (min 3)</string>
+     <string>No of metre per floor (3-6)</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="totalFloorSpinBox">
@@ -532,7 +532,7 @@ QTabWidget::tab-bar {
      <number>2</number>
     </property>
     <property name="maximum">
-     <number>90</number>
+     <number>50</number>
     </property>
     <property name="value">
      <number>2</number>
@@ -585,7 +585,7 @@ QTabWidget::tab-bar {
      </rect>
     </property>
     <property name="text">
-     <string>Number of lifts (min 1)</string>
+     <string>Number of lifts (1-4)</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="totalLiftsSpinBox">
@@ -616,7 +616,7 @@ QTabWidget::tab-bar {
      <number>1</number>
     </property>
     <property name="maximum">
-     <number>6</number>
+     <number>4</number>
     </property>
     <property name="value">
      <number>1</number>
@@ -662,7 +662,7 @@ QTabWidget::tab-bar {
       </rect>
      </property>
      <property name="text">
-      <string>Max Weight (min 200kg)</string>
+      <string>Max Weight (min 400kg)</string>
      </property>
     </widget>
     <widget class="QLabel" name="maxWeightLabel_2">
@@ -675,7 +675,7 @@ QTabWidget::tab-bar {
       </rect>
      </property>
      <property name="text">
-      <string>Speed (Min 1m/s)</string>
+      <string>Speed (Min 3m/s)</string>
      </property>
     </widget>
     <widget class="QSpinBox" name="maxWeightSpinBox">
@@ -700,10 +700,13 @@ QTabWidget::tab-bar {
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
      <property name="minimum">
-      <number>200</number>
+      <number>400</number>
      </property>
      <property name="maximum">
       <number>700</number>
+     </property>
+     <property name="value">
+      <number>400</number>
      </property>
     </widget>
     <widget class="QSpinBox" name="maxSpeedSpinBox">
@@ -727,11 +730,14 @@ QTabWidget::tab-bar {
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
+     <property name="minimum">
+      <number>3</number>
+     </property>
      <property name="maximum">
       <number>6</number>
      </property>
      <property name="value">
-      <number>1</number>
+      <number>3</number>
      </property>
     </widget>
     <widget class="QLabel" name="maxWeightLabel_3">

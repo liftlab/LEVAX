@@ -69,24 +69,38 @@ public:
     Algorithm();                /* Constructor */
     ~Algorithm();               /* Destructor */
 
-    pair<QString, pair<double, int> > nearestCar(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);                           /* Nearest Car algorithm */
-    double fixedSectoringCommonSectorSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);     /* Fixed Sectoring Common Sector System algorithm */
-    double fixedSectoringPriorityTimedSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);    /* Fixed Sectoring Priority Timed System algorithm */
-    double dynamicSectoringSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);               /* Dynamic Sectoring System algorithm */
+    /* Nearest Car algorithm */
+    pair<QString, pair<pair<double, vector<int> >, pair<int, int> > > nearestCar(BuildingHandler *,
+                                                                                 LiftHandler *,
+                                                                                 SimulatedHumanHandler *);
+    /* Fixed Sectoring Common Sector System algorithm */
+    double fixedSectoringCommonSectorSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
 
-    double convertToSeconds(qint64);                                        /* Convert time to seconds */
-    vector<PassengerInfo> processPassenger(SimulatedHumanHandler*);         /* Push all passenger into passengerList and sort by timing they are travelling */
-    void computeFS(vector<WaitingStatus>&, LiftHandler*);                   /* Compute FS for individual passenger in the waitingList (parse by reference) */
+    /* Fixed Sectoring Priority Timed System algorithm */
+    double fixedSectoringPriorityTimedSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
 
-    QString getSummary(vector<PassengerInfo>);                              /* Get summary of simulation */
-    pair<double, int> getTiming(double, vector<PassengerInfo>);             /* Get elapsed time and average waiting time */
+    /* Dynamic Sectoring System algorithm */
+    double dynamicSectoringSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
+
+    /* Convert time to seconds */
+    double convertToSeconds(qint64);
+
+    /* Push all passenger into passengerList and sort by timing they are travelling */
+    vector<PassengerInfo> processPassenger(SimulatedHumanHandler*);
+
+    /* Compute FS for individual passenger in the waitingList (parse by reference) */
+    void computeFS(vector<WaitingStatus>&, LiftHandler*);
+
+    /* Get summary of simulation */
+    QString getSummary(vector<PassengerInfo>);
+
+    /* Get elapsed time and average waiting time */
+    pair<pair<double, vector<int> >, pair<int, int> > getTiming(double, vector<PassengerInfo>, vector<int>);
 
 private:
     int noOfLifts;
     int noOfFloors;
     int noOfResidents;
     int noOfVisitors;
-
-    vector<vector<PassengerInfo> > passengersInLift;
 };
 #endif // ALGORITHM_H

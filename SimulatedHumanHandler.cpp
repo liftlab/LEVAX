@@ -256,8 +256,8 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
                     int timeToSchool = rand() % (26100 - 21600) + 21600;
                     simulatedHumanObj[idx]->addTravelTime(timeToSchool, 1);
 
-                    /* Student back from school at 1PM (46800) to 7PM  (68400) */
-                    int backFromSchool = rand() % (68400 - 46800) + 46800;
+                    /* Student back from school at 12PM (43200) to 7PM  (68400) */
+                    int backFromSchool = rand() % (68400 - 43200) + 43200;
                     simulatedHumanObj[idx]->addTravelTime(backFromSchool, simulatedHumanObj[idx]->getResident());
 
                     currentTime = backFromSchool + 600;
@@ -292,8 +292,8 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
                     int backFromWork;
                     if(randomNoOfTimesTravel == 1)
                     {
-                        /* Person back from work at 6PM (68400) to 11:59PM  (86399) */
-                        backFromWork = rand() % (86399 - 82800) + 82800;
+                        /* Person back from work at 6PM (68400) to 9:00PM  (75600) */
+                        backFromWork = rand() % (75600 - 68400) + 68400;
                     }
                     else
                     {
@@ -307,9 +307,9 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
                 else
                 {
                     /* Generate a time the person will leave home
-                     * Time ranging from backFromWork to 23:59PM (86399)
+                     * Time ranging from backFromWork to 23:00PM (82800)
                      */
-                    randomTime = rand() % (86399 - currentTime) + currentTime;
+                    randomTime = rand() % (82800 - currentTime) + currentTime;
                     simulatedHumanObj[idx]->addTravelTime(randomTime, 1);
                     currentTime = randomTime + 600;
                 }
@@ -319,7 +319,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         {
             randomNoOfTimesTravel = rand() % 3 + 1;
 
-            int range1 = 19800; // 5:30AM
+            int range1 = 21600; // 6:00AM
             int range2 = 86399; // 23:59PM
 
             int i = 0;
@@ -378,9 +378,8 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
         {
             /* Generate 1-100
              * 1-10     = Morning
-             * 11-30    = Afternoon
-             * 31-60    = Late Afternoon
-             * 60-100   = Evening
+             * 11-40    = Afternoon
+             * 41-100   = Evening
              */
             int randomVisitingPeak = rand() % 100 + 1;
 
@@ -397,10 +396,10 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
                 randomTime = rand() % (43200 - currentTime) + currentTime;
                 nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
             }
-            else if(randomVisitingPeak >= 11 && randomVisitingPeak <= 30)
+            else if(randomVisitingPeak >= 11 && randomVisitingPeak <= 40)
             {
-                /* Visit at 11AM (39600) to 2PM  (50400) */
-                randomTime = rand() % (50400 - 39600) + 39600;
+                /* Visit at 12PM (43200) to 1PM  (46800) */
+                randomTime = rand() % (46800 - 43200) + 43200;
                 nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
                 currentTime = randomTime + 600;
 
@@ -410,30 +409,17 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
                 randomTime = rand() % (57600 - currentTime) + currentTime;
                 nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
             }
-            else if(randomVisitingPeak >= 31 && randomVisitingPeak <= 60)
+            else if(randomVisitingPeak >= 41 && randomVisitingPeak <= 100)
             {
-                /* Visit at 5PM (61200) to 7:30PM  (70200) */
-                randomTime = rand() % (70200 - 61200) + 61200;
+                /* Visit at 6PM (64800) to 7:30PM  (70200) */
+                randomTime = rand() % (70200 - 64800) + 64800;
                 nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
                 currentTime = randomTime + 600;
 
                 /* Generate a time the visitor will leave
-                 * Time ranging from currentTime to 8PM (72000)
+                 * Time ranging from currentTime to 9PM (75600)
                  */
-                randomTime = rand() % (72000 - currentTime) + currentTime;
-                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
-            }
-            else if(randomVisitingPeak >= 60 && randomVisitingPeak <= 100)
-            {
-                /* Visit at 7:30PM (61200) to 9PM  (75600) */
-                randomTime = rand() % (75600 - 61200) + 61200;
-                nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, randomFloor);
-                currentTime = randomTime + 600;
-
-                /* Generate a time the visitor will leave
-                 * Time ranging from currentTime to 11PM (82800)
-                 */
-                randomTime = rand() % (82800 - currentTime) + currentTime;
+                randomTime = rand() % (75600 - currentTime) + currentTime;
                 nonResSimulatedHumanObj[idx]->addTravelTime(randomTime, 1);
             }
         }

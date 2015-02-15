@@ -29,7 +29,8 @@ namespace Ui {
 class MainWindow;
 }
 
-#define MAX_FLOORS 90               /* Define maximum floor */
+#define MAX_FLOORS 50               /* Define maximum floor */
+#define MAX_LIFTS 4                 /* Define maximum no of lifts */
 
 class MainWindow : public QMainWindow
 {
