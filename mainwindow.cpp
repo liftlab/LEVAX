@@ -690,9 +690,25 @@ void MainWindow::on_runBtn_clicked()
 
             else if(ui->algoCombo->currentIndex() == 2)
             {               
+                result = algo.fixedSectoringCommonSectorSystem(&bh, &lh, &shh);
+
                 /* Output message */
-                QString message = "Simulation completed<br>"
-                                + QString::number(algo.fixedSectoringCommonSectorSystem(&bh, &lh, &shh), 'f', 2);
+                QString message = "<b>Fixed Sectoring Common Sector System (FSO) simulation completed in "
+                                + QString::number(result.second.first.first, 'f', 2)
+                                + " seconds</b><br><br>";
+
+                message += "Average passenger wait time: <b>" + QString::number(result.second.second.first) + "s</b><br>";
+                message += "Average passenger travel time: <b>" + QString::number(result.second.second.second) + "s</b><br>";
+
+                for(int i=0;i<lh.getNumberOfLiftsObject();i++)
+                {
+                    message += "Lift " + QString::number(i+1) + " idle time: <b>" + QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("h") + "hr ";
+                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("m") + "min ";
+                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("s") + "sec</b><br>";
+                }
+
+                message += "<br>";
+                message += result.first;
 
                 /* Set output message */
                 ui->outputBox->setText(message);

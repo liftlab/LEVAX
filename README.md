@@ -23,7 +23,9 @@ v3.0	: New GUI Interface, Modify functions to handle the new GUI, Removed number
 v3.1	: Fix Bugs pertaining to version 3.0, Create Export XML Feature<br />  
 v3.2	: GUI Update and function change. Removed generating objects on the fly. Allocate floors evenly based on average number of people per floor.<br />  
 v3.3	: Print feature, Algorithm class, Generate time simulatedHuman will travel to floor, Remove variables and pathTravelled<br />  
-v3.4	: Add default floor features for lift, update GUI, edit help information, add timer for algorithm<br /><br />  
+v3.4	: Add default floor features for lift, update GUI, edit help information, add timer for algorithm<br />  
+v3.5	: Nearest Car Algorithm, Save/Print simulation result, change default values<br />  
+v3.6	: Fixed Sectoring Common Sector System (FSO)<br /><br />  
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  

@@ -74,7 +74,7 @@ public:
                                                                                  LiftHandler *,
                                                                                  SimulatedHumanHandler *);
     /* Fixed Sectoring Common Sector System algorithm */
-    double fixedSectoringCommonSectorSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
+    pair<QString, pair<pair<double, vector<int> >, pair<int, int> > > fixedSectoringCommonSectorSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
 
     /* Fixed Sectoring Priority Timed System algorithm */
     double fixedSectoringPriorityTimedSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
@@ -91,16 +91,24 @@ public:
     /* Compute FS for individual passenger in the waitingList (parse by reference) */
     void computeFS(vector<WaitingStatus>&, LiftHandler*);
 
+    /* Get lift by sector */
+    void getLiftBySector(vector<WaitingStatus>&, LiftHandler*);
+
     /* Get summary of simulation */
     QString getSummary(vector<PassengerInfo>);
 
     /* Get elapsed time and average waiting time */
     pair<pair<double, vector<int> >, pair<int, int> > getTiming(double, vector<PassengerInfo>, vector<int>);
 
+    /* Split lift by sector */
+    void splitLiftBySector();
+
 private:
     int noOfLifts;
     int noOfFloors;
     int noOfResidents;
     int noOfVisitors;
+
+    vector<pair<int, int> > liftSector;
 };
 #endif // ALGORITHM_H
