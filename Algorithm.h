@@ -77,10 +77,10 @@ public:
     pair<QString, pair<pair<double, vector<int> >, pair<int, int> > > fixedSectoringCommonSectorSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
 
     /* Fixed Sectoring Priority Timed System algorithm */
-    double fixedSectoringPriorityTimedSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
+    pair<QString, pair<pair<double, vector<int> >, pair<int, int> > > fixedSectoringPriorityTimedSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
 
     /* Dynamic Sectoring System algorithm */
-    double dynamicSectoringSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
+    pair<QString, pair<pair<double, vector<int> >, pair<int, int> > > dynamicSectoringSystem(BuildingHandler *, LiftHandler *, SimulatedHumanHandler *);
 
     /* Convert time to seconds */
     double convertToSeconds(qint64);
@@ -92,7 +92,13 @@ public:
     void computeFS(vector<WaitingStatus>&, LiftHandler*);
 
     /* Get lift by sector */
-    void getLiftBySector(vector<WaitingStatus>&, LiftHandler*);
+    void getLiftBySector(vector<WaitingStatus>&);
+
+    /* Split lift by sector */
+    void splitLiftBySector();
+
+    /* Compute lift sector dynamically */
+    void computeDynamicSector(vector<WaitingStatus>&, LiftHandler*);
 
     /* Get summary of simulation */
     QString getSummary(vector<PassengerInfo>);
@@ -100,8 +106,6 @@ public:
     /* Get elapsed time and average waiting time */
     pair<pair<double, vector<int> >, pair<int, int> > getTiming(double, vector<PassengerInfo>, vector<int>);
 
-    /* Split lift by sector */
-    void splitLiftBySector();
 
 private:
     int noOfLifts;

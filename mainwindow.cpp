@@ -660,23 +660,7 @@ void MainWindow::on_runBtn_clicked()
                 // returns simulation data, elapsed time, average human wait time
                 result = algo.nearestCar(&bh, &lh, &shh);
 
-                /* Output message */
-                QString message = "<b>Nearest Car simulation completed in "
-                                + QString::number(result.second.first.first, 'f', 2)
-                                + " seconds</b><br><br>";
-
-                message += "Average passenger wait time: <b>" + QString::number(result.second.second.first) + "s</b><br>";
-                message += "Average passenger travel time: <b>" + QString::number(result.second.second.second) + "s</b><br>";
-
-                for(int i=0;i<lh.getNumberOfLiftsObject();i++)
-                {
-                    message += "Lift " + QString::number(i+1) + " idle time: <b>" + QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("h") + "hr ";
-                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("m") + "min ";
-                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("s") + "sec</b><br>";
-                }
-
-                message += "<br>";
-                message += result.first;
+                QString message = populateResult(result, "Nearest Car");
 
                 /* Set output message */
                 ui->outputBox->setText(message);
@@ -687,28 +671,11 @@ void MainWindow::on_runBtn_clicked()
                 QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
                 QMessageBox::information(this,tr("Completed!"), content);
             }
-
             else if(ui->algoCombo->currentIndex() == 2)
             {               
                 result = algo.fixedSectoringCommonSectorSystem(&bh, &lh, &shh);
 
-                /* Output message */
-                QString message = "<b>Fixed Sectoring Common Sector System (FSO) simulation completed in "
-                                + QString::number(result.second.first.first, 'f', 2)
-                                + " seconds</b><br><br>";
-
-                message += "Average passenger wait time: <b>" + QString::number(result.second.second.first) + "s</b><br>";
-                message += "Average passenger travel time: <b>" + QString::number(result.second.second.second) + "s</b><br>";
-
-                for(int i=0;i<lh.getNumberOfLiftsObject();i++)
-                {
-                    message += "Lift " + QString::number(i+1) + " idle time: <b>" + QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("h") + "hr ";
-                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("m") + "min ";
-                    message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("s") + "sec</b><br>";
-                }
-
-                message += "<br>";
-                message += result.first;
+                QString message = populateResult(result, "Fixed Sectoring Common Sector System (FSO)");
 
                 /* Set output message */
                 ui->outputBox->setText(message);
@@ -720,12 +687,11 @@ void MainWindow::on_runBtn_clicked()
                 QMessageBox::information(this,tr("Completed!"), content);
 
             }
-
             else if(ui->algoCombo->currentIndex() == 3)
             {
-                /* Output message */
-                QString message = "Simulation completed<br>"
-                                + QString::number(algo.fixedSectoringPriorityTimedSystem(&bh, &lh, &shh), 'f', 2);
+                result = algo.fixedSectoringPriorityTimedSystem(&bh, &lh, &shh);
+
+                QString message = populateResult(result, "Fixed Sectoring Priority Timed System (FS4)");
 
                 /* Set output message */
                 ui->outputBox->setText(message);
@@ -736,12 +702,11 @@ void MainWindow::on_runBtn_clicked()
                 QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
                 QMessageBox::information(this,tr("Completed!"), content);
             }
-
             else if(ui->algoCombo->currentIndex() == 4)
             {
-                /* Output message */
-                QString message = "Simulation completed<br>"
-                                + QString::number(algo.dynamicSectoringSystem(&bh, &lh, &shh), 'f', 2);
+                result = algo.dynamicSectoringSystem(&bh, &lh, &shh);
+
+                QString message = populateResult(result, "Dynamic Sectoring System (DS)");
 
                 /* Set output message */
                 ui->outputBox->setText(message);
@@ -752,26 +717,86 @@ void MainWindow::on_runBtn_clicked()
                 QString content = "Simulation for "+ ui->algoCombo->currentText() + " completed!";
                 QMessageBox::information(this,tr("Completed!"), content);
             }
-
             else
             {
-                /* Output message */
-                QString message = "Simulation completed in 1.3s<br>"
-                                ".<br>"
-                                "..<br>"
-                                "...<br>"
-                                "....<br>"
-                                ".....<br>"
-                                "......<br>"
-                                ".......<br>"
-                                "........<br>"
-                                ".........<br>"
-                                "..........<br>"
-                                "...........<br>";
+                QString message = "";
+
+                /* Execute nearest car algorithm */
+                result = algo.nearestCar(&bh, &lh, &shh);
+                message = populateResult(result, "Nearest Car");
+
+                int averageWaitTime1 = result.second.second.first;
+                int averageTravelTime1 = result.second.second.second;
+
+                /* Execute Fixed Sectoring Common Sector System (FSO) algorithm */
+                result = algo.fixedSectoringCommonSectorSystem(&bh, &lh, &shh);
+                message += populateResult(result, "Fixed Sectoring Common Sector System (FSO)");
+
+                int averageWaitTime2 = result.second.second.first;
+                int averageTravelTime2 = result.second.second.second;
+
+                /* Execute Dynamic Sectoring System (DS) algorithm */
+                result = algo.dynamicSectoringSystem(&bh, &lh, &shh);
+                message += populateResult(result, "Dynamic Sectoring System (DS)");
+
+                int averageWaitTime3 = result.second.second.first;
+                int averageTravelTime3 = result.second.second.second;
+
+                map<QString, int> points;
+                points["Nearest Car"] = 0;
+                points["Fixed Sectoring Common Sector System (FSO)"] = 0;
+                points["Dynamic Sectoring System (DS)"] = 0;
+
+                if(averageWaitTime1 < averageWaitTime2)
+                    points["Nearest Car"]++;
+                if(averageWaitTime1 < averageWaitTime3)
+                    points["Nearest Car"]++;
+
+                if(averageWaitTime2 < averageWaitTime1)
+                    points["Fixed Sectoring Common Sector System (FSO)"]++;
+                if(averageWaitTime2 < averageWaitTime3)
+                    points["Fixed Sectoring Common Sector System (FSO)"]++;
+
+                if(averageWaitTime3 < averageWaitTime1)
+                    points["Dynamic Sectoring System (DS)"]++;
+                if(averageWaitTime3 < averageWaitTime2)
+                    points["Dynamic Sectoring System (DS)"]++;
+
+                if(averageTravelTime1 < averageTravelTime2)
+                    points["Nearest Car"]++;
+                if(averageTravelTime1 < averageTravelTime3)
+                    points["Nearest Car"]++;
+
+                if(averageTravelTime2 < averageTravelTime1)
+                    points["Fixed Sectoring Common Sector System (FSO)"]++;
+                if(averageTravelTime2 < averageTravelTime3)
+                    points["Fixed Sectoring Common Sector System (FSO)"]++;
+
+                if(averageTravelTime3 < averageTravelTime1)
+                    points["Dynamic Sectoring System (DS)"]++;
+                if(averageTravelTime3 < averageTravelTime2)
+                    points["Dynamic Sectoring System (DS)"]++;
+
+                map<QString, int>::const_iterator it = points.begin();
+                int highest = it->second;
+                QString bestAlgo = it->first;
+                for(map<QString, int>::const_iterator it = points.begin(); it != points.end(); ++it)
+                {
+                    if(it->second > highest)
+                    {
+                        highest = it->second;
+                        bestAlgo = it->first;
+                    }
+                }
+
+                message = "The algorithm that scored the most point in terms of"
+                        " average waiting time and average travel time is <b>"
+                        + bestAlgo + "</b><br><br>"
+                        + message
+                        + "<br><br>";
 
                 /* Set output message */
-                ui->outputBox->append(message);
-                message.clear();
+                ui->outputBox->setText(message);
 
                 ui->saveResultBtn->setDisabled(false);
                 ui->tabWidget->setCurrentWidget(ui->tab_2);
@@ -799,6 +824,30 @@ void MainWindow::on_runBtn_clicked()
     }  
 }
 
+/* Populate result message */
+QString MainWindow::populateResult(pair<QString, pair<pair<double, vector<int> >, pair<int, int> > > result, QString algoName)
+{
+    /* Output message */
+    QString message = "<b>" + algoName + " simulation completed in "
+                    + QString::number(result.second.first.first, 'f', 2)
+                    + " seconds</b><br><br>";
+
+    message += "Average passenger wait time: <b>" + QString::number(result.second.second.first) + "s</b><br>";
+    message += "Average passenger travel time: <b>" + QString::number(result.second.second.second) + "s</b><br>";
+
+    for(int i=0;i<lh.getNumberOfLiftsObject();i++)
+    {
+        message += "Lift " + QString::number(i+1) + " idle time: <b>" + QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("h") + "hr ";
+        message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("m") + "min ";
+        message += QDateTime::fromTime_t(result.second.first.second[i]).toUTC().toString("s") + "sec</b><br>";
+    }
+
+    message += "<br>";
+    message += result.first;
+
+    return message;
+}
+
 /* Handle save result button clicked */
 void MainWindow::on_saveResultBtn_clicked()
 {
@@ -808,7 +857,7 @@ void MainWindow::on_saveResultBtn_clicked()
     /* Display QFileDialog prompt */
     QString fileName = QFileDialog::getSaveFileName(
                 this,
-                tr("Save File"), "Result_"+local.toString("dMMM_HHmmap")+".txt",
+                tr("Save File"), "Result_"+local.toString("dMMM_HH-mm-ssap")+".txt",
                 tr("Text Documents (*.txt);;"));
 
     /* Save and display success */
@@ -1577,9 +1626,6 @@ void MainWindow::on_defaultFloorSpinBox_valueChanged(int arg1)
             /* Set weight only if current index is not 0 */
             if(ui->liftCombo->currentIndex() != 0)
                 lh.setLiftDefaultFloor(ui->liftCombo->currentIndex()-1, arg1);
-
-
-            qDebug() << ui->liftCombo->currentIndex()-1;
 
             /* If lift is at the highest level, set direction to DOWN (-1) */
             if(arg1 == bh.getNoOfFloor())

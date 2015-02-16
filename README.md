@@ -25,7 +25,8 @@ v3.2	: GUI Update and function change. Removed generating objects on the fly. Al
 v3.3	: Print feature, Algorithm class, Generate time simulatedHuman will travel to floor, Remove variables and pathTravelled<br />  
 v3.4	: Add default floor features for lift, update GUI, edit help information, add timer for algorithm<br />  
 v3.5	: Nearest Car Algorithm, Save/Print simulation result, change default values<br />  
-v3.6	: Fixed Sectoring Common Sector System (FSO)<br /><br />  
+v3.6	: Fixed Sectoring Common Sector System (FSO)<br />  
+v3.7	: Dynamic Sectoring System (DS), All algorithm comparison based on points<br /><br />  
 
 [Instructions]<br />  
 To open the executable, download and extract<br />  

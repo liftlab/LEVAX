@@ -86,6 +86,10 @@ private:
     void updateHumanSummary(bool);                      /* Update summary box */
     void updateBuildingSummary();                       /* Display building summary */
     QString generateSimulationData();                   /* Combine simulated humans and simulated building model */
+    QString populateResult(pair<QString, pair<pair<double, vector<int> >, pair<int, int> > >, /* Populate result message */
+                           QString);
+
+
 };
 
 #endif // MAINWINDOW_H
