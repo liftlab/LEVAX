@@ -160,9 +160,6 @@ void MainWindow::uploadBuildingXML()
         ui->inputSummaryBox_2->clear();
         ui->inputSummaryBox_3->clear();
 
-        /* Reset all lift data before any input */
-        lh.resetAll();
-
         /* Reset all simulated human data before any input */
         shh.resetAll();
 
@@ -184,6 +181,7 @@ void MainWindow::uploadBuildingXML()
 
             /* reset all building due to error */
             bh.resetAll();
+
         }
         else
         {
