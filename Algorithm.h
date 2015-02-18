@@ -106,6 +106,8 @@ public:
     /* Get elapsed time and average waiting time */
     pair<pair<double, vector<int> >, pair<int, int> > getTiming(double, vector<PassengerInfo>, vector<int>);
 
+    /* Get priority floor */
+    int getFloorWithHighestPriority(map<int, int>, int, int);
 
 private:
     int noOfLifts;
