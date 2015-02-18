@@ -388,15 +388,15 @@ void MainWindow::onActionHelp()
                         "He travels to 27th floor at 65946s (18:19:06PM) and back to 1st floor at 71932s (19:58:52PM)<br>"
                         "<b>E.g. of Building XML</b><br>"
                         "&lt;building floors=\"28\" metrePerFloor=\"3\"&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"1\" defaultFloor=\"1\"/&gt;<br>"
-                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"340\" speed=\"2\" defaultFloor=\"15\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"400\" speed=\"3\" defaultFloor=\"1\"/&gt;<br>"
+                            "&nbsp;&nbsp;&nbsp;&nbsp;&lt;lift maxWeight=\"540\" speed=\"4\" defaultFloor=\"15\"/&gt;<br>"
                         "&lt;/building&gt;<br><br>"
                         "Building is 28 stories high<br>"
                         "Each level is 3 metres apart. It has two lift<br>"
                         "-Lift 1<br>"
-                        "Maximum weight of 400kg and travels 1 metre per second with default floor at 1<br>"
+                        "Maximum weight of 400kg and travels 3 metre per second with default floor at 1<br>"
                         "-Lift 2<br>"
-                        "Maximum weight of 340kg and travels 2 metre per second with default floor at 15<br>";
+                        "Maximum weight of 540kg and travels 4 metre per second with default floor at 15<br>";
 
     /* Pop-up message box */
     QMessageBox::information(this,tr("Help"),message);
@@ -789,7 +789,7 @@ void MainWindow::on_runBtn_clicked()
                     }
                 }
 
-                message = "The algorithm that scored the most point in terms of"
+                message = "The algorithm that scored the most points in terms of"
                         " average waiting time and average travel time is <b>"
                         + bestAlgo + "</b><br><br>"
                         + message
