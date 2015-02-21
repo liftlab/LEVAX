@@ -733,48 +733,85 @@ void MainWindow::on_runBtn_clicked()
                 int averageWaitTime2 = result.second.second.first;
                 int averageTravelTime2 = result.second.second.second;
 
-                /* Execute Dynamic Sectoring System (DS) algorithm */
-                result = algo.dynamicSectoringSystem(&bh, &lh, &shh);
-                message += populateResult(result, "Dynamic Sectoring System (DS)");
+                /* Execute Fixed Sectoring Priority Timed System (FS4) algorithm */
+                result = algo.fixedSectoringPriorityTimedSystem(&bh, &lh, &shh);
+                message += populateResult(result, "Fixed Sectoring Priority Timed System (FS4)");
 
                 int averageWaitTime3 = result.second.second.first;
                 int averageTravelTime3 = result.second.second.second;
 
+                /* Execute Dynamic Sectoring System (DS) algorithm */
+                result = algo.dynamicSectoringSystem(&bh, &lh, &shh);
+                message += populateResult(result, "Dynamic Sectoring System (DS)");
+
+                int averageWaitTime4 = result.second.second.first;
+                int averageTravelTime4 = result.second.second.second;
+
                 map<QString, int> points;
                 points["Nearest Car"] = 0;
                 points["Fixed Sectoring Common Sector System (FSO)"] = 0;
+                points["Fixed Sectoring Priority Timed System (FS4)"] = 0;
                 points["Dynamic Sectoring System (DS)"] = 0;
 
+                /* Populate points for best average wait time */
                 if(averageWaitTime1 < averageWaitTime2)
                     points["Nearest Car"]++;
                 if(averageWaitTime1 < averageWaitTime3)
+                    points["Nearest Car"]++;
+                if(averageWaitTime1 < averageWaitTime4)
                     points["Nearest Car"]++;
 
                 if(averageWaitTime2 < averageWaitTime1)
                     points["Fixed Sectoring Common Sector System (FSO)"]++;
                 if(averageWaitTime2 < averageWaitTime3)
                     points["Fixed Sectoring Common Sector System (FSO)"]++;
+                if(averageWaitTime2 < averageWaitTime4)
+                    points["Fixed Sectoring Common Sector System (FSO)"]++;
 
                 if(averageWaitTime3 < averageWaitTime1)
-                    points["Dynamic Sectoring System (DS)"]++;
+                    points["Fixed Sectoring Priority Timed System (FS4)"]++;
                 if(averageWaitTime3 < averageWaitTime2)
+                    points["Fixed Sectoring Priority Timed System (FS4)"]++;
+                if(averageWaitTime3 < averageWaitTime4)
+                    points["Fixed Sectoring Priority Timed System (FS4)"]++;
+
+                if(averageWaitTime4 < averageWaitTime1)
+                    points["Dynamic Sectoring System (DS)"]++;
+                if(averageWaitTime4 < averageWaitTime2)
+                    points["Dynamic Sectoring System (DS)"]++;
+                if(averageWaitTime4 < averageWaitTime3)
                     points["Dynamic Sectoring System (DS)"]++;
 
+                /* Populate points for best average travel time */
                 if(averageTravelTime1 < averageTravelTime2)
                     points["Nearest Car"]++;
                 if(averageTravelTime1 < averageTravelTime3)
+                    points["Nearest Car"]++;
+                if(averageTravelTime1 < averageTravelTime4)
                     points["Nearest Car"]++;
 
                 if(averageTravelTime2 < averageTravelTime1)
                     points["Fixed Sectoring Common Sector System (FSO)"]++;
                 if(averageTravelTime2 < averageTravelTime3)
                     points["Fixed Sectoring Common Sector System (FSO)"]++;
+                if(averageTravelTime2 < averageTravelTime4)
+                    points["Fixed Sectoring Common Sector System (FSO)"]++;
 
                 if(averageTravelTime3 < averageTravelTime1)
-                    points["Dynamic Sectoring System (DS)"]++;
+                    points["Fixed Sectoring Priority Timed System (FS4)"]++;
                 if(averageTravelTime3 < averageTravelTime2)
+                    points["Fixed Sectoring Priority Timed System (FS4)"]++;
+                if(averageTravelTime3 < averageTravelTime4)
+                    points["Fixed Sectoring Priority Timed System (FS4)"]++;
+
+                if(averageTravelTime4 < averageTravelTime1)
+                    points["Dynamic Sectoring System (DS)"]++;
+                if(averageTravelTime4 < averageTravelTime2)
+                    points["Dynamic Sectoring System (DS)"]++;
+                if(averageTravelTime4 < averageTravelTime3)
                     points["Dynamic Sectoring System (DS)"]++;
 
+                /* Find algorithm with highest points */
                 map<QString, int>::const_iterator it = points.begin();
                 int highest = it->second;
                 QString bestAlgo = it->first;
