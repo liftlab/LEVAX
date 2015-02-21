@@ -662,7 +662,7 @@ QTabWidget::tab-bar {
       </rect>
      </property>
      <property name="text">
-      <string>Max Weight (min 400kg)</string>
+      <string>Max Weight (Min 400kg)</string>
      </property>
     </widget>
     <widget class="QLabel" name="maxWeightLabel_2">
