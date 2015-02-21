@@ -160,6 +160,9 @@ void MainWindow::uploadBuildingXML()
         ui->inputSummaryBox_2->clear();
         ui->inputSummaryBox_3->clear();
 
+        /* Reset all lift before any input */
+        lh.resetAll();
+
         /* Reset all simulated human data before any input */
         shh.resetAll();
 
@@ -182,6 +185,9 @@ void MainWindow::uploadBuildingXML()
             /* reset all building due to error */
             bh.resetAll();
 
+            /* Create default lift */
+            lh.createNewLift(lh.getNumberOfLiftsObject()+1, 400, 3, 1);
+            ui->liftCombo->addItem("Lift 1");
         }
         else
         {
