@@ -1638,7 +1638,7 @@ void MainWindow::printSimulatedData()
         }
         else
         {
-            QMessageBox::critical(this,tr("Print Fail!"),"Printing Fail!<br>1) No printer detected.<br>2)Please start the Print Spooler service (Control Panel -> Administrative Tools -> Services) on your system, and try again.");
+            QMessageBox::critical(this,tr("Print Fail!"),"Printing Fail!<br><br>1) No printer detected.<br>2) Please start the Print Spooler service and try again.");
         }
     }
     else
