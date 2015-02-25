@@ -58,7 +58,7 @@ public:
     bool getLiftPark(int);                      /* Get Lift park */
     bool getLiftPickPassenger(int);             /* Get Lift isPicking */
 
-    void resetLift(int);
+    void resetLift(int);                        /* Reset lift to default values after simulation completed */
 
 private:
     std::vector<Lift*> liftObj;

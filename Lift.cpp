@@ -221,7 +221,7 @@ bool Lift::getLiftPickPassenger()
     return isPicking;
 }
 
-/* Reset lift data */
+/* Reset lift variables to default values after simulation */
 void Lift::resetLift(int noOfFloors)
 {
     currentFloor = defaultFloor;

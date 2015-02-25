@@ -21,7 +21,7 @@ public:
     void setNoOfLifts(int);     /* Set number of lifts */
     void setMetrePerFloor(int); /* Set metres per floor */
 
-    void resetAll();            /* reset all to zero */
+    void resetAll();            /* Reset building model to default */
 
     /* Getters */
     int getNoOfFloor();         /* Return number of floors */

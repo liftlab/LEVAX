@@ -48,6 +48,7 @@ void SimulatedHuman::addTravelTime(int timeIn, int floor)
     this->timeTravel.push_back(make_pair<int, int>(timeIn, floor));
 }
 
+/* Set the travel destination */
 void SimulatedHuman::setTravelLevel(int idx, int value)
 {
     timeTravel[idx].second = value;

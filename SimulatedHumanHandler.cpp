@@ -175,6 +175,7 @@ void SimulatedHumanHandler::populateSimulatedHuman(int idx, int totalNoOfFloors,
      */
     int randHumanType = rand() % 100 + 1;
 
+    /* Randomize and set weight */
     if(randHumanType >= 1 && randHumanType <= 15)
     {
         min = 15;

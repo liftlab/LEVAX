@@ -25,7 +25,7 @@ public:
     void setResident(int);                      /* Set resident floor */
     void setWeight(int);                        /* Set weight */
     void addTravelTime(int, int);               /* Add time travel into building */
-    void setTravelLevel(int, int);
+    void setTravelLevel(int, int);              /* Set the travel destination */
 
     /* Getters */
     int getPersonID();                          /* Return person id */

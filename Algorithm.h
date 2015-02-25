@@ -1,3 +1,10 @@
+/*-----------------------------------------------------------------------------
+ * File      - Algorithm.h
+ * Author    - LEVAX
+ * Purpose   - Algorithm header. 4 lifts algorithm and its neccessary variables
+ *             for travelling in the building model
+ *---------------------------------------------------------------------------*/
+
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
 

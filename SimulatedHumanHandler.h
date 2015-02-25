@@ -12,7 +12,7 @@
 #include "SimulatedHuman.h"
 #include <qDebug>
 
-#define MAX_PEOPLE 500                                 /* Maximum no of people */
+#define MAX_PEOPLE 500                                  /* Maximum no of people */
 #define MAX_VISITOR 200                                 /* Maximum no of visitor */
 
 class SimulatedHumanHandler

@@ -1620,14 +1620,25 @@ void MainWindow::printSimulatedData()
 {
     if(!ui->inputSummaryBox_2->document()->isEmpty() || !ui->inputSummaryBox_3->document()->isEmpty())
     {
-        QPrinter printer;
+        /* Check for available printer */
+        QList <QPrinterInfo> plist = QPrinterInfo::availablePrinters();
 
-        QPrintDialog *dialog = new QPrintDialog(&printer, this);
-        dialog ->setWindowTitle("Print Simulated Data");
+        /* If printer available */
+        if(plist.count() != 0)
+        {
+            QPrinter printer;
 
-        if(dialog ->exec() == QDialog::Accepted){
-            QTextDocument doc (generateSimulationData());
-            doc.print(&printer);
+            QPrintDialog *dialog = new QPrintDialog(&printer, this);
+            dialog ->setWindowTitle("Print Simulated Data");
+
+            if(dialog ->exec() == QDialog::Accepted){
+                QTextDocument doc (generateSimulationData());
+                doc.print(&printer);
+            }
+        }
+        else
+        {
+            QMessageBox::critical(this,tr("Print Fail!"),"Printing Fail!<br>1) No printer detected.<br>2)Please start the Print Spooler service (Control Panel -> Administrative Tools -> Services) on your system, and try again.");
         }
     }
     else

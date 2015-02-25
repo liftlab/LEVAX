@@ -35,6 +35,7 @@ void BuildingHandler::setMetrePerFloor(int metrePerFloor)
     building.setMetrePerFloor(metrePerFloor);
 }
 
+/* Reset building model to default */
 void BuildingHandler::resetAll()
 {
     building.setNoOfFloors(2);

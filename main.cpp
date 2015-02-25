@@ -29,9 +29,9 @@ int main(int argc, char *argv[])
     QTimer::singleShot(1500,splash,SLOT(close()));
     QTimer::singleShot(1500,&w,SLOT(show()));
 
-    // Set icon
+    /* Set icon */
     a.setWindowIcon(QIcon(":/icons/Images/icon.ico"));
 
-    // End program
+    /* End program */
     return a.exec();
 }

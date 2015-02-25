@@ -248,6 +248,7 @@ bool LiftHandler::getLiftPickPassenger(int idx)
     return liftObj[idx]->getLiftPickPassenger();
 }
 
+/* Reset lift to default values after simulation completed */
 void LiftHandler::resetLift(int noOfFloors)
 {
     for(size_t i=0;i<liftObj.size();i++)

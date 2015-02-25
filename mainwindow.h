@@ -9,11 +9,10 @@
 
 #include <QMainWindow>              /* GUI Window */
 #include <QFileDialog>              /* File dialog */
-#include <QMessageBox>              /* Help pop-up message box */
+#include <QMessageBox>              /* Pop-up message box */
 #include <QDateTime>                /* Date time */
 #include <QTimer>                   /* Splash timer */
 #include <QSplashScreen>            /* Splash screen */
-#include <QDebug>                   /* Debug, similar to cout. Usage qDebut() << "Hello World" */
 #include <QScrollBar>               /* Scroll bar */
 #include <QtPrintSupport>           /* Printer support */
 #include <QTextStream>              /* Write to file */
@@ -23,7 +22,7 @@
 #include "BuildingHandler.h"        /* Building Handler */
 #include "LiftHandler.h"            /* Lift Handler */
 #include "SimulatedHumanHandler.h"  /* SimulatedHuman Handler */
-#include "Algorithm.h"
+#include "Algorithm.h"              /* Lift algorithm */
 
 namespace Ui {
 class MainWindow;

@@ -50,7 +50,7 @@ public:
     bool getLiftPark();                     /* Get Lift park */
     bool getLiftPickPassenger();            /* Get Lift isPicking */
 
-    void resetLift(int);
+    void resetLift(int);                    /* Reset lift variables to default values after simulation */
 
 private:
     int liftID;

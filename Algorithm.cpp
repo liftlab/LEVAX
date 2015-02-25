@@ -19,7 +19,6 @@ Algorithm::Algorithm()
 /* Destructor */
 Algorithm::~Algorithm()
 {
-
 }
 
 /* Nearest Car algorithm */
@@ -2428,6 +2427,7 @@ int Algorithm::getFloorWithHighestPriority(map<int, int> travelPath, int current
     int highestTimedPriority = 0;
     map<int,int>::iterator it = travelPath.begin();
 
+    /* for all travel path, search the floor with highest priority value */
     for(;it != travelPath.end();it++)
     {
         if(direction == -1)
